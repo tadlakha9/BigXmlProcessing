@@ -3,6 +3,9 @@
  */
 package com.soprasteria.springboot.controller;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
@@ -32,10 +35,35 @@ public class HomeController {
 	}
 	
 	@PostMapping("/transformXml")
-	public String addNewUser(@RequestParam("file") MultipartFile file) {
+	public Response transformXml(@RequestParam("file") MultipartFile file) {
 		log.info("Saving user."+file.getOriginalFilename());
 
-		return "Everything is fine";
+		return Response.ok().build();
 	}
+	
+	@GetMapping("/script")
+	public void executeScript() {
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		processBuilder.command("C:\\Users\\tadlakha\\Desktop\\GitTesting\\practise\\test.sh");
+		try {
+
+			Process process = processBuilder.start();
+
+			StringBuilder output = new StringBuilder();
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(process.getInputStream()));
+			
+			String line;
+			while ((line = reader.readLine()) != null) {
+				output.append(line + "\n");
+			}
+			System.out.println("output::"+output.toString());
+		}catch(Exception e) {
+			e.printStackTrace();
+			
+		}
+	}
+	
+	
 
 }
