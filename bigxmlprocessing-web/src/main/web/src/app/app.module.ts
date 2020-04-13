@@ -5,17 +5,35 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
 import { HttpClientModule } from '@angular/common/http';
+import { HeaderComponent } from './header/header.component';
+import { ParsingComponent } from './parsing/parsing.component';
+import { AppRoutingModule } from './app.routing.module';
+import { PrettyPrintComponent } from './pretty-print/pretty-print.component';
+import { SearchComponent } from './search/search.component';
+import { SortComponent } from './sort/sort.component';
+import { SplitComponent } from './split/split.component';
+import { ConvertComponent } from './convert/convert.component';
+import { FeedbackComponent } from './feedback/feedback.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HeaderComponent,
+    ParsingComponent,
+    PrettyPrintComponent,
+    SearchComponent,
+    SortComponent,
+    SplitComponent,
+    ConvertComponent,
+    FeedbackComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AppRoutingModule
   ],
   providers: [AppService],
   bootstrap: [AppComponent]
