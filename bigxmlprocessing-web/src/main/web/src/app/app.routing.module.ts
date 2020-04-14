@@ -11,47 +11,48 @@ import { FeedbackComponent } from "./feedback/feedback.component";
 const routes: Routes = [
     
     {
-      path: "./",
-      redirectTo: "/parsing"
+      path: '',
+      redirectTo: '/search',
+      pathMatch: 'full'
     },
     {
-        path: "search",
+        path: 'search',
         component: SearchComponent,
         
       }
       ,
     {
-        path: "sort",
+        path: 'sort',
         component: SortComponent,
         
       }
       ,
     {
-        path: "prettyprint",
+        path: 'prettyprint',
         component: PrettyPrintComponent,
         
       }
       ,
     {
-        path: "split",
+        path: 'split',
         component: SplitComponent,
         
       }
       ,
     {
-        path: "convert",
+        path: 'convert',
         component: ConvertComponent,
         
       }
       ,
     {
-        path: "parsing",
+        path: 'parsing',
         component: ParsingComponent,
         
       }
       ,
       {
-          path: "feedback",
+          path: 'feedback',
           component: FeedbackComponent,
           
         }

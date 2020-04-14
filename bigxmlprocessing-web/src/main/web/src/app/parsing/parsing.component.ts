@@ -9,7 +9,6 @@ import { AppService } from '../app.service';
 })
 export class ParsingComponent implements OnInit {
 
-  title = 'BigXMLProcessing';
   
   profileForm:FormGroup;
   xmlFilePath:File;

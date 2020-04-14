@@ -1,50 +1,48 @@
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>  
-</div>
-<div >
-<form [formGroup]="profileForm" style="left: 35%;position: relative;width: 35%;top:85px" class="border">
+
+<div class="panel panel-primary" style="width:50%;left:20%;position:relative">
+	<div class="panel-heading">Parsing</div>
+	<div class="panel-body">
+<form [formGroup]="profileForm" style="left: 35%;position: relative;width: 35%;" >
 	<br>
-	<div class=" row" style="text-align: center;">
+	<div class=" row" >
 		<div class=" col-md-12">
 			<div class=" form-group">				 
-				<b><label for="xmlFile"> XML file Input: </label></b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<b><label for="xmlFile"> XML file Input: </label></b> 
 				<input type="file" id="xmlFile" name="profile" (change)="onSelectedXMLFile($event)"/>
 			</div>
 		</div>
 	</div>
-	<div class=" row" style="text-align: center;">
+	<div class=" row" >
 		<div class=" col-md-12">
 			<div class=" form-group">				 
-				<b><label for="xsdFile">XSD file Input: </label></b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<b><label for="xsdFile">XSD file Input: </label></b> 
 				<input type="file" id="xsdFile" name="profile" (change)="onSelectedXSDFile($event)"/>
 			</div>
 		</div>
 	</div>
-	<div class=" row" style="text-align: center;">
+	<div class=" row" >
 		<div class=" col-md-12">
 			<div class=" form-group">				 
-				<b><label for="xsltFile"> XSLT Result File: </label></b> &nbsp;&nbsp;&nbsp;
+				<b><label for="xsltFile"> XSLT Result File: </label></b>
 				<input type="file" id="xsltFile" name="profile" (change)="onSelectedXSLTFile($event)"/>
 			</div>
 		</div>
 	</div>
-	<div class=" row" style="text-align: center;">
+	<div class=" row" >
 		<div class=" col-md-12">
 			<div class=" form-group">				 
-				<b><label for="errorFile"> Error File: </label> </b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<b><label for="errorFile"> Error File: </label> </b>
 				<input type="file" id="errorFile" name="profile" (change)="onSelectedERRORFile($event)"/>
 			</div>
 		</div>
 	</div>
-	<div class=" row" style="left: 30%;position: relative;">
+	<div class=" row" >
 		<div class="form-group">
-			<button class=" btn btn-fill btn-success"  >Parse XML </button>&nbsp;&nbsp;
-		</div>
-		<div class="form-group">
+			<button class=" btn btn-fill btn-success"  >Parse XML </button>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			<button class=" btn btn-fill btn-success" (click)="transformXML()" type="submit" >Transform XML</button>
 		</div>
+		
 	</div>
 </form>
+</div>
 </div>
