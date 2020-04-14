@@ -15,6 +15,10 @@ import { SplitComponent } from './split/split.component';
 import { ConvertComponent } from './convert/convert.component';
 import { FeedbackComponent } from './feedback/feedback.component';
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+
+
 
 @NgModule({
   declarations: [
@@ -33,7 +37,10 @@ import { FeedbackComponent } from './feedback/feedback.component';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    
+    
   ],
   providers: [AppService],
   bootstrap: [AppComponent]

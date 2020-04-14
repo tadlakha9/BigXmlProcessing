@@ -4,13 +4,21 @@
 package com.soprasteria.springboot.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +34,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/home")
 public class HomeController {
 	
+	@Autowired
+	ServletContext context;
+	
 	private final Logger log = LoggerFactory.getLogger(HomeController.class);
 	
 	
@@ -35,8 +46,27 @@ public class HomeController {
 	}
 	
 	@PostMapping("/transformXml")
-	public Response transformXml(@RequestParam("file") MultipartFile file) {
-		log.info("Saving user."+file.getOriginalFilename());
+	public Response transformXml(@RequestParam("file") MultipartFile file, HttpSession session) throws IOException {
+//		 Path rootLocation = Paths.get(session.getServletContext().getRealPath("/resources/images"));  
+//         System.out.println("rootLocation  ==  " + rootLocation);
+//         
+//		log.info("Saving user."+file.getOriginalFilename());
+		
+		boolean isExist = new File(context.getRealPath("/")).exists();
+		if(!isExist) {
+			new File(context.getRealPath("/webapp")).mkdir(); 
+		}
+		
+		String fileName = file.getOriginalFilename();
+		String modifiedFileName = FilenameUtils.getBaseName(fileName)+"_"+System.currentTimeMillis()+"."+FilenameUtils.getExtension(fileName);
+		File serverFile = new File(context.getRealPath("/") + File.separator + modifiedFileName);
+		
+		try {
+			FileUtils.writeByteArrayToFile(serverFile, file.getBytes());
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 
 		return Response.ok().build();
 	}
