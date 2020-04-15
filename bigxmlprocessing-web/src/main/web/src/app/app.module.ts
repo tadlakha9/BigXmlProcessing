@@ -14,6 +14,7 @@ import { SortComponent } from './sort/sort.component';
 import { SplitComponent } from './split/split.component';
 import { ConvertComponent } from './convert/convert.component';
 import { FeedbackComponent } from './feedback/feedback.component';
+import { ToastrModule} from 'ngx-toastr';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -39,7 +40,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ReactiveFormsModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    
+    ToastrModule.forRoot()
     
   ],
   providers: [AppService],

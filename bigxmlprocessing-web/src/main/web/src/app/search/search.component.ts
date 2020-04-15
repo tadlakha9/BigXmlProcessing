@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-search',
@@ -22,6 +22,10 @@ export class SearchComponent implements OnInit {
         const path = file.webkitRelativePath.split('/');
     
     }
+}
+
+save(form:NgForm){
+
 }
 
 }

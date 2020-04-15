@@ -1,4 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { AppService } from '../app.service';
+import { splitAtColon } from '@angular/compiler/src/util';
+import { Split } from '../model/split';
+import { toBase64String } from '@angular/compiler/src/output/source_map';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-split',
@@ -7,9 +13,44 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SplitComponent implements OnInit {
 
-  constructor() { }
+  filePath:File;
+  split:Split;
+  constructor(private appService:AppService, private toastr:ToastrService) { }
 
+  
   ngOnInit() {
   }
+
+  onSelectedXMLFile(event){
+    console.log(event.target.files);
+    this.filePath = event.target.files[0];
+  }
+
+  save(form:NgForm){
+    console.log(form.value);
+    this.split = form.value;
+    let formData = new FormData();
+    formData.append('file', this.filePath, this.filePath.name); 
+    formData.append('typeOfSplit', form.value.typeOfSplit);       
+    formData.append('level', form.value.level);
+    formData.append('size', form.value.size);
+    formData.append('splitByElement', form.value.splitByElement);
+    this.appService.splitService(formData).
+    subscribe(
+      (response => {
+        console.log("ok"+response);
+        this.toastr.success('Split Successfully')
+        }),
+      (error) => {
+        console.log("ko"+error);  
+        this.toastr.error('Error on Splitting');
+      }
+    );
+
+    form.reset();
+    
+
+  }
+
 
 }

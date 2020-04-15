@@ -1,3 +1,75 @@
-<p>
-  split works!
-</p>
+
+<div class="panel panel-primary" style="width:50%;left:20%;position:relative">
+	<div class="panel-heading">Split</div>
+	<div class="panel-body">
+<form (ngSubmit)="save(f)" #f="ngForm" style="left: 35%;position: relative;width: 35%;" >
+	<br>
+	<div class=" row" >
+		<div class=" col-md-12">
+			<div class=" form-group">	
+        <label> Type of Split: </label>
+                    <select id="typeOfSplit" 
+                    ngModel 
+                    name="typeOfSplit" 
+                    style="color:black; background-color: white;"
+                    class="form-control" 
+                    
+                    placeholder="typeOfSplit">
+                      <option></option>
+                      <option>Level</option>
+                      <option>Element</option>
+                      <option>Flat</option>
+                      <option>Size</option>
+                    </select>
+			</div>
+		</div>
+  </div>
+
+  <div class=" row" >
+		<div class=" col-md-12">
+			<div class=" form-group">				 
+				<label for="xmlFile"> File Input: </label>
+				<input type="file"  id="xmlFile"  (change)="onSelectedXMLFile($event)"/>
+			</div>
+		</div>
+  </div>
+  
+
+  
+
+  <div class=" row" >
+		<div class=" col-md-12">
+			<div class=" form-group">
+        <label for="level"> Level: </label>	<br>
+        <input id="level" ngModel name="level" type="number"/>
+      </div>
+    </div>
+  </div>    
+
+  <div class=" row" >
+    <div class=" col-md-12">
+      <div class=" form-group">	
+        <label for="size"> Size: </label><br>
+        <input id="size" ngModel name="size" type="number"/>
+      </div>
+    </div>
+  </div>
+
+  <div class=" row" >
+    <div class=" col-md-12">
+      <div class=" form-group">	
+        <label for="splitByElement"> Split by Element: </label><br>
+        <input id="splitByElement" ngModel name="splitByElement" type="text"/>
+      </div>
+    </div>
+  </div>
+
+
+	<div class="card-footer">
+    <button class=" btn btn-fill btn-success" type="submit" >Split</button>
+  </div>
+		
+	
+</form>
+</div>
+</div>
