@@ -103,5 +103,11 @@ public class HomeController {
 		log.info("splitObject:" + split);
 		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
 	}
-
+	@PostMapping("/sortXml")
+	public ResponseEntity<String> sortXml(@RequestParam("file") MultipartFile file,
+			@RequestParam("sortType") String typeOfSort, @RequestParam("attribute") String attribute,
+			@RequestParam("keyattribute") String keyattribute, @RequestParam("idattribute") String idattribute) {
+		log.info("File name." + file.getOriginalFilename());
+		return new ResponseEntity<String>("Everything is working fine for sort", HttpStatus.OK);
+	}
 }
