@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.soprasteria.springboot.model.PrettyPrint;
 import com.soprasteria.springboot.model.Split;
 
 /**
@@ -75,7 +76,7 @@ public class HomeController {
 	@GetMapping("/script")
 	public void executeScript() {
 		ProcessBuilder processBuilder = new ProcessBuilder();
-		processBuilder.command("C:\\Users\\tadlakha\\Desktop\\GitTesting\\practise\\test.sh");
+		processBuilder.command("C:\\Users\\mjindal.EMEAAD\\Desktop\\FileFormatter.ksh");
 		try {
 
 			Process process = processBuilder.start();
@@ -103,6 +104,7 @@ public class HomeController {
 		log.info("splitObject:" + split);
 		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
 	}
+
 	@PostMapping("/sortXml")
 	public ResponseEntity<String> sortXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("sortType") String typeOfSort, @RequestParam("attribute") String attribute,
@@ -110,4 +112,20 @@ public class HomeController {
 		log.info("File name." + file.getOriginalFilename());
 		return new ResponseEntity<String>("Everything is working fine for sort", HttpStatus.OK);
 	}
+
+	
+	
+	@PostMapping("/prettyPrintXml")
+	public ResponseEntity<String> prettyPrintXml(@RequestParam("file") MultipartFile file,
+			@RequestParam("fileType") String fileType){
+		log.info("File name." + file.getOriginalFilename());
+		
+		PrettyPrint print = new PrettyPrint(fileType);
+		log.info("Pretty Print:" + print);
+		
+		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
+	}
+	
+
+
 }

@@ -8,6 +8,7 @@ export class AppService{
     transformXmlUrl:string = this.baseUrl + "transformXml";
     splitServiceUrl = this.baseUrl + "splitXml";
     sortServiceUrl = this.baseUrl + "sortXml";
+    prettyPrintServiceUrl = this.baseUrl + "prettyPrintXml";
 
     constructor(private httpClient: HttpClient) {}
 
@@ -20,7 +21,14 @@ export class AppService{
     splitService(formData){        
         return this.httpClient.post(this.splitServiceUrl, formData, {responseType: 'text'});
     }
+
     sortService(formData){        
         return this.httpClient.post(this.sortServiceUrl, formData, {responseType: 'text'});
+ 	}
+
+
+    prettyPrintService(formData){
+        return this.httpClient.post(this.prettyPrintServiceUrl,formData,{responseType: 'text'})
+
     }
 }
