@@ -14,6 +14,7 @@ import { ToastrService } from 'ngx-toastr';
 export class SplitComponent implements OnInit {
 
   filePath:File;
+  typeOfSplit:string;
  
   constructor(private appService:AppService, private toastr:ToastrService) { }
 

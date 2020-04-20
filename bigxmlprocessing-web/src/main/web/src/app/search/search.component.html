@@ -13,7 +13,7 @@
                     name="searchId" 
                     style="color:black; background-color: white;"
                     class="form-control" 
-                    
+                    [(ngModel)]="searchId"
                     placeholder="searchId">
                       <option></option>
                       <option>Text</option>
@@ -26,32 +26,34 @@
 		<div class=" col-md-12">
 			<div class=" form-group">	
         <label> Folder Path: </label>
-        <input type="file" #folderInput id="ctrl" webkitdirectory directory (change)="filesPicked(folderInput.files)"/>
+        <input type="file" #folderInput id="ctrl" webkitdirectory directory (change)="filesPicked($event)"/>
         </div>
       </div>
   </div>
 
-  <div class=" row" >
+  <div class=" row" [ngSwitch]="searchId"> 
+    <div *ngSwitchCase="'Extension'" >
 		<div class=" col-md-12">
 			<div class=" form-group">
         <label for="extension"> Type of Extension: </label>	
-        <input id="extension" type="text"/>
+        <input id="extension" ngModel name="extension" type="text"/>
       </div>
     </div>
   </div>    
 
-  <div class=" row" >
+  <div *ngSwitchCase="'Text'" >
     <div class=" col-md-12">
       <div class=" form-group">	
         <label for="text"> Text: </label><br>
-        <input id="text" type="text"/>
+        <input id="text" ngModel name="text" type="text"/>
       </div>
     </div>
+  </div>
   </div>
 
 
 	<div class="card-footer">
-    <button class=" btn btn-fill btn-success" [routerLink]="['/sort']" type="submit" >Search</button>
+    <button class=" btn btn-fill btn-success"  type="submit" >Search</button>
   </div>
 		
 	

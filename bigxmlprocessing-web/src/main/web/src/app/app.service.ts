@@ -9,6 +9,7 @@ export class AppService{
     splitServiceUrl = this.baseUrl + "splitXml";
     sortServiceUrl = this.baseUrl + "sortXml";
     prettyPrintServiceUrl = this.baseUrl + "prettyPrintXml";
+    searchServiceUrl = this.baseUrl + "searching";
 
     constructor(private httpClient: HttpClient) {}
 
@@ -29,6 +30,9 @@ export class AppService{
 
     prettyPrintService(formData){
         return this.httpClient.post(this.prettyPrintServiceUrl,formData,{responseType: 'text'})
+    }
 
+    searchService(formData){
+        return this.httpClient.post(this.searchServiceUrl,formData,{responseType: 'text'})
     }
 }

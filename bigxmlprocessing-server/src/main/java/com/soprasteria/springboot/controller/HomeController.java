@@ -42,37 +42,31 @@ public class HomeController {
 
 	private final Logger log = LoggerFactory.getLogger(HomeController.class);
 
+	/**
+	 * @return
+	 */
 	@GetMapping
 	public String home() {
 		return "forward:/index.html";
 	}
 
+	/**
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
 	@PostMapping("/transformXml")
-	public Response transformXml(@RequestParam("file") MultipartFile file, HttpSession session) throws IOException {
-//		 Path rootLocation = Paths.get(session.getServletContext().getRealPath("/resources/images"));  
-//         System.out.println("rootLocation  ==  " + rootLocation);
-//         
-//		log.info("Saving user."+file.getOriginalFilename());
+	public Response transformXml(@RequestParam("file") MultipartFile file) throws IOException {
+		createLocalFolder();		
 
-		boolean isExist = new File(context.getRealPath("/")).exists();
-		if (!isExist) {
-			new File(context.getRealPath("/webapp")).mkdir();
-		}
-
-		String fileName = file.getOriginalFilename();
-		String modifiedFileName = FilenameUtils.getBaseName(fileName) + "_" + System.currentTimeMillis() + "."
-				+ FilenameUtils.getExtension(fileName);
-		File serverFile = new File(context.getRealPath("/") + File.separator + modifiedFileName);
-
-		try {
-			FileUtils.writeByteArrayToFile(serverFile, file.getBytes());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		createLocalFile(file);
+		
 		return Response.ok().build();
 	}
 
+	/**
+	 * 
+	 */
 	@GetMapping("/script")
 	public void executeScript() {
 		ProcessBuilder processBuilder = new ProcessBuilder();
@@ -95,6 +89,14 @@ public class HomeController {
 		}
 	}
 
+	/**
+	 * @param file
+	 * @param typeOfSplit
+	 * @param level
+	 * @param size
+	 * @param splitByElement
+	 * @return
+	 */
 	@PostMapping("/splitXml")
 	public ResponseEntity<String> splitXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("typeOfSplit") String typeOfSplit, @RequestParam("level") String level,
@@ -105,6 +107,14 @@ public class HomeController {
 		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
 	}
 
+	/**
+	 * @param file
+	 * @param typeOfSort
+	 * @param attribute
+	 * @param keyattribute
+	 * @param idattribute
+	 * @return
+	 */
 	@PostMapping("/sortXml")
 	public ResponseEntity<String> sortXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("sortType") String typeOfSort, @RequestParam("attribute") String attribute,
@@ -115,6 +125,11 @@ public class HomeController {
 
 	
 	
+	/**
+	 * @param file
+	 * @param fileType
+	 * @return
+	 */
 	@PostMapping("/prettyPrintXml")
 	public ResponseEntity<String> prettyPrintXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("fileType") String fileType){
@@ -124,6 +139,57 @@ public class HomeController {
 		log.info("Pretty Print:" + print);
 		
 		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
+	}
+	
+	/**
+	 * @param files
+	 * @return
+	 */
+	@PostMapping("/searching")
+	public ResponseEntity<String> searching(@RequestParam("file") MultipartFile[] files,
+			@RequestParam("searchId") String searchId, @RequestParam("extension") String extension,
+			@RequestParam("text") String text){
+		String dirPath = null;
+		createLocalFolder();
+		for(MultipartFile file:files) {
+			dirPath = createLocalFile(file);
+		}
+		log.info("Dir name." + dirPath);
+		log.info("searchId." + searchId);
+		log.info("extension." + extension);
+		log.info("text." + text);
+		
+		
+		
+		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
+	}
+	
+	/**
+	 * 
+	 */
+	private void createLocalFolder() {
+		boolean isExist = new File(context.getRealPath("/")).exists();
+		if (!isExist) {
+			new File(context.getRealPath("/webapp")).mkdir();
+		}
+	}
+	
+	/**
+	 * @param file
+	 * @return
+	 */
+	private String createLocalFile(MultipartFile file) {
+		String fileName = file.getOriginalFilename();
+		String modifiedFileName = FilenameUtils.getBaseName(fileName) + "_" + System.currentTimeMillis() + "."
+				+ FilenameUtils.getExtension(fileName);
+		File serverFile = new File(context.getRealPath("/") + File.separator + modifiedFileName);
+
+		try {
+			FileUtils.writeByteArrayToFile(serverFile, file.getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return serverFile.getParent();
 	}
 	
 
