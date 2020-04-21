@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.soprasteria.springboot.model.PrettyPrint;
 import com.soprasteria.springboot.model.Split;
+import com.soprasteria.springboot.utils.ExecProcess;
 
 /**
  * @author tushar
@@ -69,24 +70,19 @@ public class HomeController {
 	 */
 	@GetMapping("/script")
 	public void executeScript() {
-		ProcessBuilder processBuilder = new ProcessBuilder();
-		processBuilder.command("C:\\Users\\mjindal.EMEAAD\\Desktop\\FileFormatter.ksh");
-		try {
+		ExecProcess p = null;
+    	String cmd = "";
 
-			Process process = processBuilder.start();
+        try {
+        	cmd = "bash /home/user/test.sh -help"; 
+            p = new ExecProcess(cmd);
+            p.run();
 
-			StringBuilder output = new StringBuilder();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-			String line;
-			while ((line = reader.readLine()) != null) {
-				output.append(line + "\n");
-			}
-			System.out.println("output::" + output.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-
-		}
+        } catch (Exception e) {
+            
+            e.printStackTrace();
+            
+        } 
 	}
 
 	/**
