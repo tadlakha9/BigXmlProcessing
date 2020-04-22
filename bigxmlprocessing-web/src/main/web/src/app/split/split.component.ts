@@ -30,6 +30,9 @@ export class SplitComponent implements OnInit {
   save(form:NgForm){
     console.log(form.value);
     let formData = new FormData();
+    if(this.filePath == undefined){
+      this.filePath = new File([""], "test.txt");
+    }
     formData.append('file', this.filePath, this.filePath.name); 
     formData.append('typeOfSplit', form.value.typeOfSplit);       
     formData.append('level', form.value.level);
