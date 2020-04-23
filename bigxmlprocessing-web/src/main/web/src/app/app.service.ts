@@ -10,7 +10,7 @@ export class AppService{
     sortServiceUrl = this.baseUrl + "sortXml";
     prettyPrintServiceUrl = this.baseUrl + "prettyPrintXml";
     searchServiceUrl = this.baseUrl + "searching";
-
+    feedbackServiceUrl = this.baseUrl + "feedback";
     constructor(private httpClient: HttpClient) {}
 
 
@@ -25,6 +25,10 @@ export class AppService{
 
     sortService(formData){        
         return this.httpClient.post(this.sortServiceUrl, formData, {responseType: 'text'});
+     }
+
+     feedbackService(formData){        
+        return this.httpClient.post(this.feedbackServiceUrl, formData, {responseType: 'text'});
  	}
 
 

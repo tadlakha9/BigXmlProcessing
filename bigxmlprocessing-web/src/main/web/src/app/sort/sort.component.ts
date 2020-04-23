@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AppService } from '../app.service';
 import { splitAtColon } from '@angular/compiler/src/util';
-//import { Split } from '../model/split';
 import { toBase64String } from '@angular/compiler/src/output/source_map';
 import { ToastrService } from 'ngx-toastr';
 
@@ -13,7 +12,6 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class SortComponent implements OnInit {
   xmlFilePath:File;
-  //split:Split;
   constructor(private appService:AppService, private toastr:ToastrService) { }
   
 
@@ -21,7 +19,6 @@ export class SortComponent implements OnInit {
   }
   submitform(form:NgForm){
     console.log(form.value);
-    //this.split = form.value;
     let formData = new FormData();
     formData.append('file', this.xmlFilePath, this.xmlFilePath.name); 
     formData.append('sortType', form.value.sortType);       

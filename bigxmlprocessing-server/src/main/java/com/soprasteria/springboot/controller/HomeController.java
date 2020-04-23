@@ -161,6 +161,25 @@ public class HomeController {
 	}
 	
 	/**
+	 * @param file
+	 * @param typeOfSplit
+	 * @param level
+	 * @param size
+	 * @param splitByElement
+	 * @return
+	 */
+	@PostMapping("/feedback")
+	public ResponseEntity<String> feedback(
+			@RequestParam("feedbacktype") String feedbacktype, @RequestParam("desfeedback") String desfeedback,
+			@RequestParam("name") String name, @RequestParam("email") String email, @RequestParam("projectname") String projectname) {
+		log.info("feedbacktype " + feedbacktype);
+		log.info("desfeedback " + desfeedback);
+		log.info("name " + name);
+		log.info("email " + email);
+		return new ResponseEntity<String>("Feedback service is working fine", HttpStatus.OK);
+	}
+	
+	/**
 	 * 
 	 */
 	private void createLocalFolder() {

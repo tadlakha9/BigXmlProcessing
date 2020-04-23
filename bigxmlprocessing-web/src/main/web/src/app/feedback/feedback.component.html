@@ -1,3 +1,68 @@
-<p>
-  feedback works!
-</p>
+
+<div class="panel panel-primary" style="width:50%;left:20%;position:relative">
+	<div class="panel-heading">Feedback Form</div>
+	<div class="panel-body">
+    <div height= 100% width= 100% font-family= "Arial" font-size= 10px;>	
+      <label style="font-size : 12px" > We would love to hear your thoughts, concerns or problems with anything so we can improve :</label>
+    </div>
+<form (ngSubmit)="submitform(f)" #f= "ngForm" style="left: 35%;position: relative;width: 35%;" >
+	<br>
+	
+  <div class=" row" >
+		<div class=" col-md-12">
+			<div class=" form-group">	
+        <label> Feedback type </label>
+      <br>
+      <div style="display :block">
+        <input type="radio" id="suggestion" name="feedbacktype" value="suggestion">
+        <label style="font-size : 10px" for="suggestion"> Suggestion&nbsp;</label>
+        <input type="radio" id="bugreport" name="feedbacktype" value="bugreport">
+        <label style="font-size : 10px" for="bugreport">Bug Reports&nbsp;</label>
+       <input type="radio" id="questions" name="feedbacktype" value="questions">
+       <label style="font-size : 10px" for="questions">Questions</label>
+      </div>
+    </div>
+      </div>
+  </div>
+
+  <div class=" row" >
+		<div class=" col-md-12">
+			<div class=" form-group" display="inline-block">
+        <label for="attribute"> Describe Feedback: </label>	
+        <textarea style="width : 200px" id="desfeedback"type="text"></textarea>
+      </div>
+    </div>
+  </div>     
+ 
+  <div class=" row" >
+		<div class=" col-md-12">
+			<div class=" form-group" display="inline-block">
+        <label for="name"> Name : </label>	
+        <input id="name" type="text"/>
+      </div>
+    </div>
+  </div> 
+  <div class=" row" >
+		<div class=" col-md-12">
+			<div class=" form-group" display="inline-block">
+        <label for="email"> Email : </label>	
+        <input id="email" type="text"/>
+      </div>
+    </div>
+  </div> 
+  <div class=" row" >
+		<div class=" col-md-12">
+			<div class=" form-group" display="inline-block">
+        <label for="projectname"> Project Name : </label>	
+        <input id="projectname" type="text"/>
+      </div>
+    </div>
+  </div> 
+
+
+	<div class="card-footer">
+    <button class=" btn btn-fill btn-success" [routerLink]="['/sort']" type="submit" >Submit feedback</button>
+  </div>
+</form>
+</div>
+</div>
