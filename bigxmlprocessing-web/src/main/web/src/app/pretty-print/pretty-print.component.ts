@@ -25,12 +25,13 @@ export class PrettyPrintComponent implements OnInit {
   console.log(event.target.files);
   this.inputfile =event.target.files[0];
   }
-  onXMLSelect(event) {
-    console.log("XML Selected");
-  }
-  onSGMLSelect(event){
-    console.log("SGML Selected");
-}
+
+  // onXMLSelect(event) {
+  //   console.log("XML Selected");
+  // }
+  // onSGMLSelect(event){
+  //   console.log("SGML Selected");
+  //}
 
 save(form:NgForm)
 {

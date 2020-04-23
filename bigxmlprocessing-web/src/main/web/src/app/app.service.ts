@@ -11,6 +11,8 @@ export class AppService{
     prettyPrintServiceUrl = this.baseUrl + "prettyPrintXml";
     searchServiceUrl = this.baseUrl + "searching";
     feedbackServiceUrl = this.baseUrl + "feedback";
+    convertURL = this.baseUrl + "convert";
+
     constructor(private httpClient: HttpClient) {}
 
 
@@ -39,4 +41,8 @@ export class AppService{
     searchService(formData){
         return this.httpClient.post(this.searchServiceUrl,formData,{responseType: 'text'})
     }
+    convertService(formData){
+        return this.httpClient.post(this.convertURL, formData, {responseType: 'text'});
+    }
+
 }
