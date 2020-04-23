@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.soprasteria.springboot.model.Converter;
 import com.soprasteria.springboot.model.PrettyPrint;
 import com.soprasteria.springboot.model.Split;
 import com.soprasteria.springboot.utils.ExecProcess;
@@ -119,8 +120,7 @@ public class HomeController {
 		return new ResponseEntity<String>("Everything is working fine for sort", HttpStatus.OK);
 	}
 
-	
-	
+
 	/**
 	 * @param file
 	 * @param fileType
@@ -136,6 +136,27 @@ public class HomeController {
 		
 		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
 	}
+	
+	/**
+	 * @param file
+	 * @param file
+	 * @param file
+	 * @return
+	 */
+	@PostMapping("/convert")
+	public ResponseEntity<String> convert(@RequestParam("file0")MultipartFile sgmlfile,
+			@RequestParam("file1")MultipartFile catalogfile,@RequestParam("file2")MultipartFile errorfile){
+		
+		log.info("Sgmlfile name." + sgmlfile.getOriginalFilename());
+		log.info("catalogfile name." + catalogfile.getOriginalFilename());
+		log.info("Errorfile name." + errorfile.getOriginalFilename());
+		
+		Converter converter = new Converter(sgmlfile.getOriginalFilename(), catalogfile.getOriginalFilename(), errorfile.getOriginalFilename());
+		log.info("Converter : " +converter);
+		
+		return  new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
+	}
+	
 	
 	/**
 	 * @param files

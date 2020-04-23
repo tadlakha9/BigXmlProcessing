@@ -1,3 +1,40 @@
-<p>
-  convert works!
-</p>
+<div class="panel panel-primary" style="width:50%;left:20%;top:40px;position:relative">
+  <div class="panel-heading">Conversion</div>
+  <div class="panel-body">
+
+    <form (ngSubmit)="save(f)" #f="ngForm" style="left:35%;position:relative;width: 35%;top:10px;" >
+    
+      <div class=" row" >
+        <div class=" form-group">
+          <b><label for="sgmlfile">SGML File Path:</label></b>&nbsp;&nbsp;
+          <input type="file" id="sgmlfile" name="profile" (change)="onSelectSGMLFile($event)" required/>
+        </div>
+      </div>
+
+      
+      <div class=" row" >
+        <div class=" form-group">
+          <b><label for="catalog-file">Catalog File:</label></b>&nbsp;&nbsp;
+          <input type="file" id="catalogfile" name="profile" (change)="onSelectCatalogFile($event)"/>
+        </div>
+      </div>
+
+      
+      <div class=" row" >
+        <div class=" form-group">
+          <b><label for="errorfile">ERROR File:</label></b>&nbsp;&nbsp;
+          <input type="file" id="errorfile" name="profile" (change)="onSelectErrorFile($event)"/>
+        </div>
+      </div>
+    
+      <br/>
+      <div class=" row" >
+        <div class=" form-group">
+          <button class=" btn btn-fill btn-success" type="submit" > Convert File </button>&nbsp;&nbsp;
+        </div>
+      </div>
+    </form>
+
+  </div>
+
+</div>>
