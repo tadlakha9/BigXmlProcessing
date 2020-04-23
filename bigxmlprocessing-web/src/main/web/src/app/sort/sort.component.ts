@@ -12,6 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class SortComponent implements OnInit {
   xmlFilePath:File;
+  sortType:string;
   constructor(private appService:AppService, private toastr:ToastrService) { }
   
 
