@@ -1,23 +1,23 @@
 package com.soprasteria.springboot.utils;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.airbus.b260.b260.tools.messages.B260Messages;
-import com.airbus.b260.b260.tools.messages.ComMessages;
-import com.airbus.b260.b260.tools.utilities.Tools;
-import com.airbus.b260.b260.tools.utilities.logger.LogMngr;
+/**
+ * Class for launching an UNIX (Windows) command
+ */
 
 public class ExecProcess {
 
-    /** stderr */
+    /** Standard Error */
     private String mStderr = null;
 
     /**
-     * stdout
+     * Standard Output
      */
     private String mStdout = null;
 
@@ -45,29 +45,20 @@ public class ExecProcess {
      * Environment
      */
     private String[] mEnv = null;
-
+    
     /**
-     * Logger instance
+     * Logger
      */
-    protected LogMngr theLogger = LogMngr.getLogger(ExecProcess.class);
+    private Logger theLoggger = Logger.getLogger(getClass().getName());
 
     /**
      * constructor
-     * 
-     * @param cmd
-     *            splitted command
+     * @param cmd command
      */
     public ExecProcess(String[] cmd) {
-
         mCmd = null;
         mTcmd = cmd;
         mEnv = null;
-
-        theLogger = LogMngr.getLogger(ExecProcess.class);
-
-        if (theLogger.isDebugEnabled()) {
-            theLogger.logDebug("runProcess run : " + cmd);
-        }
     }
 
     /**
@@ -77,18 +68,11 @@ public class ExecProcess {
      * @param cmd
      *            command
      * @param env
-     *            environnement variables
+     *            Environment variables
      */
     public ExecProcess(String cmd, String[] env) {
-
         mCmd = cmd;
         mEnv = env;
-
-        theLogger = LogMngr.getLogger(ExecProcess.class);
-
-        if (theLogger.isDebugEnabled()) {
-            theLogger.logDebug("runProcess run : " + cmd);
-        }
     }
 
     /**
@@ -98,24 +82,16 @@ public class ExecProcess {
      *            command
      */
     public ExecProcess(String cmd) {
-
         mCmd = cmd;
         mEnv = null;
-
-        theLogger = LogMngr.getLogger(ExecProcess.class);
-
-        if (theLogger.isDebugEnabled()) {
-            theLogger.logDebug("runProcess run : " + cmd);
-        }
     }
 
     /**
      * launch the command
-     * 
-     * @throws java.lang.Exception
+     * @throws IOException, ExecStatusException
      *             when error
      */
-    public void run() throws Exception {
+    public void run() throws IOException, ExecStatusException {
         run(false);
     }
 
@@ -140,41 +116,18 @@ public class ExecProcess {
 
     /**
      * launch the command
-     * 
      * @param allowPositifReturnCode
-     *            TRUE to allow return code > 0 (For ex, cmp command can return
-     *            1)
+     *            TRUE to allow return code > 0 (For example, copy command can return 1)
      * @throws java.lang.Exception
      *             when error
      */
-    public void run(boolean allowPositifReturnCode) throws Exception {
-        theLogger.logDebug("->run");
-
+    public void run(boolean allowPositifReturnCode) throws IOException, ExecStatusException {
         try {
-            // start process
-            Process proc = null;
-
             // trace the command
-            theLogger.logInfo(ComMessages.getString(B260Messages.I_EXEC_PROCESS_1, getCmdString()));
-
-            // magic 3352477
-            try {
-                // test which constructor has been used
-                if (mCmd == null) {
-                    Runtime.getRuntime().gc();
-                    proc = Runtime.getRuntime().exec(mTcmd, mEnv);
-                } else {
-                    proc = Runtime.getRuntime().exec(mCmd, mEnv);
-                }
-                //MF0657 Qualification infinite loop for external tool launch.
-                // for JobDifferential / JobCustoDMGeneration / and b266 jobs. 
-                //NO proc.waitFor() statement to declare here.
-                //proc.waitFor();
-                //MF0657 <--
-            } catch (IOException e) {
-                theLogger.logWarning(ComMessages.getString(B260Messages.W_EXEC_PROCESS_4, getCmdString()));
-                throw e;
-            }
+            theLoggger.log(Level.INFO, getCmdString());
+            
+            // start process
+            Process proc = getRunTime();
 
             // create stream Gobbler
             StreamGobbler sgErr = new StreamGobbler(proc.getErrorStream());
@@ -184,51 +137,39 @@ public class ExecProcess {
             // Start these gobbler
             sgErr.start();
             sgOut.start();
-           
 
             // wait for processes termination
-            try {
-                proc.waitFor();
-                sgErr.join();
-                sgOut.join();
-             
-               // Closing the streams (even if not used)
-                proc.getErrorStream().close();
-                proc.getInputStream().close();
-                proc.getOutputStream().close();
-            } catch (InterruptedException ie) {
-                theLogger.logError(ComMessages.getString(B260Messages.E_EXEC_PROCESS_1));
-                theLogger.logError(ie);
-            }
+            process(proc, sgErr, sgOut);
 
             // update returned value
             mRet = proc.exitValue();
 
-            // update stdout value
+            // update Standard Output
             mStdout = sgOut.getString();
 
-            // update sterr value
+            // update Standard Error
             mStderr = sgErr.getString();
-
-            /**
-             * SKO: following workaround is obsolete for JDK 1.4+
-             */
-            // force garbage collector (prevents jdk 1.2 bug #4291490)
-            // Runtime.getRuntime().gc();
+            System.out.println("Return Code: "+mRet);
+            System.out.println("Std Out: "+mStdout);
+            System.out.println("Std Error: "+mStderr);
         } catch (IOException ioe) {
-            // MAGIC 3444181
-            // Avoid that system error to be treated as command with non zero
-            // return code
+            // Avoid that system error to be treated as command with non zero return code
             // Do not treat such an error as bad return code
             throw ioe;
         } catch (Exception x) {
-            theLogger.logError(x);
+            theLoggger.log(Level.SEVERE, x.getMessage());
             mRet = -2;
         } 
-        System.out.println("Return Code: "+mRet);
-        System.out.println("Std Out: "+mStdout);
-        System.out.println("Std Error: "+mStderr);
-        if (mRet < 0 || (mRet > 0 && !allowPositifReturnCode)) {
+
+        execStatus(allowPositifReturnCode);
+    }
+
+	/**
+	 * @param allowPositifReturnCode
+	 * @throws ExecStatusException
+	 */
+	private void execStatus(boolean allowPositifReturnCode) throws ExecStatusException {
+		if (mRet < 0 || (mRet > 0 && !allowPositifReturnCode)) {
             // print message + command
             StringBuilder s = new StringBuilder();
             if (mTcmd != null) {
@@ -239,24 +180,69 @@ public class ExecProcess {
             } else {
                 s.append(mCmd);
             }
-            theLogger.logWarning(ComMessages.getString(B260Messages.W_EXEC_PROCESS_1, s.toString(), new Integer(mRet)));
-            // print stdout
+            
+            theLoggger.log(Level.SEVERE, "Something went wrong with Command: {0}.", s.toString());
+            theLoggger.log(Level.SEVERE, "Return Value: {0}", mRet);
+            
+            // print Standard Output
             if ((mStdout != null) && (mStdout.length() > 0)) {
-                theLogger.logWarning(ComMessages.getString(B260Messages.W_EXEC_PROCESS_2, mStdout));
+            	theLoggger.log(Level.SEVERE, "Standard Output: {0}", mStdout);
             }
-            // print stderr
+            
+            // print Standard Error
             if ((mStderr != null) && (mStderr.length() > 0)) {
-                theLogger.logWarning(ComMessages.getString(B260Messages.W_EXEC_PROCESS_3, mStderr));
+            	theLoggger.log(Level.SEVERE, "Standared Error: {0}", mStderr);
             }
-            throw new ExecStatusException(ComMessages.getString(B260Messages.X_EXEC_PROCESS_4, new Integer(mRet)));
+            throw new ExecStatusException("IOException for command: " + mRet);
         }
+	}
 
-        theLogger.logDebug("<-run");
-    }
+	/**
+	 * @param proc current run time
+	 * @param sgErr Stream for Error
+	 * @param sgOut Stream for Output
+	 * @throws IOException 
+	 * @throws InterruptedException
+	 */
+	private void process(Process proc, StreamGobbler sgErr, StreamGobbler sgOut)
+			throws IOException, InterruptedException {
+		try {
+		    proc.waitFor();
+		    sgErr.join();
+		    sgOut.join();
+		 
+		   // Closing the streams (even if not used)
+		    proc.getErrorStream().close();
+		    proc.getInputStream().close();
+		    proc.getOutputStream().close();
+		} catch (InterruptedException ie) {
+		    theLoggger.log(Level.SEVERE, "An error occured while waiting the result of the command.");
+		    throw ie;
+		}
+	}
+
+	/**
+	 * @return the Runtime according to Operating System
+	 * @throws IOException
+	 */
+	private Process getRunTime() throws IOException {
+		Process process = null;
+		try {
+		    // test which constructor has been used
+		    if (mCmd == null) {
+		        process = Runtime.getRuntime().exec(mTcmd, mEnv);
+		    } else {
+		    	process = Runtime.getRuntime().exec(mCmd, mEnv);
+		    }
+		} catch (IOException e) {
+			theLoggger.log(Level.SEVERE, "Something Went Wrong with the command: {0}", getCmdString());
+		    throw e;
+		}
+		return process;
+	}
 
     /**
      * getter
-     * 
      * @return return value
      */
     public int getReturnValue() {
@@ -264,26 +250,9 @@ public class ExecProcess {
     }
 
     /**
-     * Format path with / if sun OS or \ if windows os
-     * 
-     * @param path
-     *            the path to be formated
-     * @return the path formated
-     */
-    public static String formatPath(String path) {
-        if (Tools.isWindowsOS()) {
-            String cygPath = new String(path);
-            cygPath = cygPath.replaceAll("([A-Z]):", "/cygdrive/$1");
-            cygPath = cygPath.replaceAll("\\\\", "/");
-            return cygPath;
-        }
-        return path;
-    }
-
-    /**
      * getter
      * 
-     * @return stdout
+     * @return Standard Output
      */
     public String getStdout() {
         return mStdout;
@@ -292,7 +261,7 @@ public class ExecProcess {
     /**
      * getter
      * 
-     * @return stderr
+     * @return Standard Error
      */
     public String getStderr() {
         return mStderr;
@@ -356,6 +325,7 @@ public class ExecProcess {
 
         /**
          */
+        @Override
         public void run() {
             try {
                 InputStreamReader isr = new InputStreamReader(is);
@@ -373,8 +343,8 @@ public class ExecProcess {
                     sb.append(line);
                 }
             } catch (IOException ioe) {
-                theLogger.logError(ComMessages.getString(B260Messages.E_EXEC_PROCESS_5));
-                theLogger.logError(ioe);
+            	theLoggger.log(Level.SEVERE, "Error while reading output of an execution");
+            	theLoggger.log(Level.SEVERE, ioe.getMessage());
             }
         }
 
@@ -388,20 +358,18 @@ public class ExecProcess {
         }
     }
     
-    public static void main(String[] args) throws Exception {
-    	ExecProcess p = null;
-    	String cmd = "";
-
-        try {
-        	cmd = "bash /home/user/test.sh -help"; 
-            p = new ExecProcess(cmd);
-            p.run();
-
-        } catch (Exception e) {
-            
-            p.theLogger.logError("Error during execution of " + cmd);
-            throw e;
-            
-        } 
-	}
+//    public static void main(String[] args) throws Exception {
+//    	ExecProcess p = null;
+//    	String cmd = "";
+//
+//        try {
+//        	cmd = "bash /home/agupta/FileFormatter.ksh -sort /home/agupta/AMM.XML"; 
+//            p = new ExecProcess(cmd);
+//            p.run();
+//        } catch (Exception e) {
+//        	if (p != null)
+//        		p.theLoggger.log(Level.SEVERE, e.getMessage());
+//            throw e;
+//        } 
+//	}
 }

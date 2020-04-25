@@ -3,13 +3,10 @@
  */
 package com.soprasteria.springboot.controller;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
@@ -71,6 +68,7 @@ public class HomeController {
 	 */
 	@GetMapping("/script")
 	public void executeScript() {
+		log.info("inside executeScript method");
 		ExecProcess p = null;
     	String cmd = "";
 
