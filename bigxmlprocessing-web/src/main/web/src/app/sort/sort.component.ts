@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AppService } from '../app.service';
-import { splitAtColon } from '@angular/compiler/src/util';
-import { toBase64String } from '@angular/compiler/src/output/source_map';
 import { ToastrService } from 'ngx-toastr';
+import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_directives/form_group_name';
 
 @Component({
   selector: 'app-sort',
@@ -13,10 +12,12 @@ import { ToastrService } from 'ngx-toastr';
 export class SortComponent implements OnInit {
   xmlFilePath:File;
   sortType:string;
-  constructor(private appService:AppService, private toastr:ToastrService) { }
+  constructor(private appService:AppService, private toastr:ToastrService) { 
+    //form.value.sortType=""
+  }
   
-
   ngOnInit() {
+    this.sortType="Default"
   }
   submitform(form:NgForm){
     console.log(form.value);

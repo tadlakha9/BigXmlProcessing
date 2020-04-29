@@ -14,11 +14,11 @@
         <label> Feedback type </label>
       <br>
       <div style="display :block">
-        <input type="radio" id="suggestion" name="feedbacktype" value="suggestion">
+        <input type="radio" ngModel id="suggestion" name="feedbacktype" value="suggestion">
         <label style="font-size : 10px" for="suggestion"> Suggestion&nbsp;</label>
-        <input type="radio" id="bugreport" name="feedbacktype" value="bugreport">
+        <input type="radio" ngModel id="bugreport" name="feedbacktype" value="bugreport">
         <label style="font-size : 10px" for="bugreport">Bug Reports&nbsp;</label>
-       <input type="radio" id="questions" name="feedbacktype" value="questions">
+       <input type="radio" ngModel id="questions" name="feedbacktype" value="questions">
        <label style="font-size : 10px" for="questions">Questions</label>
       </div>
     </div>
@@ -29,7 +29,7 @@
 		<div class=" col-md-12">
 			<div class=" form-group" display="inline-block">
         <label for="attribute"> Describe Feedback: </label>	
-        <textarea style="width : 200px" id="desfeedback"type="text"></textarea>
+        <textarea style="width : 200px" ngModel id="desfeedback" name="desfeedback" type="text"></textarea>
       </div>
     </div>
   </div>     
@@ -38,7 +38,7 @@
 		<div class=" col-md-12">
 			<div class=" form-group" display="inline-block">
         <label for="name"> Name : </label>	
-        <input id="name" type="text"/>
+        <input ngModel id="name" name="name" type="text"/>
       </div>
     </div>
   </div> 
@@ -46,7 +46,7 @@
 		<div class=" col-md-12">
 			<div class=" form-group" display="inline-block">
         <label for="email"> Email : </label>	
-        <input id="email" type="text"/>
+        <input ngModel id="email" name="email" type="email"/>
       </div>
     </div>
   </div> 
@@ -54,7 +54,7 @@
 		<div class=" col-md-12">
 			<div class=" form-group" display="inline-block">
         <label for="projectname"> Project Name : </label>	
-        <input id="projectname" type="text"/>
+        <input ngModel id="projectname" name="projectname" type="text"/>
       </div>
     </div>
   </div> 

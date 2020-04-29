@@ -8,14 +8,14 @@
 		<div class=" col-md-12">
 			<div class=" form-group">	
         <label> Type of Sort: </label>
-                    <select id="sortType" 
+                    <select id="sortType" disabled
                     ngModel 
                     name="sortType" 
                     style="color:black; background-color: white;"
                     class="form-control" 
                     [(ngModel)]="sortType"
                     placeholder="sortType">
-                      <option>Default Sort</option>
+                      <option value="Default" selected="selected">Default Sort</option>
                       <option>Attribute Sort</option>
                       <option>Mixed Content Sort</option>
                     </select>
@@ -35,26 +35,25 @@
 		<div class=" col-md-12" *ngSwitchCase="'Attribute Sort'">
 			<div class=" form-group" display="inline-block">
         <label for="attribute"> Attribute Name : </label>	
-        <input id="attribute" ngModel type="text"/>
+        <input name="attribute" id="attribute" ngModel type="text"/>
       </div>
     </div>
-  </div>    
 
-  <div class=" row" [ngSwitch]="sortType">
 		<div class=" col-md-12" *ngSwitchCase="'Mixed Content Sort'">
 			<div class=" form-group">
         <label for="keyattribute"> Sort by Key attribute :&nbsp; </label>	
-        <input id="keyattribute" ngModel type="checkbox"/>
+        <input name="keyattribute" id="keyattribute" ngModel type="checkbox"/>
       </div>
-    </div>
-  </div>   
-  <div class=" row" [ngSwitch]="sortType">
-		<div class=" col-md-12" *ngSwitchCase="'Mixed Content Sort'">
+    </div>  
+
+    <div *ngSwitchCase="'Mixed Content Sort'">
+		<div class=" col-md-12">
 			<div class=" form-group" display="inline-block">
         <label for="idattribute"> Sort by Id :&nbsp; </label>	
-        <input id="idattribute" ngModel type="checkbox"/>
+        <input id="idattribute" name="idattribute" ngModel type="checkbox"/>
       </div>
     </div>
+  </div>
   </div>  
 
 
