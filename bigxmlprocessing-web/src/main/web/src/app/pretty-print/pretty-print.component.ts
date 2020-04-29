@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from "@angular/router";
 import { AppService } from '../app.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -15,7 +14,7 @@ export class PrettyPrintComponent implements OnInit {
 
   inputfile:File;
 
-  constructor( private appService:AppService, private router:Router, private toastr:ToastrService) { }
+  constructor( private appService:AppService, private toastr:ToastrService) { }
 
   ngOnInit() {
  
@@ -26,32 +25,26 @@ export class PrettyPrintComponent implements OnInit {
   this.inputfile =event.target.files[0];
   }
 
-  // onXMLSelect(event) {
-  //   console.log("XML Selected");
-  // }
-  // onSGMLSelect(event){
-  //   console.log("SGML Selected");
-  //}
-
-save(form:NgForm)
-{
-  console.log("Documented will be pretty Printed ");
-  console.log(form.value);
-  let formData = new FormData();
-  formData.append('file', this.inputfile, this.inputfile.name);
-  formData.append('fileType', form.value.fileType);
-  this.appService.prettyPrintService(formData).
-  subscribe((response) => {
-    console.log("ok"+response);
-    this.toastr.success('Pretty Printed Successfully')
-    },
+  save(form:NgForm)
+  {
+    console.log("Documented will be pretty Printed ");
+    console.log(form.value);
+    let formData = new FormData();
+    formData.append('file', this.inputfile, this.inputfile.name);
+    
+    //to be included fileType(SGM file) option as well in future 
+    //formData.append('fileType', form.value.fileType);
+  
+    this.appService.prettyPrintService(formData).
+    subscribe((response) => {
+      console.log("ok"+response);
+      this.toastr.success('Pretty Printed Successfully')
+      },
       (error) => { console.log("ko"+error);  
       this.toastr.error('Error in Pretty Print');  
-  });
-   this.router.navigate(["/feedback"]);
+    });
    alert("Please give your valuable feedback!")
-  form.reset();
- 
-}
+   form.reset();
+  }
 
 }

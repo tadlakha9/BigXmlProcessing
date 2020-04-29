@@ -3,15 +3,15 @@
   <div class="panel-body">
 
     <form (ngSubmit)="save(f)" #f="ngForm" style="left:35%;position:relative;width: 35%;top:10px;" >
-    
+      <br/>
       <div class=" row" >
         <div class=" form-group">
           <b><label for="sgmlfile">SGML File Path:</label></b>&nbsp;&nbsp;
-          <input type="file" id="sgmlfile" name="profile" (change)="onSelectSGMLFile($event)" required/>
+          <input type="file" id="sgmlfile" name="profile" placeholder="Select XML file" (change)="onSelectSGMLFile($event)" required/>
         </div>
       </div>
 
-      
+      <br/>
       <div class=" row" >
         <div class=" form-group">
           <b><label for="catalog-file">Catalog File:</label></b>&nbsp;&nbsp;
@@ -19,17 +19,10 @@
         </div>
       </div>
 
-      
-      <div class=" row" >
-        <div class=" form-group">
-          <b><label for="errorfile">ERROR File:</label></b>&nbsp;&nbsp;
-          <input type="file" id="errorfile" name="profile" (change)="onSelectErrorFile($event)"/>
-        </div>
-      </div>
     
       <br/>
       <div class=" row" >
-        <div class=" form-group">
+        <div class=" form-group">&nbsp;&nbsp;
           <button class=" btn btn-fill btn-success" type="submit" > Convert File </button>&nbsp;&nbsp;
         </div>
       </div>
@@ -37,4 +30,4 @@
 
   </div>
 
-</div>>
+</div>

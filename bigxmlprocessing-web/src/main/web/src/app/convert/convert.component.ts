@@ -13,7 +13,6 @@ export class ConvertComponent implements OnInit {
 
   sgmlfile:File;
   catalogfile:File;
-  errorfile:File;
 
 
   constructor(private appService:AppService, private toastr:ToastrService) { }
@@ -31,14 +30,8 @@ export class ConvertComponent implements OnInit {
     this.catalogfile= event.target.files[0];
   }
 
-  onSelectErrorFile(event){
-    console.log(event.target.files);
-    this.errorfile= event.target.files[0];
-  }
 
-
-  save(form:NgForm)
-  {
+  save(form:NgForm){
     console.log("Document will be converted");
     let formData = new FormData();
     console.log(form.value);
@@ -48,19 +41,8 @@ export class ConvertComponent implements OnInit {
     if(this.catalogfile == undefined ){
       this.catalogfile = new File([""], "filecatalog.txt");
       formData.append('file1', this.catalogfile, this.catalogfile.name);
-      console.log("if for cat",this.catalogfile);
     } else{
       formData.append('file1', this.catalogfile, this.catalogfile.name); 
-      console.log("else for cat");
-    }
-
-    if(this.errorfile == undefined){ 
-     this.errorfile= new File([""], "error.log");
-     formData.append('file2', this.errorfile, this.errorfile.name);
-     console.log("if for error", this.errorfile);
-    }else {
-      formData.append('file2', this.errorfile, this.errorfile.name);
-      console.log("else for error");
     }
 
     this.appService.convertService(formData).

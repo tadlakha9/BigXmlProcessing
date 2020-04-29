@@ -125,11 +125,11 @@ public class HomeController {
 	 * @return
 	 */
 	@PostMapping("/prettyPrintXml")
-	public ResponseEntity<String> prettyPrintXml(@RequestParam("file") MultipartFile file,
-			@RequestParam("fileType") String fileType){
+	public ResponseEntity<String> prettyPrintXml(@RequestParam("file") MultipartFile file){
+		//to be included SGM file option as well
 		log.info("File name." + file.getOriginalFilename());
 		
-		PrettyPrint print = new PrettyPrint(fileType);
+		PrettyPrint print = new PrettyPrint(file.getOriginalFilename());
 		log.info("Pretty Print:" + print);
 		
 		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
@@ -143,16 +143,17 @@ public class HomeController {
 	 */
 	@PostMapping("/convert")
 	public ResponseEntity<String> convert(@RequestParam("file0")MultipartFile sgmlfile,
-			@RequestParam("file1")MultipartFile catalogfile,@RequestParam("file2")MultipartFile errorfile){
+			@RequestParam("file1")MultipartFile catalogfile){
 		
 		log.info("Sgmlfile name." + sgmlfile.getOriginalFilename());
 		log.info("catalogfile name." + catalogfile.getOriginalFilename());
-		log.info("Errorfile name." + errorfile.getOriginalFilename());
+		//to be used in future along with error file
+		//log.info("Errorfile name." + errorfile.getOriginalFilename());
 		
-		Converter converter = new Converter(sgmlfile.getOriginalFilename(), catalogfile.getOriginalFilename(), errorfile.getOriginalFilename());
+		Converter converter = new Converter(sgmlfile.getOriginalFilename(), catalogfile.getOriginalFilename());
 		log.info("Converter : " +converter);
 		
-		return  new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
+		return  new ResponseEntity<String>("Conversion is working fine", HttpStatus.OK);
 	}
 	
 	

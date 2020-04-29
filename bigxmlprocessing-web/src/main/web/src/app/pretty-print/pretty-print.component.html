@@ -2,19 +2,20 @@
 	<div class="panel-heading">Pretty Print</div>
 	<div class="panel-body">
 
-  <form (ngSubmit)="save(f)" #f="ngForm" style="left: 35%;position:relative;width: 35%;top:10px;" >
-    <div class=" row" >
-      <div class=" form-group">
-        <b><label for="input-file">Select File:</label></b>&nbsp;&nbsp;
-        <input type="file" id="input" name="profile" (change)="onSelectInputFile($event)" required/>
+    <form (ngSubmit)="save(f)" #f="ngForm" style="left: 35%;position:relative;width: 35%;top:10px;" >
+      <div class=" row" >
+        <div class=" form-group"><br/>&nbsp;&nbsp;
+          <b><label for="input-file">Select XML file:</label></b>
+          <br/><br/>
+          <input type="file" accept=".XML,.xml" id="input" title="Only XML format" name="profile" (change)="onSelectInputFile($event)" required />
+        </div>
       </div>
-    </div>
-
-    <br/>
-
-    <div class=" row" >
-      <div class=" form-group">
-        <b><label for="input-file">Select Your File Type</label></b><br/>
+       <br/>
+    
+     <!-- to be included fileType(SGM file) option as well in future -->
+  <!--<div class=" row" >
+       <div class=" form-group">
+        <b><label for="input-file">Select Your File Type</label></b> <br/>
 
         <input id="XML" type="radio" value="XML" name="fileType" ngModel/>
         <label class="control-label" for="XML">XML </label>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -22,16 +23,17 @@
         <input id="SGML" type="radio" value="SGML" name="fileType" ngModel/>
         <label class="control-label" for="SGML">SGML </label> <br/><br/>
 
-      </div>
-    </div> 
+       </div>
+      </div>  -->
      
-    <div class=" row" style="left: 30%;">
-      <div class=" form-group">
-        <button class=" btn btn-fill btn-success" type="submit" >Pretty Print File </button>&nbsp;&nbsp;
+      <div class=" row" style="left: 30%;">
+        <div class=" form-group">
+          &nbsp;&nbsp; <button class=" btn btn-fill btn-success" type="submit" >Pretty Print File </button>&nbsp;&nbsp;
+        </div>
       </div>
-    </div>
- 
-  </form>
-</div>
-</div>
+      <br/>
+
+    </form>
+  </div>
+  </div>
 

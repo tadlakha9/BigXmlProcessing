@@ -1,20 +1,19 @@
 package com.soprasteria.springboot.model;
 
 public class PrettyPrint {
-	public String fileType;
+	public String fileName;
+	//to be included fileType(SGM file) option as well in future 
 
-	public PrettyPrint(String fileType) {
+	public PrettyPrint(String fileName) {
 		super();
-		this.fileType = fileType;
+		this.fileName = fileName;
 	}
 
 	@Override
 	public String toString() {
-		return "PrettyPrint [fileType=" + fileType + "]";
+		return "PrettyPrint [fileName=" + fileName + "]";
 		
 	}
-	
-	
 	
 	
 }
