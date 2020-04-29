@@ -25,7 +25,7 @@ export class FeedbackComponent implements OnInit {
     formData.append('name', form.value.name);
     formData.append('email', form.value.email);
     formData.append('projectname', form.value.projectname);
-    this.appService.sortService(formData).
+    this.appService.feedbackService(formData).
     subscribe(
       (response => {
         console.log("ok"+response);
