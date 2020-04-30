@@ -54,7 +54,7 @@ public class HomeController {
 	 * @return
 	 * @throws IOException
 	 */
-	@PostMapping("/transformXml")
+	@PostMapping("/parseXml")
 	public Response transformXml(@RequestParam("file") MultipartFile file) throws IOException {
 		createLocalFolder();		
 
@@ -95,7 +95,9 @@ public class HomeController {
 	@PostMapping("/splitXml")
 	public ResponseEntity<String> splitXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("typeOfSplit") String typeOfSplit, @RequestParam("level") String level,
-			@RequestParam("size") String size, @RequestParam("splitByElement") String splitByElement) {
+			@RequestParam("size") String size, @RequestParam("splitByElement") String splitByElement,
+			@RequestParam("splitType") String splitType, @RequestParam("splitByLine") String splitByLine, 
+			@RequestParam("splitBySize") String splitBySize) {
 		log.info("File name." + file.getOriginalFilename());
 		Split split = new Split(typeOfSplit, level, size, splitByElement);
 		log.info("splitObject:" + split);
@@ -126,7 +128,7 @@ public class HomeController {
 	 */
 	@PostMapping("/prettyPrintXml")
 	public ResponseEntity<String> prettyPrintXml(@RequestParam("file") MultipartFile file){
-		//to be included SGM file option as well
+				//to be included SGM file option as well
 		log.info("File name." + file.getOriginalFilename());
 		
 		PrettyPrint print = new PrettyPrint(file.getOriginalFilename());

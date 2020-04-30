@@ -15,8 +15,7 @@
                     style="color:black; background-color: white;"
                     class="form-control" 
                     
-                    placeholder="typeOfSplit">
-                      <option></option>
+                    placeholder="typeOfSplit">                      
                       <option>Level</option>
                       <option>Element</option>
                       <option>Flat</option>
@@ -62,6 +61,29 @@
       <div class=" form-group">	
         <label for="splitByElement"> Split by Element: </label><br>
         <input id="splitByElement" ngModel name="splitByElement" type="text"/>
+      </div>
+    </div>
+  </div>
+  <div *ngSwitchCase="'Flat'" >
+    <div class=" col-md-12">
+      <label > Split Type: </label><br>
+      <div class=" radio" *ngFor="let type of splitType">	        
+        <label>
+        <input id="splitType" [value]="type" [(ngModel)]="splitByRadio" name="splitType" type="radio"/>
+        {{type}}
+      </label>
+      </div>
+    </div>
+    <div class=" col-md-12" *ngIf="isSelected('line')">
+      <div class=" form-group">	
+        <label for="splitByLine"> Split by Line: </label><br>
+        <input id="splitByLine" ngModel name="splitByLine" type="text"/>
+      </div>
+    </div>
+    <div class=" col-md-12" *ngIf="isSelected('size')">
+      <div class=" form-group">	
+        <label for="splitBySize"> Split by Size: </label><br>
+        <input id="splitBySize" ngModel name="splitBySize" type="text"/>
       </div>
     </div>
   </div>

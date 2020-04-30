@@ -16,8 +16,8 @@ export class AppService{
     constructor(private httpClient: HttpClient) {}
 
 
-    transformXML(data){
-        const newRequest = new HttpRequest('POST', 'http://127.0.0.1:8090/home/transformXml', data);
+    parseXML(data){
+        const newRequest = new HttpRequest('POST', 'http://127.0.0.1:8090/home/parseXml', data);
         return this.httpClient.request(newRequest);
     }
 

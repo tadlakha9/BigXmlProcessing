@@ -14,8 +14,7 @@
                     style="color:black; background-color: white;"
                     class="form-control" 
                     [(ngModel)]="searchId"
-                    placeholder="searchId">
-                      <option></option>
+                    placeholder="searchId">                      
                       <option>Text</option>
                       <option>Extension</option>
                     </select>
@@ -25,8 +24,8 @@
   <div class=" row" >
 		<div class=" col-md-12">
 			<div class=" form-group">	
-        <label> Folder Path: </label>
-        <input type="file" #folderInput id="ctrl" webkitdirectory directory (change)="filesPicked($event)"/>
+        <label for="ctrl"> Folder Path: </label>
+        <input type="file" #folderInput id="ctrl" webkitdirectory directory (change)="filesPicked($event)" />
         </div>
       </div>
   </div>
@@ -36,7 +35,7 @@
 		<div class=" col-md-12">
 			<div class=" form-group">
         <label for="extension"> Type of Extension: </label>	
-        <input id="extension" ngModel name="extension" type="text"/>
+        <input id="extension" ngModel name="extension" type="text" placeholder=".xml"/>
       </div>
     </div>
   </div>    

@@ -31,19 +31,17 @@ export class ParsingComponent implements OnInit {
   onSelectedXSDFile(event){
   	console.log(event.target.files);
   }
-  onSelectedXSLTFile(event){
-  	console.log(event.target.files);
-  }
+  
   onSelectedERRORFile(event){
   	console.log(event.target.files);
   }
   
   
-  transformXML() {
+  parseXML() {
     console.log("within on submit method" );
     let formData = new FormData();
     formData.append('file', this.xmlFilePath, this.xmlFilePath.name);
-    this.appService.transformXML(formData)
+    this.appService.parseXML(formData)
     .subscribe((response) => {
       console.log('response received is ', response);
   },

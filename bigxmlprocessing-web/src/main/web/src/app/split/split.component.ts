@@ -15,6 +15,8 @@ export class SplitComponent implements OnInit {
 
   filePath:File;
   typeOfSplit:string;
+  splitType = ['line', 'size'];
+  splitByRadio='';
  
   constructor(private appService:AppService, private toastr:ToastrService) { }
 
@@ -22,6 +24,14 @@ export class SplitComponent implements OnInit {
   ngOnInit() {
   }
 
+  isSelected(valueSelected){
+    if(this.splitByRadio===valueSelected){
+      return true;
+    }else{
+      return false;
+    }
+
+  }
   onSelectedXMLFile(event){
     console.log(event.target.files);
     this.filePath = event.target.files[0];
@@ -38,6 +48,9 @@ export class SplitComponent implements OnInit {
     formData.append('level', form.value.level);
     formData.append('size', form.value.size);
     formData.append('splitByElement', form.value.splitByElement);
+    formData.append('splitType', form.value.splitType);
+    formData.append('splitByLine', form.value.splitByLine);
+    formData.append('splitBySize', form.value.splitBySize);
     this.appService.splitService(formData).
     subscribe(
       (response => {

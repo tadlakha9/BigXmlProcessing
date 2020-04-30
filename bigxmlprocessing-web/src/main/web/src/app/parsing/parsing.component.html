@@ -20,14 +20,7 @@
 			</div>
 		</div>
 	</div>
-	<div class=" row" >
-		<div class=" col-md-12">
-			<div class=" form-group">				 
-				<b><label for="xsltFile"> XSLT Result File: </label></b>
-				<input type="file" id="xsltFile" name="profile" (change)="onSelectedXSLTFile($event)"/>
-			</div>
-		</div>
-	</div>
+	
 	<div class=" row" >
 		<div class=" col-md-12">
 			<div class=" form-group">				 
@@ -37,9 +30,11 @@
 		</div>
 	</div>
 	<div class=" row" >
+		<div class=" col-md-12">
 		<div class="form-group">
-			<button class=" btn btn-fill btn-success"  >Parse XML </button>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<button class=" btn btn-fill btn-success" (click)="transformXML()" type="submit" >Transform XML</button>
+			<button class=" btn btn-fill btn-success" (click)="parseXML()" type="submit" >Parse XML </button>  
+			<!-- <button class=" btn btn-fill btn-success" (click)="transformXML()" type="submit" >Transform XML</button> -->
+		</div>
 		</div>
 		
 	</div>
