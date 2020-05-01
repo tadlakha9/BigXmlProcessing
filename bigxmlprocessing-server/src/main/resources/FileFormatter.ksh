@@ -80,7 +80,7 @@ usage ()
   echo "			 ex : FileFormatter.ksh -sgx /home/td_b260_delivery/DATA_PA/SAMPLE.SGM /home/td_b260_delivery/sgmlentities/SAMPLE.CAT
 						  Where SAMPLE is corresponding to SAMPLE.CAT"
   echo ""
-  echo "          [-searcht : Covert SGML into Well-Formatted XML file. (ROOT_DIR) (TYPE) (OUTPUTFILE)"
+  echo "          [-searcht : Find type of file in folder. (ROOT_DIR) (TYPE) (OUTPUTFILE)"
   echo "				ROOT_DIR: Absolute/Relative Path of the root directory"
   echo "				TYPE: Extension of the files to be searched."
   echo "             ex : FileFormatter.ksh -searcht /home/td_b260_delivery/DATA_PA/ XML OUTPUTFILE"
@@ -184,7 +184,10 @@ GetParameters()
 				INPUT_FILE="$2"
 				LEVEL="$3"
 				CATALOGUE_FILE="$4"
-				ROOT_DIR=$(dirname $2)				
+				OUTPUT_FILE=$(echo "$INPUT_FILE" | cut -f 1 -d '.')				
+				ROOT_DIR=$(dirname $2)
+				
+				XML_OUTPUT=$OUTPUT_FILE.XML
 				
 				if [ ! -z $4 ];then
 					#initialize special parameter
@@ -194,10 +197,6 @@ GetParameters()
 				if [ $# = 4 ]; then
 				    echo "INFO: You have provided ${CATALOGUE_FILE} for SGML splitting"
 					echo "INFO: You are using Splitting for SGML file"
-					#If Level not provide then default value taken
-					echo "INFO: You have not provide required Level. Default Level 1 will be used"
-					echo "INFO: Level 0 is the root Level"
-					LEVEL=1
 					shift 4
 				elif [ $# = 3 ]; then
 					shift 3
@@ -217,7 +216,10 @@ GetParameters()
 				INPUT_FILE="$2"
 				CHUNK_SIZE="$3"
 				CATALOGUE_FILE="$4"
+				OUTPUT_FILE=$(echo "$INPUT_FILE" | cut -f 1 -d '.')				
 				ROOT_DIR=$(dirname $2)
+				
+				XML_OUTPUT=$OUTPUT_FILE.XML
 				
 				if [ ! -z $4 ];then
 					#initialize special parameter
@@ -281,7 +283,10 @@ GetParameters()
 				INPUT_FILE="$2"
 				ELEMENT="$3"
 				CATALOGUE_FILE="$4"
+				OUTPUT_FILE=$(echo "$INPUT_FILE" | cut -f 1 -d '.')				
 				ROOT_DIR=$(dirname $2)
+				
+				XML_OUTPUT=$OUTPUT_FILE.XML
 				
 				if [ ! -z $4 ];then
 					#initialize special parameter
@@ -334,8 +339,9 @@ GetParameters()
 				SGML_CONV_XML_MODE="$1"
 				SGML_FILE="$2"
 				CATALOGUE_FILE=$3
+				OUTPUT_FILE=$(echo "$SGML_FILE" | cut -f 1 -d '.')
 				ROOT_DIR=$(dirname $SGML_FILE)
-				XML_OUTPUT=$ROOT_DIR/RESULT.XML
+				XML_OUTPUT=$OUTPUT_FILE.XML
 				
 				#initialize special parameter
 				initializeForSGML
@@ -402,17 +408,16 @@ GetParameters()
 			-validatesgml)
 				SGML_CONV_XML_MODE="$1"
 				SGML_FILE="$2"
-				CATALOG_FILE="$3"
-				XML_ROOT_DIR=$(dirname $2)
+				CATALOGUE_FILE=$3
+				OUTPUT_FILE=$(echo "$SGML_FILE" | cut -f 1 -d '.')
+				ROOT_DIR=$(dirname $SGML_FILE)
+				XML_OUTPUT=$OUTPUT_FILE.XML
 				
 				#initialize special parameter
 				initializeForSGML
 				
 				if [ $# = 3 ]; then
 					shift 3
-				elif [ $# = 2 ]; then
-					echo "INFO: You have not provided required catalogue file"
-					shift 2
 				else 
 					usage
 					exit 1
@@ -450,13 +455,14 @@ echo "In Method: formatAllFILES()------------------------>"
 			do
 				TDVV_FILE_PATTERN="1K11_.*_VVmessages\.XML"
 				if [[ $file =~ $TDVV_FILE_PATTERN ]]; then
-					sortXML $file
+					sortFile $file
 				else
 					formatXML $file
 				fi
 			done
 		else
 			echo "WARNING: There is no XML file for Processing"
+			exit 1
 		fi
 		
 		#SGML File Formatting
@@ -469,6 +475,7 @@ echo "In Method: formatAllFILES()------------------------>"
 			done
 		else
 			echo "WARNING: There is no SGML File For Processing"
+			exit 1
 		fi
 	fi
 echo "Out Method: formatAllFILES()---------------------->"
@@ -499,6 +506,7 @@ echo "In Method: formatXML()---------------------------->"
 		else
 			echo "ERROR: There is some error in File Formatting Process."
 			echo "ERROR: XML File can't be parsed properly"
+			exit 2
 		fi
 	else 
 	  	echo "ERROR: ${1} not found"
@@ -511,9 +519,9 @@ echo Execution_time-----${Execution_time}
 }
 
 #Method to Sort XML file: $1 ==> Path to XML File $2 ==> Path to Output File
-sortXML() {
+sortFile() {
 start_time=`date +%s%N`
-echo "In Method: sortXML()-------------------------------->"	
+echo "In Method: sortFile()-------------------------------->"	
 if [ -f $1 ]; 
  then
 	
@@ -527,7 +535,7 @@ if [ -f $1 ];
 	echo "INFO: Extension of the file to be splitted------${TYPE} "
     if [[ $TYPE = XML ]];
 		then
-		echo "We are in XML Split"	
+		echo "We are in XML Sort"	
         if [ -z $2 ]; then
 			echo "INFO: You have not provided any Output File." 
 			echo "INFO: Default temp file will be created"
@@ -543,22 +551,23 @@ if [ -f $1 ];
 		else
 			echo "ERROR: There is some error in File Sorting Process." 
 			echo "ERROR: XML File can't be parsed properly"
+			exit 3
 		fi
 		
 	elif [[ $TYPE = SGM ]];
 	then
-		echo "We are in SGML Split"							
+		echo "We are in SGML Sort"							
 		covertSGMLToXML ${1} $CATALOGUE_FILE $FLAG_SORT
 		echo "SGML converted to XML------------------------>"	        		
-		sortXML $XML_OUTPUT ${2}
-		rm -rf $XML_OUTPUT			
+		sortFile $XML_OUTPUT ${2}
+		#rm -rf $XML_OUTPUT			
     fi	
 	
 else 
 	 echo "ERROR: ${1} not found"
 	exit 1
 fi
-echo "Out Method: sortXML()--------------------------------->"
+echo "Out Method: sortFile()--------------------------------->"
 end_time=`date +%s%N`
 Execution_time=$(($((end_time-start_time))/1000000000))
 echo Execution_time-----${Execution_time}
@@ -566,7 +575,7 @@ echo Execution_time-----${Execution_time}
 
 #Method to Convert SGML into XML: 
 #$1 ==> SGML File Absolute Path. 
-#$2 ==> XML Ouput File name 
+#$2 ==> Catalogue file name
 #$3 ==> Flag to check if it is case of SORTING
 covertSGMLToXML() {
 start_time=`date +%s%N`
@@ -576,13 +585,15 @@ echo "In Method: covertSGMLToXML()"
 		## Converting SGML into XML
 		#CATALOG_FILE=$CATALOG_DIR/$2.CAT
 		
-		if [ -z $XML_OUTPUT ]; then
-			XML_OUTPUT=$XML_ROOT_DIR/$2.XML
-		fi
-		if [ ! -z $3 ]; then		   
-			XML_OUTPUT=$XML_ROOT_DIR/$2.XML
-		fi		
-		osx -e -g -wall -E0 -c ${2} -x no-nl-in-tag -x pi-escape -x empty -f $ERROR_FILE $1 >$XML_OUTPUT
+		# if [ -z $2 ]; then
+			# XML_OUTPUT=$XML_ROOT_DIR/Result.XML
+			# echo "xml output1----------------------${XML_OUTPUT}"
+		# fi
+		#if [ ! -z $3 ]; then		   
+		#	 XML_OUTPUT=$XML_ROOT_DIR/$2.XML
+		#	 echo "xml output2----------------------${XML_ROOT_DIR}"
+		#fi		
+		osx -e -g -wall -E0 -c ${2} -x no-nl-in-tag -x pi-escape -x empty -f $ERROR_FILE $1 > $XML_OUTPUT
 		echo "ERROR_FILE-------${ERROR_FILE}"
 		if [ $? -eq 0 ];
 		then
@@ -598,6 +609,7 @@ echo "In Method: covertSGMLToXML()"
 		else
 			echo "ERROR: There is some error in Coversion of SGML into XML." 
 			echo "ERROR: Check ${ERROR_FILE} file for more details"
+			exit 4
 		fi
 		#rm -rf $CATALOGUE_FILE.XML
 		#mv $CATALOGUE_FILE.XML.tmp $CATALOGUE_FILE.XML
@@ -615,14 +627,14 @@ echo Execution_time-----${Execution_time}
 #$1 ==> Absolute Path of File 
 #$2 ==> Size required of each chunk
 #$3 ==> CATALOGUE_FILE of the SGM file
-splitXMLBySize() {
+splitBySize() {
 start_time=`date +%s%N`
-echo "In Method: splitXMLBySize()------------------------>" 
+echo "In Method: splitBySize()------------------------>" 
 if [ -f $1 ]; 
     then
     
     echo "INFO: File to be splitted ----------${1}"
-	echo "INFO: Path to Output File-----------${2}"
+	echo "INFO: Size to be splitted-----------${2}"
 	echo "INFO: CATALOGUE_FILE of the SGML file-------${3}"
 	
 	#To get extension of file
@@ -639,13 +651,17 @@ if [ -f $1 ];
             echo "INFO: Splitted files are copied at ${ROOT_DIR}"
         else
             echo "ERROR: There is some error in File Splitting Process."
+			exit 5
         fi
     elif [[ $TYPE = SGM ]];
 		then
 		echo "INFO: We are in SGML Split------>"							
 		covertSGMLToXML ${1} $CATALOGUE_FILE
-		echo "INFO: SGML converted to XML----------->"		
-		splitXMLBySize $XML_OUTPUT ${2} $CATALOGUE_FILE		
+		echo "INFO: SGML converted to XML----------->"
+		
+		splitBySize $XML_OUTPUT ${2} $CATALOGUE_FILE
+		
+ 	
     fi									
 
 else 
@@ -653,7 +669,7 @@ else
     exit 1
 fi
 
-echo "Out Method: splitXMLBySize()------------------------>"
+echo "Out Method: splitBySize()------------------------>"
 end_time=`date +%s%N`
 Execution_time=$(($((end_time-start_time))/1000000000))
 echo Execution_time-----${Execution_time}
@@ -679,6 +695,7 @@ echo "WARNING: It doesn't guarantee that every splitted file will be of the give
 			echo "INFO: Splitted files are copied at ${ROOT_DIR}"
 		else
 			echo "ERROR: There is some error in File Splitting Process."
+			exit 6
 		fi
 	else 
 	  	echo "ERROR: ${1} not found"
@@ -693,8 +710,8 @@ echo Execution_time-----${Execution_time}
 #Method to Flat Spilt Big XML file into smaller chunks of given size: 
 #$1 ==> Absolute Path of Big XML File 
 #$2 ==> line of code for each file
-flatsplitXMLByLine() {
-echo "In Method: flatsplitXMLByLine()------------------------>"	
+flatsplitByLine() {
+echo "In Method: flatsplitByLine()------------------------>"	
 echo "WARNING: You have chosen Split by line option." 
 start_time=`date +%s`
 	if [ -f $1 ]; 
@@ -706,12 +723,13 @@ start_time=`date +%s`
 			echo "INFO: Splitted files are copied at ${XML_ROOT_DIR}"
 		else
 			echo "ERROR: There is some error in File Splitting Process."
+			exit 7
 		fi
 	else 
 	  	echo "ERROR: ${1} not found"
 	  	exit 1
 	fi
-echo "Out Method: flatsplitXMLByLine()------------------------>"
+echo "Out Method: flatsplitByLine()------------------------>"
 end_time=`date +%s`
 Execution_time= end_time-start_time
 echo "Excecution time is------- `expr $end_time-$start_time`"
@@ -722,14 +740,14 @@ echo "Excecution time is------- `expr $end_time-$start_time`"
 #$1 ==> Absolute Path of Big XML File 
 #$2 ==> level of the element. Root element is counted as level 0
 #$3 ==> CATALOGUE_FILE of the SGML file (Or Name of the Catalogue File)
-splitXMLByLevel() {
+splitByLevel() {
 start_time=`date +%s%N`
-echo "In Method: splitXMLByLevel()------------------------>" 
+echo "In Method: splitByLevel()------------------------>" 
 if [ -f $1 ]; 
     then
     
     echo "INFO: File to be splitted ----------${1}"
-	echo "INFO: Path to Output File-----------${2}"
+	echo "INFO: Level to be splitted-----------${2}"
 	echo "INFO: CATALOGUE_FILE of the SGML file-------${3}"
 	
 	#To get extension of file
@@ -746,13 +764,14 @@ if [ -f $1 ];
             echo "INFO: Splitted files are copied at ${ROOT_DIR}"
         else
             echo "ERROR: There is some error in File Splitting Process."
+			exit 8
         fi
     elif [[ $TYPE = SGM ]];
 		then
 		echo "INFO: We are in SGML Split------>"							
 		covertSGMLToXML ${1} $CATALOGUE_FILE
 		echo "INFO: SGML converted to XML----------->"		
-		splitXMLByLevel $XML_OUTPUT ${2} $CATALOGUE_FILE		
+		splitByLevel $XML_OUTPUT ${2}		
     fi									
 
 else 
@@ -760,7 +779,7 @@ else
     exit 1
 fi
 
-echo "Out Method: splitXMLByLevel()------------------------>"
+echo "Out Method: splitByLevel()------------------------>"
 end_time=`date +%s%N`
 Execution_time=$(($((end_time-start_time))/1000000000))
 echo Execution_time-----${Execution_time}
@@ -772,16 +791,16 @@ echo Execution_time-----${Execution_time}
 #$1 ==> Absolute Path of Big XML or BIG SGM File 
 #$2 ==> Name of the element such as "CHAPTER".
 #$3 ==> CATALOGUE_FILE of the SGML file (Or Name of the Catalogue File)
-splitXMLByElement() {
+splitByElement() {
 start_time=`date +%s%N`
-echo "In Method: splitXMLByElement()------------------------>"
+echo "In Method: splitByElement()------------------------>"
 echo "WARNING: You have chosen option of splitting by element."
-echo "WARNING: This Option is a lot slower than split by level (-splitl)"	
+echo "WARNING: This Option is a lot slower than split by element (-splite)"	
 if [ -f $1 ]; 
 	then
 	
 	echo "INFO: File to be splitted ----------${1}"
-	echo "INFO: Path to Output File-----------${2}"
+	echo "INFO: Element to be splitted-----------${2}"
 	echo "INFO: CATALOGUE_FILE of the SGML file-------${3}"
 	
 	#To get extension of file
@@ -798,13 +817,14 @@ if [ -f $1 ];
 			echo "INFO: Splitted files are copied at ${ROOT_DIR}"
 		else
 			echo "ERROR: There is some error in File Splitting Process."
+			exit 9
 		fi
 	elif [[ $TYPE = SGM ]];
 		then
 		echo "INFO: We are in SGML Split------>"							
-		covertSGMLToXML ${1} $CATALOGUE_FILE
+		covertSGMLToXML ${1} $CATALOGUE_FILE 
 		echo "INFO: SGML converted to XML----------->"		
-		splitXMLByElement $XML_OUTPUT ${2} $CATALOGUE_FILE		
+		splitByElement $XML_OUTPUT ${2}
     fi									
 
 else 
@@ -812,7 +832,7 @@ else
 	exit 1
 fi
 
-echo "Out Method: splitXMLByElement()------------------------>"
+echo "Out Method: splitByElement()------------------------>"
 end_time=`date +%s%N`
 Execution_time=$(($((end_time-start_time))/1000000000))
 echo Execution_time-----${Execution_time}
@@ -843,6 +863,7 @@ echo "WARNING: You have chosen option of searching by type of the file"
 			fi
 		else
 			echo "WARNING: There is no such file of ${TYPE} exists in directory ${ROOT_DIR}."
+			exit 10
 		fi
 	else 
 	  	echo "ERROR: Directory ${ROOT_DIR} not found"
@@ -867,7 +888,8 @@ echo "WARNING: You have chosen option of searching by pattern of the content in 
 		then
 		echo "INFO: Result has been saved in file ${OUTPUT_FILE}."
 		else
-			echo "WARNING: There is no such file of ${TYPE} exists in directory ${ROOT_DIR}."
+			echo "WARNING: There is no such file with content ${TYPE} exists in directory ${ROOT_DIR}."
+			exit 11
 	    fi
 	else 
 	  	echo "ERROR: Directory ${ROOT_DIR} not found"
@@ -914,6 +936,7 @@ echo "In Method: validateXML()-------------------------------->"
 		else
 			echo "ERROR: There is some error in File parsing Process." 
 			echo "ERROR: XML File can't be parsed proper"
+			exit 12
 		fi
 	else 
 	  	echo "ERROR: ${1} not found"
@@ -924,28 +947,31 @@ Execution_time=$(($((end_time-start_time))/1000000000))
 echo "Out Method: validateXML--------------------------------->"
 }
 
-
 validateSGML(){
 start_time=`date +%s%N`
-echo "In Method: validatesgml()-------------------------------->"	
-	
+echo "In Method: validateSGML()"	
 	if [ -f $1 ]; 
 	then
-		#Validating SGML file
 		onsgmls -s -e -g -wall -E0 -c ${2} -f $ERROR_FILE $1
+		echo "ERROR_FILE-------${ERROR_FILE}"
 		if [ $? -eq 0 ];
 		then
-			echo "INFO: SGML file with catalogue has been validated successfully."
+			if [ -z $3 ]; then
+				echo "INFO: SGML file is validated successfully"
+			fi			
 		else
-			echo "ERROR: There is some error in File parsing."
+			echo "ERROR: There is some error in Coversion of SGML into XML." 
+			echo "ERROR: Check ${ERROR_FILE} file for more details"
+			exit 4
 		fi
 	else 
 	  	echo "ERROR: ${1} not found"
 	  	exit 1
 	fi
+echo "Out Method: covertSGMLToXML()"
 end_time=`date +%s%N`
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo "Out Method: validateXMLwithXSD()------------------------>"
+echo Execution_time-----${Execution_time}
 }
 
 
@@ -962,17 +988,17 @@ if [ "${DIR_MODE}" = "-d" ];then
 elif [ "${XML_FORMAT_MODE}" = "-format" ];then
 	formatXML $INPUT_FILE $XML_OUTPUT
 elif [ "${SPLIT_MODE}" = "-splits" ];then
-	splitXMLBySize $INPUT_FILE $CHUNK_SIZE $CATALOGUE_FILE 
+	splitBySize $INPUT_FILE $CHUNK_SIZE $CATALOGUE_FILE 
 elif [ "${SPLIT_MODE}" = "-fsplits" ];then
 	flatSplitBySize $INPUT_FILE $CHUNK_SIZE 
 elif [ "${SPLIT_MODE}" = "-fsplitl" ];then
-	flatsplitXMLByLine $INPUT_FILE $LINE_SIZE
+	flatsplitByLine $INPUT_FILE $LINE_SIZE
 elif [ "${SPLIT_MODE}" = "-splitl" ];then
-	splitXMLByLevel $INPUT_FILE $LEVEL $CATALOGUE_FILE
+	splitByLevel $INPUT_FILE $LEVEL $CATALOGUE_FILE
 elif [ "${SPLIT_MODE}" = "-splite" ];then
-	splitXMLByElement $INPUT_FILE $ELEMENT $CATALOGUE_FILE
+	splitByElement $INPUT_FILE $ELEMENT $CATALOGUE_FILE
 elif [ "${SORT_MODE}" = "-sort" ];then
-	sortXML $INPUT_FILE $XML_OUTPUT $CATALOGUE_FILE
+	sortFile $INPUT_FILE $XML_OUTPUT $CATALOGUE_FILE
 elif [ "${SGML_CONV_XML_MODE}" = "-validatesgml" ];then
 	validateSGML $SGML_FILE $CATALOGUE_FILE
 elif [ "${XML_VALIDATE_MODE}" = "-validatexml" ];then
