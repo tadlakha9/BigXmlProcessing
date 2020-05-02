@@ -15,6 +15,7 @@ import { SplitComponent } from './split/split.component';
 import { ConvertComponent } from './convert/convert.component';
 import { FeedbackComponent } from './feedback/feedback.component';
 import { ToastrModule} from 'ngx-toastr';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -43,7 +44,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ToastrModule.forRoot()
     
   ],
-  providers: [AppService],
+  providers: [AppService,
+  { provide: LocationStrategy, useClass: HashLocationStrategy}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
