@@ -7,16 +7,16 @@
 	<div class=" row" >
 		<div class=" col-md-12">
 			<div class=" form-group">				 
-				<b><label for="xmlFile"> XML file Input: </label></b> 
-				<input type="file" id="xmlFile" name="profile" (change)="onSelectedXMLFile($event)"/>
+				<b><label for="xmlFile">Select file Input: </label></b> 
+				<input type="file" id="xmlFile" accept=".XML,.xml,.SGM" name="profile" (change)="onSelectedXMLFile($event)"/>
 			</div>
 		</div>
 	</div>
 	<div class=" row" >
 		<div class=" col-md-12">
 			<div class=" form-group">				 
-				<b><label for="xsdFile">XSD file Input: </label></b> 
-				<input type="file" id="xsdFile" name="profile" (change)="onSelectedXSDFile($event)"/>
+				<b><label for="xsdFile">XSD/DTD file Input:</label></b> 
+				<input type="file" id="xsdFile" accept=".xsd, .dtd " name="profile" (change)="onSelectedXSDFile($event)"/>
 			</div>
 		</div>
 	</div>

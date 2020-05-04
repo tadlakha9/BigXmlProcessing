@@ -55,6 +55,7 @@ export class SplitComponent implements OnInit {
     subscribe(
       (response => {
         console.log("ok"+response);
+        alert("Alert   " +response);
         this.toastr.success('Split Successfully')
         }),
       (error) => {

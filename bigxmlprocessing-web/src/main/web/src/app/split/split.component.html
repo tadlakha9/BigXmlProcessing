@@ -29,14 +29,14 @@
 		<div class=" col-md-12">
 			<div class=" form-group">				 
 				<label for="xmlFile"> File Input: </label>
-				<input type="file"  id="xmlFile"  (change)="onSelectedXMLFile($event)"/>
+				<input type="file"  id="xmlFile" accept=".XML,.xml,.SGM" (change)="onSelectedXMLFile($event)"/>
 			</div>
 		</div>
   </div>
   
 
   
-  <div class=" row" [ngSwitch]="typeOfSplit"> 
+ <div class=" row" [ngSwitch]="typeOfSplit"> 
   <div *ngSwitchCase="'Level'" >
 		<div class=" col-md-12">
 			<div class=" form-group">

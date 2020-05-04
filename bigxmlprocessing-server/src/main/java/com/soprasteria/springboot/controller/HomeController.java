@@ -36,6 +36,10 @@ import com.soprasteria.springboot.utils.ExecProcess;
 @RequestMapping("/home")
 public class HomeController {
 
+	int SttdCode = 0;
+	String StdOut = null;
+	String StdErr = null;
+	
 	@Autowired
 	ServletContext context;
 
@@ -67,17 +71,22 @@ public class HomeController {
 	 * 
 	 */
 	@GetMapping("/script")
-	public void executeScript() {
+	public void executeScript(String command) {
 		log.info("inside executeScript method");
-		ExecProcess p = null;
-    	String cmd = "";
+		ExecProcess exec = null;
+    	String cmd = "bash /$HOME/FileFormatter.ksh ";
 
         try {
-        	cmd = "bash /home/user/test.sh -help"; 
-            p = new ExecProcess(cmd);
-            p.run();
-
+        	cmd = cmd + command;
+        	//cmd = "bash /home/user/test.sh -help"; 
+        	//cmd = "bash /home/mjindal/FileFormatter.ksh -splits /mnt/c/Users/mjindal.EMEAAD/Documents/G101_MNT_L_0001_0001_AMM_AIRCRAFT.XML 100Kb";
+        	exec = new ExecProcess(cmd);
+        	exec.run();
+            this.StdOut =exec.getStdout();
+            this.SttdCode = exec.getReturnValue();
+                      
         } catch (Exception e) {
+        	this.StdErr = exec.getStderr();
             
             e.printStackTrace();
             
@@ -86,10 +95,13 @@ public class HomeController {
 
 	/**
 	 * @param file
-	 * @param typeOfSplit
-	 * @param level
-	 * @param size
-	 * @param splitByElement
+	 * @param typeOfSplit(Level, Element,Flat,Size)
+	 * @param level(split:Level)
+	 * @param size(split:Size)
+	 * @param splitByElement(split:Element)
+	 * @param splitType(split:Flat(By line/Size))
+	 * @param splitByLine(split:Flat)
+	 * @param splitBySize(split:Flat)
 	 * @return
 	 */
 	@PostMapping("/splitXml")
@@ -98,10 +110,19 @@ public class HomeController {
 			@RequestParam("size") String size, @RequestParam("splitByElement") String splitByElement,
 			@RequestParam("splitType") String splitType, @RequestParam("splitByLine") String splitByLine, 
 			@RequestParam("splitBySize") String splitBySize) {
+		
 		log.info("File name." + file.getOriginalFilename());
-		Split split = new Split(typeOfSplit, level, size, splitByElement);
+		Split split = new Split(typeOfSplit, level, size, splitByElement, splitBySize, splitBySize, splitBySize);
 		log.info("splitObject:" + split);
-		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
+		
+		
+		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
+		
+		String cmd = "-splits /mnt/" + filepath + " "+ size+"Kb";
+		log.info("command   "+cmd);
+		executeScript(cmd );
+		
+		return new ResponseEntity<String>("  Everything is working fine "+  this.StdOut, HttpStatus.OK);
 	}
 
 	/**
@@ -216,6 +237,9 @@ public class HomeController {
 	 * @return
 	 */
 	private String createLocalFile(MultipartFile file) {
+		
+		createLocalFolder();		
+		
 		String fileName = file.getOriginalFilename();
 		String modifiedFileName = FilenameUtils.getBaseName(fileName) + "_" + System.currentTimeMillis() + "."
 				+ FilenameUtils.getExtension(fileName);
@@ -226,7 +250,8 @@ public class HomeController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return serverFile.getParent();
+		//return serverFile.getParent();
+		return serverFile.getAbsolutePath();
 	}
 	
 

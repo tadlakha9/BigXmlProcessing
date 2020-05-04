@@ -23,23 +23,23 @@
 		</div>
   </div>
   <div class=" row" >
-		<div class=" col-md-12">
+		<div class="col-md-12">
 			<div class=" form-group">	
         <label> Select File : </label>
-        <input type="file" id="xmlFileforSort" name="xmlFileforSort" (change)="onSelectofXMLFile($event)"/>
+        <input type="file" id="xmlFileforSort" accept=".XML,.xml" title="Only XML format" name="xmlFileforSort" (change)="onSelectofXMLFile($event)"/>
         </div>
       </div>
   </div>
 
   <div class=" row" [ngSwitch]="sortType" > 
-		<div class=" col-md-12" *ngSwitchCase="'Attribute Sort'">
+		<div class="col-md-12" *ngSwitchCase="'Attribute Sort'">
 			<div class=" form-group" display="inline-block">
         <label for="attribute"> Attribute Name : </label>	
         <input name="attribute" id="attribute" ngModel type="text"/>
       </div>
     </div>
 
-		<div class=" col-md-12" *ngSwitchCase="'Mixed Content Sort'">
+		<div class="col-md-12" *ngSwitchCase="'Mixed Content Sort'">
 			<div class=" form-group">
         <label for="keyattribute"> Sort by Key attribute :&nbsp; </label>	
         <input name="keyattribute" id="keyattribute" ngModel type="checkbox"/>
@@ -47,7 +47,7 @@
     </div>  
 
     <div *ngSwitchCase="'Mixed Content Sort'">
-		<div class=" col-md-12">
+		<div class="col-md-12">
 			<div class=" form-group" display="inline-block">
         <label for="idattribute"> Sort by Id :&nbsp; </label>	
         <input id="idattribute" name="idattribute" ngModel type="checkbox"/>
