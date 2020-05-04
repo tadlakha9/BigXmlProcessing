@@ -25,9 +25,9 @@ usage ()
   echo "					 LEVEL: Various LEVELS of XML Tree. Root element is at LEVEL0. This is optional. 
 									Default LEVEL is 1"
   echo "							In case of SGML please provide all the three parameters.(SGML)"
-  echo "								ex : FileFormatter.ksh -splil /home/td_b260_delivery/DATA_PA/AMM.SGML 2 AMM"
-  echo "             ex : FileFormatter.ksh -splil /home/td_b260_delivery/DATA_PA/Sample.XML"
-  echo "             ex : FileFormatter.ksh -splil /home/td_b260_delivery/DATA_PA/Sample.XML 2"
+  echo "								ex : FileFormatter.ksh -splitl /home/td_b260_delivery/DATA_PA/AMM.SGML 2 AMM"
+  echo "             ex : FileFormatter.ksh -splitl /home/td_b260_delivery/DATA_PA/Sample.XML"
+  echo "             ex : FileFormatter.ksh -splitl /home/td_b260_delivery/DATA_PA/Sample.XML 2"
   echo ""
   echo "          [-splits : Split BIG XML File by given Size] (INPUT_FILE) (CHUNK_SIZE)"
   echo "					 INPUT_FILE: Absolute/Relative Path of BIG XML File"
@@ -471,7 +471,7 @@ echo "In Method: formatAllFILES()------------------------>"
 			echo ${SGML_FILES_LIST}
 			for file in $SGML_FILES_LIST
 			do
-				covertSGMLToXML $file $CATALOGUE_FILE
+				convertSGMLToXML $file $CATALOGUE_FILE
 			done
 		else
 			echo "WARNING: There is no SGML File For Processing"
@@ -480,8 +480,14 @@ echo "In Method: formatAllFILES()------------------------>"
 	fi
 echo "Out Method: formatAllFILES()---------------------->"
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time-----${Execution_time}	
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi	
 }
 
 #Method to Format XML file: $1 ==> Path to XML File $2 ==> Path to Output File
@@ -514,8 +520,14 @@ echo "In Method: formatXML()---------------------------->"
 	fi
 echo "Out Method: formatXML()---------------------------->"
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time-----${Execution_time}
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 }
 
 #Method to Sort XML file: $1 ==> Path to XML File $2 ==> Path to Output File
@@ -557,7 +569,7 @@ if [ -f $1 ];
 	elif [[ $TYPE = SGM ]];
 	then
 		echo "We are in SGML Sort"							
-		covertSGMLToXML ${1} $CATALOGUE_FILE $FLAG_SORT
+		convertSGMLToXML ${1} $CATALOGUE_FILE $FLAG_SORT
 		echo "SGML converted to XML------------------------>"	        		
 		sortFile $XML_OUTPUT ${2}
 		#rm -rf $XML_OUTPUT			
@@ -569,17 +581,23 @@ else
 fi
 echo "Out Method: sortFile()--------------------------------->"
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time-----${Execution_time}
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 }
 
 #Method to Convert SGML into XML: 
 #$1 ==> SGML File Absolute Path. 
 #$2 ==> Catalogue file name
 #$3 ==> Flag to check if it is case of SORTING
-covertSGMLToXML() {
+convertSGMLToXML() {
 start_time=`date +%s%N`
-echo "In Method: covertSGMLToXML()"	
+echo "In Method: convertSGMLToXML()"	
 	if [ -f $1 ]; 
 	then
 		## Converting SGML into XML
@@ -617,10 +635,16 @@ echo "In Method: covertSGMLToXML()"
 	  	echo "ERROR: ${1} not found"
 	  	exit 1
 	fi
-echo "Out Method: covertSGMLToXML()"
+echo "Out Method: convertSGMLToXML()"
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time-----${Execution_time}
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 }
 
 #Method to Spilt Big XML or SGML file into smaller chunks of given size: 
@@ -656,7 +680,7 @@ if [ -f $1 ];
     elif [[ $TYPE = SGM ]];
 		then
 		echo "INFO: We are in SGML Split------>"							
-		covertSGMLToXML ${1} $CATALOGUE_FILE
+		convertSGMLToXML ${1} $CATALOGUE_FILE
 		echo "INFO: SGML converted to XML----------->"
 		
 		splitBySize $XML_OUTPUT ${2} $CATALOGUE_FILE
@@ -671,8 +695,14 @@ fi
 
 echo "Out Method: splitBySize()------------------------>"
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time-----${Execution_time}
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 
 }
 
@@ -703,8 +733,14 @@ echo "WARNING: It doesn't guarantee that every splitted file will be of the give
 	fi
 echo "Out Method: flatSplitBySize()------------------------>"
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time-----${Execution_time}
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 }
 
 #Method to Flat Spilt Big XML file into smaller chunks of given size: 
@@ -731,8 +767,14 @@ start_time=`date +%s`
 	fi
 echo "Out Method: flatsplitByLine()------------------------>"
 end_time=`date +%s`
-Execution_time= end_time-start_time
-echo "Excecution time is------- `expr $end_time-$start_time`"
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
+Execution_time=$(($((end_time-start_time))/1000000000))
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 }
 
 
@@ -769,7 +811,7 @@ if [ -f $1 ];
     elif [[ $TYPE = SGM ]];
 		then
 		echo "INFO: We are in SGML Split------>"							
-		covertSGMLToXML ${1} $CATALOGUE_FILE
+		convertSGMLToXML ${1} $CATALOGUE_FILE
 		echo "INFO: SGML converted to XML----------->"		
 		splitByLevel $XML_OUTPUT ${2}		
     fi									
@@ -781,8 +823,14 @@ fi
 
 echo "Out Method: splitByLevel()------------------------>"
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time-----${Execution_time}
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 
 }
 
@@ -822,7 +870,7 @@ if [ -f $1 ];
 	elif [[ $TYPE = SGM ]];
 		then
 		echo "INFO: We are in SGML Split------>"							
-		covertSGMLToXML ${1} $CATALOGUE_FILE 
+		convertSGMLToXML ${1} $CATALOGUE_FILE 
 		echo "INFO: SGML converted to XML----------->"		
 		splitByElement $XML_OUTPUT ${2}
     fi									
@@ -834,8 +882,14 @@ fi
 
 echo "Out Method: splitByElement()------------------------>"
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time-----${Execution_time}
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 }
 
 
@@ -851,7 +905,7 @@ echo "WARNING: You have chosen option of searching by type of the file"
 	if [ -d $ROOT_DIR ]; 
 	then
 		FILES_LIST=$(find $ROOT_DIR -type f -iname "$TYPE")
-		if [ ! -z $FILES_LIST ];
+		if [[ ! -z $FILES_LIST ]];
 		then
 			echo "INFO: File of ${TYPE} Searched Successfully in the directory ${ROOT_DIR}" 
 			if [ -z $OUTPUT_FILE ];
@@ -870,8 +924,14 @@ echo "WARNING: You have chosen option of searching by type of the file"
 	  	exit 1
 	fi
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo "Out Method: searchFilesByType()------------------------>"
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 }
 
 #Method to Search all files of the given in the provided directory with the given content: 
@@ -896,8 +956,14 @@ echo "WARNING: You have chosen option of searching by pattern of the content in 
 	  	exit 1
 	fi
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo "Out Method: searchFilesByPattern()------------------------>"
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 }
 
 
@@ -943,8 +1009,14 @@ echo "In Method: validateXML()-------------------------------->"
 	  	exit 1
 	fi
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo "Out Method: validateXML--------------------------------->"
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 }
 
 validateSGML(){
@@ -968,10 +1040,16 @@ echo "In Method: validateSGML()"
 	  	echo "ERROR: ${1} not found"
 	  	exit 1
 	fi
-echo "Out Method: covertSGMLToXML()"
+echo "Out Method: convertSGMLToXML()"
 end_time=`date +%s%N`
+Execution_time=$(($((end_time-start_time))/1000000))
+if [ $Execution_time -ge 1000 ] 
+then
 Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time-----${Execution_time}
+echo Execution_time in seconds-----${Execution_time} seconds
+else
+echo Execution_time-----${Execution_time}milliseconds
+fi
 }
 
 
@@ -1008,5 +1086,5 @@ elif [ "${SEARCH_MODE}" = "-searcht" ];then
 elif [ "${SEARCH_MODE}" = "-searchp" ];then
 	searchFilesByPattern
 elif [ "${SGML_CONV_XML_MODE}" = "-sgx" ];then
-	covertSGMLToXML $SGML_FILE $CATALOGUE_FILE
+	convertSGMLToXML $SGML_FILE $CATALOGUE_FILE
 fi
