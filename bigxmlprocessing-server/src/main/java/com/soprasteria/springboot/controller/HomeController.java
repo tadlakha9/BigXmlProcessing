@@ -74,55 +74,91 @@ public class HomeController {
 	public void executeScript(String command) {
 		log.info("inside executeScript method");
 		ExecProcess exec = null;
-    	String cmd = "bash /$HOME/FileFormatter.ksh ";
+		String cmd = "";
+		File localScript = new File("src//main//resources//FileFormatter.ksh");
+		String localScriptPath = localScript.getAbsolutePath().replace("\\", "/").replaceFirst("C:", "/mnt/c");
 
-        try {
-        	cmd = cmd + command;
-        	//cmd = "bash /home/user/test.sh -help"; 
-        	//cmd = "bash /home/mjindal/FileFormatter.ksh -splits /mnt/c/Users/mjindal.EMEAAD/Documents/G101_MNT_L_0001_0001_AMM_AIRCRAFT.XML 100Kb";
-        	exec = new ExecProcess(cmd);
-        	exec.run();
-            this.StdOut =exec.getStdout();
-            this.SttdCode = exec.getReturnValue();
-                      
-        } catch (Exception e) {
-        	this.StdErr = exec.getStderr();
-            
-            e.printStackTrace();
-            
-        } 
+		try {
+
+			cmd = "bash " + localScriptPath + " " + command;
+			// cmd = "bash /home/user/test.sh -help";
+			// cmd = "bash /home/mjindal/FileFormatter.ksh -splits
+			// /mnt/c/Users/mjindal.EMEAAD/Documents/G101_MNT_L_0001_0001_AMM_AIRCRAFT.XML
+			// 100Kb";
+			exec = new ExecProcess(cmd);
+			exec.run();
+			this.StdOut = exec.getStdout();
+			this.SttdCode = exec.getReturnValue();
+
+		} catch (Exception e) {
+			this.StdErr = exec.getStderr();
+
+			e.printStackTrace();
+
+		}
 	}
 
 	/**
 	 * @param file
-	 * @param typeOfSplit(Level, Element,Flat,Size)
-	 * @param level(split:Level)
-	 * @param size(split:Size)
-	 * @param splitByElement(split:Element)
-	 * @param splitType(split:Flat(By line/Size))
-	 * @param splitByLine(split:Flat)
-	 * @param splitBySize(split:Flat)
+	 * @param      typeOfSplit(Level, Element,Flat,Size)
+	 * @param      level(split:Level)
+	 * @param      size(split:Size)
+	 * @param      splitByElement(split:Element)
+	 * @param      splitType(split:Flat(By line/Size))
+	 * @param      splitByLine(split:Flat)
+	 * @param      splitBySize(split:Flat)
 	 * @return
 	 */
 	@PostMapping("/splitXml")
 	public ResponseEntity<String> splitXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("typeOfSplit") String typeOfSplit, @RequestParam("level") String level,
 			@RequestParam("size") String size, @RequestParam("splitByElement") String splitByElement,
-			@RequestParam("splitType") String splitType, @RequestParam("splitByLine") String splitByLine, 
+			@RequestParam("splitType") String splitType, @RequestParam("splitByLine") String splitByLine,
 			@RequestParam("splitBySize") String splitBySize) {
-		
+
 		log.info("File name." + file.getOriginalFilename());
 		Split split = new Split(typeOfSplit, level, size, splitByElement, splitBySize, splitBySize, splitBySize);
 		log.info("splitObject:" + split);
-		
-		
+
 		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
-		
-		String cmd = "-splits /mnt/" + filepath + " "+ size+"Kb";
-		log.info("command   "+cmd);
-		executeScript(cmd );
-		
-		return new ResponseEntity<String>("  Everything is working fine "+  this.StdOut, HttpStatus.OK);
+		switch (typeOfSplit) {
+		case "Level":
+			String cmd1 = "-splitl /mnt/" + filepath + " " + level;
+			log.info("command   " + cmd1);
+			executeScript(cmd1);
+			break;
+		case "Size":
+			String cmd2 = "-splits /mnt/" + filepath + " " + size + "Kb";
+			log.info("command   " + cmd2);
+			executeScript(cmd2);
+			break;
+		case "Element":
+			String cmd3 = "-splite /mnt/" + filepath + " " + splitByElement;
+			log.info("command   " + cmd3);
+			executeScript(cmd3);
+			break;
+		case "Flat":
+			switch (splitType) {
+
+			case "line":
+				String cmd4 = "-fsplitl /mnt/" + filepath + " " + splitByLine;
+				log.info("command   " + cmd4);
+				executeScript(cmd4);
+				break;
+
+			case "size":
+				String cmd5 = "-fsplits /mnt/" + filepath + " " + splitBySize + "k";
+				log.info("command   " + cmd5);
+				executeScript(cmd5);
+				break;
+
+			}
+
+			break;
+
+		}
+
+		return new ResponseEntity<String>("Split is working fine here" + this.StdOut, HttpStatus.OK);
 	}
 
 	/**
@@ -148,16 +184,21 @@ public class HomeController {
 	 * @return
 	 */
 	@PostMapping("/prettyPrintXml")
-	public ResponseEntity<String> prettyPrintXml(@RequestParam("file") MultipartFile file){
-				//to be included SGM file option as well
+	public ResponseEntity<String> prettyPrintXml(@RequestParam("file") MultipartFile file) {
+		// to be included SGM file option as well
 		log.info("File name." + file.getOriginalFilename());
-		
+
 		PrettyPrint print = new PrettyPrint(file.getOriginalFilename());
 		log.info("Pretty Print:" + print);
-		
-		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
+		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
+
+		String cmd = "-format /mnt/" + filepath;
+		log.info("command   " + cmd);
+		executeScript(cmd);
+		return new ResponseEntity<String>("Format is working fine" + this.StdOut, HttpStatus.OK);
+
 	}
-	
+
 	/**
 	 * @param file
 	 * @param file
@@ -165,20 +206,25 @@ public class HomeController {
 	 * @return
 	 */
 	@PostMapping("/convert")
-	public ResponseEntity<String> convert(@RequestParam("file0")MultipartFile sgmlfile,
-			@RequestParam("file1")MultipartFile catalogfile){
-		
+	public ResponseEntity<String> convert(@RequestParam("file0") MultipartFile sgmlfile,
+			@RequestParam("file1") MultipartFile catalogfile) {
+
 		log.info("Sgmlfile name." + sgmlfile.getOriginalFilename());
 		log.info("catalogfile name." + catalogfile.getOriginalFilename());
-		//to be used in future along with error file
-		//log.info("Errorfile name." + errorfile.getOriginalFilename());
-		
+		// to be used in future along with error file
+		// log.info("Errorfile name." + errorfile.getOriginalFilename());
+
 		Converter converter = new Converter(sgmlfile.getOriginalFilename(), catalogfile.getOriginalFilename());
-		log.info("Converter : " +converter);
-		
-		return  new ResponseEntity<String>("Conversion is working fine", HttpStatus.OK);
+		log.info("Converter : " + converter);
+
+		String filepath = createLocalFile(sgmlfile).replace('\\', '/').replaceFirst("C:", "c");
+		String catfilepath = createLocalFile(catalogfile).replace('\\', '/').replaceFirst("C:", "c");
+		String cmd = "-sgx /mnt/" + filepath + " " + catfilepath;
+		log.info("command   " + cmd);
+		executeScript(cmd);
+		return new ResponseEntity<String>("Conversion of sgml to xml is working fine" + this.StdOut, HttpStatus.OK);
+
 	}
-	
 	
 	/**
 	 * @param files
@@ -237,12 +283,12 @@ public class HomeController {
 	 * @return
 	 */
 	private String createLocalFile(MultipartFile file) {
-		
-		createLocalFolder();		
-		
+
+		createLocalFolder();
+
 		String fileName = file.getOriginalFilename();
 		String modifiedFileName = FilenameUtils.getBaseName(fileName) + "_" + System.currentTimeMillis() + "."
-				+ FilenameUtils.getExtension(fileName);
+				+ FilenameUtils.getExtension(fileName).toUpperCase();
 		File serverFile = new File(context.getRealPath("/") + File.separator + modifiedFileName);
 
 		try {
@@ -250,10 +296,8 @@ public class HomeController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//return serverFile.getParent();
+		// return serverFile.getParent();
 		return serverFile.getAbsolutePath();
 	}
-	
-
 
 }
