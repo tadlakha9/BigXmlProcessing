@@ -107,19 +107,23 @@ public class HomeController {
 	 * @param      splitType(split:Flat(By line/Size))
 	 * @param      splitByLine(split:Flat)
 	 * @param      splitBySize(split:Flat)
+	 * @param      fileType(SGML/XML)
+	 * @param      catFile
 	 * @return
 	 */
 	@PostMapping("/splitXml")
 	public ResponseEntity<String> splitXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("typeOfSplit") String typeOfSplit, @RequestParam("level") String level,
 			@RequestParam("size") String size, @RequestParam("splitByElement") String splitByElement,
-			@RequestParam("splitType") String splitType, @RequestParam("splitByLine") String splitByLine,
-			@RequestParam("splitBySize") String splitBySize) {
+			@RequestParam("splitType") String splitType, @RequestParam("splitByLine") String splitByLine, 
+			@RequestParam("splitBySize") String splitBySize,  @RequestParam("fileType") String fileType, 
+			@RequestParam("filecat") MultipartFile catFile) {
 
 		log.info("File name." + file.getOriginalFilename());
-		Split split = new Split(typeOfSplit, level, size, splitByElement, splitBySize, splitBySize, splitBySize);
+		Split split = new Split(typeOfSplit, level, size, splitByElement, splitBySize, splitBySize, splitBySize, fileType);
 		log.info("splitObject:" + split);
-
+		log.info("catFile name." + catFile.getOriginalFilename());
+		
 		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
 		switch (typeOfSplit) {
 		case "Level":

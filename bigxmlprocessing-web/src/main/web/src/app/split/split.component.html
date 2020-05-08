@@ -29,53 +29,74 @@
 		<div class=" col-md-12">
 			<div class=" form-group">				 
 				<label for="xmlFile"> File Input: </label>
-				<input type="file"  id="xmlFile" accept=".XML,.xml,.SGM" (change)="onSelectedXMLFile($event)"/>
+				<input type="file"  id="xmlFile" accept=".XML,.xml,.SGM" required (change)="onSelectedXMLFile($event)"/>
 			</div>
 		</div>
   </div>
   
 
+  <div class=" row" >
+    <div class=" col-md-12">
+     <div class=" form-group">
+      <b><label for="input-file">Select Your File Type</label></b> <br/>
+
+      <input id="XML" type="radio" value="XML" name="fileType" [(ngModel)]="fileType"/>
+      <label class="control-label" for="XML">XML </label>&nbsp;&nbsp;&nbsp;&nbsp;
+
+      <input id="SGML" type="radio" value="SGML" name="fileType" [(ngModel)]="fileType"/>
+      <label class="control-label" for="SGML">SGML </label> 
+     </div>
+    </div>
+  
+    <div *ngIf="fileType == 'SGML'" >
+      <div class=" col-md-12">
+        <div class=" form-group">
+          <label for="catalog"> Catalog file: </label>	<br>
+          <input type="file" id="catalog" ngModel name="catalog" (change)="onSelectedCatalogFile($event)"/>
+        </div>
+      </div>
+    </div> 
+  </div>
   
  <div class=" row" [ngSwitch]="typeOfSplit"> 
-  <div *ngSwitchCase="'Level'" >
-		<div class=" col-md-12">
-			<div class=" form-group">
-        <label for="level"> Level: </label>	<br>
-        <input id="level" ngModel name="level" type="number"/>
-      </div>
-    </div>
-  </div>  
-
+   <div *ngSwitchCase="'Level'" >
+		 <div class=" col-md-12">
+		 	 <div class=" form-group">
+         <label for="level"> Level: </label>	<br>
+         <input id="level" ngModel name="level" type="number"/>
+       </div>
+     </div>
+   </div>  
    
-  <div *ngSwitchCase="'Size'" >
+   <div *ngSwitchCase="'Size'" >
     <div class=" col-md-12">
       <div class=" form-group">	
         <label for="size"> Size: </label><br>
         <input id="size" ngModel name="size" type="number"/>
       </div>
     </div>
-  </div>
+   </div>
 
-  <div *ngSwitchCase="'Element'" >
-    <div class=" col-md-12">
-      <div class=" form-group">	
-        <label for="splitByElement"> Split by Element: </label><br>
-        <input id="splitByElement" ngModel name="splitByElement" type="text"/>
+   <div *ngSwitchCase="'Element'" >
+      <div class=" col-md-12">
+       <div class=" form-group">	
+          <label for="splitByElement"> Split by Element: </label><br>
+          <input id="splitByElement" ngModel name="splitByElement" type="text"/>
+       </div>
       </div>
     </div>
-  </div>
-  <div *ngSwitchCase="'Flat'" >
-    <div class=" col-md-12">
-      <label > Split Type: </label><br>
-      <div class=" radio" *ngFor="let type of splitType">	        
-        <label>
-        <input id="splitType" [value]="type" [(ngModel)]="splitByRadio" name="splitType" type="radio"/>
-        {{type}}
-      </label>
+    <div *ngSwitchCase="'Flat'" >
+      <div class=" col-md-12">
+        <label > Split Type: </label><br>
+        <div class=" radio" *ngFor="let type of splitType">	        
+          <label>
+          <input id="splitType" [value]="type" [(ngModel)]="splitByRadio" name="splitType" type="radio"/>
+          {{type}}
+        </label>
+        </div>
       </div>
-    </div>
-    <div class=" col-md-12" *ngIf="isSelected('line')">
-      <div class=" form-group">	
+     <div class=" col-md-12" *ngIf="isSelected('line')">
+       <div class=" form-group">	
         <label for="splitByLine"> Split by Line: </label><br>
         <input id="splitByLine" ngModel name="splitByLine" type="text"/>
       </div>
