@@ -30,6 +30,7 @@ export class ParsingComponent implements OnInit {
   }
   onSelectedXSDFile(event){
   	console.log(event.target.files);
+  	this.xsdFilePath = event.target.files[0];
   }
   
   onSelectedERRORFile(event){
@@ -41,6 +42,7 @@ export class ParsingComponent implements OnInit {
     console.log("within on submit method" );
     let formData = new FormData();
     formData.append('file', this.xmlFilePath, this.xmlFilePath.name);
+    formData.append('xsdFile', this.xsdFilePath, this.xsdFilePath.name);
     this.appService.parseXML(formData)
     .subscribe((response) => {
       console.log('response received is ', response);
