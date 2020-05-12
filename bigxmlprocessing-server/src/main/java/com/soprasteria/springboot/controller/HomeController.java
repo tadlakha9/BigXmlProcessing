@@ -7,7 +7,11 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.Response;
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -22,11 +26,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.xml.sax.SAXException;
 import com.soprasteria.springboot.model.Converter;
 import com.soprasteria.springboot.model.PrettyPrint;
 import com.soprasteria.springboot.model.Split;
 import com.soprasteria.springboot.utils.ExecProcess;
+
 
 /**
  * @author tushar
@@ -59,13 +64,35 @@ public class HomeController {
 	 * @throws IOException
 	 */
 	@PostMapping("/parseXml")
-	public Response transformXml(@RequestParam("file") MultipartFile file) throws IOException {
-		createLocalFolder();		
+	public ResponseEntity<String> transformXml(@RequestParam("file") MultipartFile file,@RequestParam("xsdFile") MultipartFile xsdFile) throws IOException {	
 
-		createLocalFile(file);
-		
-		return Response.ok().build();
+		createLocalFolder();
+		String filepath = createLocalFileforSearch(file);
+		String extfilepath = createLocalFileforSearch(xsdFile);
+		boolean parse = validate(filepath,extfilepath);
+		if(parse) {
+		return new ResponseEntity<String>("  Everything is working fine "+  this.StdOut, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<String>("  Error "+  this.StdOut, HttpStatus.OK);
+		}
 	}
+	
+	
+	//parse XML with external xsd
+	private boolean validate(String xmlFile, String schemaFile) {
+		try {
+            SchemaFactory factory = 
+                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = factory.newSchema(new File(schemaFile));
+            Validator validator = schema.newValidator();
+            validator.validate(new StreamSource(new File(xmlFile)));
+        } catch (IOException | SAXException e) {
+            System.out.println("Exception: "+e.getMessage());
+            return false;
+        }
+        return true;
+    }
+	
 
 	/**
 	 * 
@@ -74,28 +101,21 @@ public class HomeController {
 	public void executeScript(String command) {
 		log.info("inside executeScript method");
 		ExecProcess exec = null;
-		String cmd = "";
-		File localScript = new File("src//main//resources//FileFormatter.ksh");
-		String localScriptPath = localScript.getAbsolutePath().replace("\\", "/").replaceFirst("C:", "/mnt/c");
+    	String cmd = "bash /home/ajohn/file/sample.ksh ";
 
-		try {
-
-			cmd = "bash " + localScriptPath + " " + command;
-			// cmd = "bash /home/user/test.sh -help";
-			// cmd = "bash /home/mjindal/FileFormatter.ksh -splits
-			// /mnt/c/Users/mjindal.EMEAAD/Documents/G101_MNT_L_0001_0001_AMM_AIRCRAFT.XML
-			// 100Kb";
-			exec = new ExecProcess(cmd);
-			exec.run();
-			this.StdOut = exec.getStdout();
-			this.SttdCode = exec.getReturnValue();
-
-		} catch (Exception e) {
-			this.StdErr = exec.getStderr();
-
-			e.printStackTrace();
-
-		}
+        try {
+        	cmd = cmd + command;
+        	exec = new ExecProcess(cmd);
+        	exec.run();
+            this.StdOut =exec.getStdout();
+            this.SttdCode = exec.getReturnValue();
+                      
+        } catch (Exception e) {
+        	this.StdErr = exec.getStderr();
+            
+            e.printStackTrace();
+            
+        } 
 	}
 
 	/**
@@ -178,6 +198,11 @@ public class HomeController {
 			@RequestParam("sortType") String typeOfSort, @RequestParam("attribute") String attribute,
 			@RequestParam("keyattribute") String keyattribute, @RequestParam("idattribute") String idattribute) {
 		log.info("File name." + file.getOriginalFilename());
+		//String output = "sort.xml";
+		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
+		String cmd = "-sort /mnt/" + filepath;;
+		log.info("command   "+cmd);
+		executeScript(cmd);
 		return new ResponseEntity<String>("Everything is working fine for sort", HttpStatus.OK);
 	}
 
@@ -237,19 +262,40 @@ public class HomeController {
 	@PostMapping("/searching")
 	public ResponseEntity<String> searching(@RequestParam("file") MultipartFile[] files,
 			@RequestParam("searchId") String searchId, @RequestParam("extension") String extension,
-			@RequestParam("text") String text){
+			@RequestParam("text") String text) {
 		String dirPath = null;
+		String output = "Result.txt";
 		createLocalFolder();
-		for(MultipartFile file:files) {
-			dirPath = createLocalFile(file);
+		for (MultipartFile file : files) {
+			dirPath = createLocalFileforSearch(file).replace('\\', '/').replaceFirst("C:", "c");
 		}
+
+		File filenew = new File(dirPath);
+		dirPath = filenew.getParent();
+		dirPath = dirPath.replace("\\", "/");
+		log.info("before script executon dir name=================" + dirPath);
+		System.out.println("searchID	:" + searchId);
+		if (searchId.equalsIgnoreCase("Text")) {
+			if (text != null) {
+				String cmd = "-searchp /mnt/" + dirPath + " " + text + " " + output;
+				log.info("command   " + cmd);
+				executeScript(cmd);
+			}
+		} else {
+			if (extension != null) {
+				String cmd = "-searcht /mnt/" + dirPath + " " + extension + " " + output;
+
+				log.info("command   " + cmd);
+				executeScript(cmd);
+			}
+		}
+		System.out.println("after running script=================");
+
 		log.info("Dir name." + dirPath);
 		log.info("searchId." + searchId);
 		log.info("extension." + extension);
 		log.info("text." + text);
-		
-		
-		
+
 		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
 	}
 	
@@ -291,8 +337,30 @@ public class HomeController {
 		createLocalFolder();
 
 		String fileName = file.getOriginalFilename();
-		String modifiedFileName = FilenameUtils.getBaseName(fileName) + "_" + System.currentTimeMillis() + "."
-				+ FilenameUtils.getExtension(fileName).toUpperCase();
+		String modifiedFileName = FilenameUtils.getBaseName(fileName)  + "_" + System.currentTimeMillis()  + "." 
+				+ FilenameUtils.getExtension(fileName).toUpperCase() ;
+		File serverFile = new File(context.getRealPath("/") + File.separator + modifiedFileName);
+
+		try {
+			FileUtils.writeByteArrayToFile(serverFile, file.getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// return serverFile.getParent();
+		return serverFile.getAbsolutePath();
+	}
+	
+	/**
+	 * @param file
+	 * @return
+	 */
+	private String createLocalFileforSearch(MultipartFile file) {
+
+		//createLocalFolder();
+
+		String fileName = file.getOriginalFilename();
+		String modifiedFileName = FilenameUtils.getBaseName(fileName) /* + "_" + System.currentTimeMillis() */ + "." 
+				+ FilenameUtils.getExtension(fileName).toUpperCase() ;
 		File serverFile = new File(context.getRealPath("/") + File.separator + modifiedFileName);
 
 		try {
