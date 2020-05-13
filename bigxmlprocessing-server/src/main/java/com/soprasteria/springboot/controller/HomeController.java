@@ -101,21 +101,28 @@ public class HomeController {
 	public void executeScript(String command) {
 		log.info("inside executeScript method");
 		ExecProcess exec = null;
-    	String cmd = "bash /home/ajohn/file/sample.ksh ";
+		String cmd = "";
+		File localScript = new File("src//main//resources//FileFormatter.ksh");
+		String localScriptPath = localScript.getAbsolutePath().replace("\\", "/").replaceFirst("C:", "/mnt/c");
 
-        try {
-        	cmd = cmd + command;
-        	exec = new ExecProcess(cmd);
-        	exec.run();
-            this.StdOut =exec.getStdout();
-            this.SttdCode = exec.getReturnValue();
-                      
-        } catch (Exception e) {
-        	this.StdErr = exec.getStderr();
-            
-            e.printStackTrace();
-            
-        } 
+		try {
+
+			cmd = "bash " + localScriptPath + " " + command;
+			// cmd = "bash /home/user/test.sh -help";
+			// cmd = "bash /home/mjindal/FileFormatter.ksh -splits
+			// /mnt/c/Users/mjindal.EMEAAD/Documents/G101_MNT_L_0001_0001_AMM_AIRCRAFT.XML
+			// 100Kb";
+			exec = new ExecProcess(cmd);
+			exec.run();
+			this.StdOut = exec.getStdout();
+			this.SttdCode = exec.getReturnValue();
+
+		} catch (Exception e) {
+			this.StdErr = exec.getStderr();
+
+			e.printStackTrace();
+
+		}
 	}
 
 	/**
@@ -135,31 +142,55 @@ public class HomeController {
 	public ResponseEntity<String> splitXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("typeOfSplit") String typeOfSplit, @RequestParam("level") String level,
 			@RequestParam("size") String size, @RequestParam("splitByElement") String splitByElement,
-			@RequestParam("splitType") String splitType, @RequestParam("splitByLine") String splitByLine, 
-			@RequestParam("splitBySize") String splitBySize,  @RequestParam("fileType") String fileType, 
+			@RequestParam("splitType") String splitType, @RequestParam("splitByLine") String splitByLine,
+			@RequestParam("splitBySize") String splitBySize, @RequestParam("fileType") String fileType,
 			@RequestParam("filecat") MultipartFile catFile) {
 
 		log.info("File name." + file.getOriginalFilename());
-		Split split = new Split(typeOfSplit, level, size, splitByElement, splitBySize, splitBySize, splitBySize, fileType);
+		Split split = new Split(typeOfSplit, level, size, splitByElement, splitBySize, splitBySize, splitBySize,
+				fileType);
 		log.info("splitObject:" + split);
 		log.info("catFile name." + catFile.getOriginalFilename());
-		
+
 		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
+		String catfilepath = createLocalFile(catFile).replace('\\', '/').replaceFirst("C:", "c");
 		switch (typeOfSplit) {
 		case "Level":
-			String cmd1 = "-splitl /mnt/" + filepath + " " + level;
-			log.info("command   " + cmd1);
-			executeScript(cmd1);
+			if (fileType == "XML") {
+				String cmd1 = "-splitl /mnt/" + filepath + " " + level;
+				log.info("command   " + cmd1);
+				executeScript(cmd1);
+			} else {
+				String cmd1 = "-splitl /mnt/" + filepath + " " + level + " " + catfilepath;
+				log.info("command   " + cmd1);
+				executeScript(cmd1);
+			}
+
+			/*
+			 * log.info("command   " + cmd1); executeScript(cmd1);
+			 */
 			break;
 		case "Size":
-			String cmd2 = "-splits /mnt/" + filepath + " " + size + "Kb";
-			log.info("command   " + cmd2);
-			executeScript(cmd2);
+			if (fileType == "XML") {
+				String cmd2 = "-splits /mnt/" + filepath + " " + size + "Kb";
+				log.info("command   " + cmd2);
+				executeScript(cmd2);
+			} else {
+				String cmd2 = "-splits /mnt/" + filepath + " " + size + "Kb" + " " + catfilepath;
+				log.info("command   " + cmd2);
+				executeScript(cmd2);
+			}
 			break;
 		case "Element":
-			String cmd3 = "-splite /mnt/" + filepath + " " + splitByElement;
-			log.info("command   " + cmd3);
-			executeScript(cmd3);
+			if (fileType == "XML") {
+				String cmd3 = "-splite /mnt/" + filepath + " " + splitByElement;
+				log.info("command   " + cmd3);
+				executeScript(cmd3);
+			} else {
+				String cmd3 = "-splite /mnt/" + filepath + " " + splitByElement + " " + catfilepath;
+				log.info("command   " + cmd3);
+				executeScript(cmd3);
+			}
 			break;
 		case "Flat":
 			switch (splitType) {
@@ -322,7 +353,7 @@ public class HomeController {
 	 * 
 	 */
 	private void createLocalFolder() {
-		boolean isExist = new File(context.getRealPath("/")).exists();
+		boolean isExist = new File("C:\\Temp\\MultiProcessor\\Target").exists();
 		if (!isExist) {
 			new File(context.getRealPath("/webapp")).mkdir();
 		}
@@ -337,9 +368,9 @@ public class HomeController {
 		createLocalFolder();
 
 		String fileName = file.getOriginalFilename();
-		String modifiedFileName = FilenameUtils.getBaseName(fileName)  + "_" + System.currentTimeMillis()  + "." 
-				+ FilenameUtils.getExtension(fileName).toUpperCase() ;
-		File serverFile = new File(context.getRealPath("/") + File.separator + modifiedFileName);
+		String modifiedFileName = FilenameUtils.getBaseName(fileName) + "."
+				+ FilenameUtils.getExtension(fileName).toUpperCase();
+		File serverFile = new File("C:\\Temp\\MultiProcessor\\Target" + File.separator + modifiedFileName);
 
 		try {
 			FileUtils.writeByteArrayToFile(serverFile, file.getBytes());

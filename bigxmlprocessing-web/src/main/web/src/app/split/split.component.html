@@ -71,7 +71,7 @@
    <div *ngSwitchCase="'Size'" >
     <div class=" col-md-12">
       <div class=" form-group">	
-        <label for="size"> Size: </label><br>
+        <label for="size"> Size(In KB): </label><br>
         <input id="size" ngModel name="size" type="number"/>
       </div>
     </div>
@@ -103,7 +103,7 @@
     </div>
     <div class=" col-md-12" *ngIf="isSelected('size')">
       <div class=" form-group">	
-        <label for="splitBySize"> Split by Size: </label><br>
+        <label for="splitBySize"> Split by Size(Provide size in KB): </label><br>
         <input id="splitBySize" ngModel name="splitBySize" type="text"/>
       </div>
     </div>

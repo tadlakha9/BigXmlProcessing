@@ -43,7 +43,7 @@ export class PrettyPrintComponent implements OnInit {
       (error) => { console.log("ko"+error);  
       this.toastr.error('Error in Pretty Print');  
     });
-   alert("Please give your valuable feedback!")
+   
    form.reset();
   }
 
