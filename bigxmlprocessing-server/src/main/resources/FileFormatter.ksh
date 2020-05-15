@@ -736,10 +736,10 @@ end_time=`date +%s%N`
 Execution_time=$(($((end_time-start_time))/1000000))
 if [ $Execution_time -ge 1000 ] 
 then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
+	Execution_time=$(($((end_time-start_time))/1000000000))
+	echo Execution_time in seconds-----${Execution_time} seconds
 else
-echo Execution_time-----${Execution_time}milliseconds
+	echo Execution_time-----${Execution_time}milliseconds
 fi
 }
 
@@ -770,10 +770,10 @@ end_time=`date +%s`
 Execution_time=$(($((end_time-start_time))/1000000))
 if [ $Execution_time -ge 1000 ] 
 then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
+	Execution_time=$(($((end_time-start_time))/1000000000))
+	echo Execution_time in seconds-----${Execution_time} seconds
 else
-echo Execution_time-----${Execution_time}milliseconds
+	echo Execution_time-----${Execution_time}milliseconds
 fi
 }
 
@@ -826,10 +826,10 @@ end_time=`date +%s%N`
 Execution_time=$(($((end_time-start_time))/1000000))
 if [ $Execution_time -ge 1000 ] 
 then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
+	Execution_time=$(($((end_time-start_time))/1000000000))
+	echo Execution_time in seconds-----${Execution_time} seconds
 else
-echo Execution_time-----${Execution_time}milliseconds
+	echo Execution_time-----${Execution_time}milliseconds
 fi
 
 }
@@ -885,10 +885,10 @@ end_time=`date +%s%N`
 Execution_time=$(($((end_time-start_time))/1000000))
 if [ $Execution_time -ge 1000 ] 
 then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
+	Execution_time=$(($((end_time-start_time))/1000000000))
+	echo Execution_time in seconds-----${Execution_time} seconds
 else
-echo Execution_time-----${Execution_time}milliseconds
+	echo Execution_time-----${Execution_time}milliseconds
 fi
 }
 
@@ -908,13 +908,14 @@ echo "WARNING: You have chosen option of searching by type of the file"
 		if [[ ! -z $FILES_LIST ]];
 		then
 			echo "INFO: File of ${TYPE} Searched Successfully in the directory ${ROOT_DIR}" 
-			if [ -z $OUTPUT_FILE ];
-			then
-				echo ${FILES_LIST}
-			else
-				echo ${FILES_LIST} > $OUTPUT_FILE
-				echo "INFO: Result has been saved in file ${OUTPUT_FILE}."
-			fi
+			echo "List of file  :  " > $OUTPUT_FILE
+			echo -e '\r\n' >> $OUTPUT_FILE
+			for f in ${FILES_LIST}
+				do 
+					basename ${f} >> $OUTPUT_FILE;
+					echo -e '\r\n' >> $OUTPUT_FILE;
+			done;
+			echo "INFO: Result has been saved in file ${OUTPUT_FILE}."
 		else
 			echo "WARNING: There is no such file of ${TYPE} exists in directory ${ROOT_DIR}."
 			exit 10
@@ -927,10 +928,10 @@ end_time=`date +%s%N`
 Execution_time=$(($((end_time-start_time))/1000000))
 if [ $Execution_time -ge 1000 ] 
 then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
+	Execution_time=$(($((end_time-start_time))/1000000000))
+	echo Execution_time in seconds-----${Execution_time} seconds
 else
-echo Execution_time-----${Execution_time}milliseconds
+	echo Execution_time-----${Execution_time}milliseconds
 fi
 }
 
@@ -943,14 +944,24 @@ echo "In Method: searchFilesByPattern()------------------------>"
 echo "WARNING: You have chosen option of searching by pattern of the content in  file"
 	if [ -d $ROOT_DIR ]; 
 	then
-		grep -H -r ${PATTERN} ${ROOT_DIR} > $OUTPUT_FILE
-		if [ -s $OUTPUT_FILE ];
+		
+		FILES_LIST=$(find ${ROOT_DIR} -type f | grep -H -r ${PATTERN} ${ROOT_DIR} | cut -d: -f1)
+	    
+	    if [[ ! -z $FILES_LIST ]];
 		then
-		echo "INFO: Result has been saved in file ${OUTPUT_FILE}."
+			echo "INFO: File of ${TYPE} Searched Successfully in the directory ${ROOT_DIR}" 
+			echo "List of file  :  " > $OUTPUT_FILE
+			echo -e '\r\n' >> $OUTPUT_FILE
+			for f in ${FILES_LIST}
+				do 
+					basename ${f} >> $OUTPUT_FILE;
+					echo -e '\r\n' >> $OUTPUT_FILE;
+			done;
+			echo "INFO: Result has been saved in file ${OUTPUT_FILE}."
 		else
 			echo "WARNING: There is no such file with content ${TYPE} exists in directory ${ROOT_DIR}."
 			exit 11
-	    fi
+		fi
 	else 
 	  	echo "ERROR: Directory ${ROOT_DIR} not found"
 	  	exit 1

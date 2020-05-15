@@ -44,6 +44,8 @@ public class HomeController {
 	int SttdCode = 0;
 	String StdOut = null;
 	String StdErr = null;
+	String message=null;
+	Boolean searchFlag=false;
 	
 	@Autowired
 	ServletContext context;
@@ -64,33 +66,31 @@ public class HomeController {
 	 * @throws IOException
 	 */
 	@PostMapping("/parseXml")
-	public ResponseEntity<String> transformXml(@RequestParam("file") MultipartFile file,@RequestParam("xsdFile") MultipartFile xsdFile) throws IOException {	
+	public void transformXml(@RequestParam("file") MultipartFile file,@RequestParam("xsdFile") MultipartFile xsdFile) {	
 
 		createLocalFolder();
-		String filepath = createLocalFileforSearch(file);
-		String extfilepath = createLocalFileforSearch(xsdFile);
-		boolean parse = validate(filepath,extfilepath);
-		if(parse) {
-		return new ResponseEntity<String>("  Everything is working fine "+  this.StdOut, HttpStatus.OK);
-		}else {
-			return new ResponseEntity<String>("  Error "+  this.StdOut, HttpStatus.OK);
-		}
+		String filepath = createLocalFile(file);
+		String extfilepath = createLocalFile(xsdFile);
+		validate(filepath,extfilepath);
 	}
 	
 	
-	//parse XML with external xsd
-	private boolean validate(String xmlFile, String schemaFile) {
+	//validate XML with external xsd
+	private ResponseEntity<String> validate(String xmlFile, String schemaFile) {
 		try {
             SchemaFactory factory = 
                     SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = factory.newSchema(new File(schemaFile));
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(new File(xmlFile)));
+            System.out.println("File parsed successfully");
+            return new ResponseEntity<String>("File parsed successfully "+  this.StdOut, HttpStatus.OK);
         } catch (IOException | SAXException e) {
             System.out.println("Exception: "+e.getMessage());
-            return false;
+            System.out.println("Error in file parsing");
+            return new ResponseEntity<String>("  Error "+  this.StdErr, HttpStatus.NOT_FOUND);   
         }
-        return true;
+      
     }
 	
 
@@ -229,12 +229,11 @@ public class HomeController {
 			@RequestParam("sortType") String typeOfSort, @RequestParam("attribute") String attribute,
 			@RequestParam("keyattribute") String keyattribute, @RequestParam("idattribute") String idattribute) {
 		log.info("File name." + file.getOriginalFilename());
-		//String output = "sort.xml";
 		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
 		String cmd = "-sort /mnt/" + filepath;;
 		log.info("command   "+cmd);
 		executeScript(cmd);
-		return new ResponseEntity<String>("Everything is working fine for sort", HttpStatus.OK);
+		return new ResponseEntity<String>(file.getOriginalFilename()+" is sorted succesfully", HttpStatus.OK);
 	}
 
 
@@ -295,16 +294,16 @@ public class HomeController {
 			@RequestParam("searchId") String searchId, @RequestParam("extension") String extension,
 			@RequestParam("text") String text) {
 		String dirPath = null;
+		searchFlag=true;
 		String output = "Result.txt";
 		createLocalFolder();
 		for (MultipartFile file : files) {
-			dirPath = createLocalFileforSearch(file).replace('\\', '/').replaceFirst("C:", "c");
+			dirPath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
 		}
 
 		File filenew = new File(dirPath);
 		dirPath = filenew.getParent();
 		dirPath = dirPath.replace("\\", "/");
-		log.info("before script executon dir name=================" + dirPath);
 		System.out.println("searchID	:" + searchId);
 		if (searchId.equalsIgnoreCase("Text")) {
 			if (text != null) {
@@ -320,14 +319,16 @@ public class HomeController {
 				executeScript(cmd);
 			}
 		}
-		System.out.println("after running script=================");
+		
 
 		log.info("Dir name." + dirPath);
 		log.info("searchId." + searchId);
 		log.info("extension." + extension);
 		log.info("text." + text);
+		//clear searchFlag
+		searchFlag=true;
 
-		return new ResponseEntity<String>("Everything is working fine", HttpStatus.OK);
+		return new ResponseEntity<String>("Search is successful", HttpStatus.OK);
 	}
 	
 	/**
@@ -365,7 +366,8 @@ public class HomeController {
 	 */
 	private String createLocalFile(MultipartFile file) {
 
-		createLocalFolder();
+		if (!searchFlag)
+			createLocalFolder();
 
 		String fileName = file.getOriginalFilename();
 		String modifiedFileName = FilenameUtils.getBaseName(fileName) + "."
@@ -381,26 +383,4 @@ public class HomeController {
 		return serverFile.getAbsolutePath();
 	}
 	
-	/**
-	 * @param file
-	 * @return
-	 */
-	private String createLocalFileforSearch(MultipartFile file) {
-
-		//createLocalFolder();
-
-		String fileName = file.getOriginalFilename();
-		String modifiedFileName = FilenameUtils.getBaseName(fileName) /* + "_" + System.currentTimeMillis() */ + "." 
-				+ FilenameUtils.getExtension(fileName).toUpperCase() ;
-		File serverFile = new File(context.getRealPath("/") + File.separator + modifiedFileName);
-
-		try {
-			FileUtils.writeByteArrayToFile(serverFile, file.getBytes());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		// return serverFile.getParent();
-		return serverFile.getAbsolutePath();
-	}
-
 }
