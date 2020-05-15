@@ -45,7 +45,7 @@ public class HomeController {
 	String StdOut = null;
 	String StdErr = null;
 	String message=null;
-	Boolean searchFlag=false;
+	boolean searchFlag=false;
 	
 	@Autowired
 	ServletContext context;
@@ -294,7 +294,7 @@ public class HomeController {
 			@RequestParam("searchId") String searchId, @RequestParam("extension") String extension,
 			@RequestParam("text") String text) {
 		String dirPath = null;
-		searchFlag=true;
+		searchFlag = true;
 		String output = "Result.txt";
 		createLocalFolder();
 		for (MultipartFile file : files) {
@@ -319,14 +319,13 @@ public class HomeController {
 				executeScript(cmd);
 			}
 		}
-		
 
 		log.info("Dir name." + dirPath);
 		log.info("searchId." + searchId);
 		log.info("extension." + extension);
 		log.info("text." + text);
-		//clear searchFlag
-		searchFlag=true;
+		// clear searchFlag
+		searchFlag = false;
 
 		return new ResponseEntity<String>("Search is successful", HttpStatus.OK);
 	}
