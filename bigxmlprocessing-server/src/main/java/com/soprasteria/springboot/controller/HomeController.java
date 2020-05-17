@@ -49,6 +49,7 @@ public class HomeController {
 	String StdErr = null;
 	String message=null;
 	boolean searchFlag=false;
+	String initialFilePath="C:\\Temp\\MultiProcessor\\Target";
 	
 	@Autowired
 	ServletContext context;
@@ -111,10 +112,6 @@ public class HomeController {
 		try {
 
 			cmd = "bash " + localScriptPath + " " + command;
-			// cmd = "bash /home/user/test.sh -help";
-			// cmd = "bash /home/mjindal/FileFormatter.ksh -splits
-			// /mnt/c/Users/mjindal.EMEAAD/Documents/G101_MNT_L_0001_0001_AMM_AIRCRAFT.XML
-			// 100Kb";
 			exec = new ExecProcess(cmd);
 			exec.run();
 			this.StdOut = exec.getStdout();
@@ -487,7 +484,7 @@ public class HomeController {
 	 * 
 	 */
 	private void createLocalFolder() {
-		boolean isExist = new File("C:\\Temp\\MultiProcessor\\Target").exists();
+		boolean isExist = new File(initialFilePath).exists();
 		if (!isExist) {
 			new File(context.getRealPath("/webapp")).mkdir();
 		}
@@ -505,7 +502,7 @@ public class HomeController {
 		String fileName = file.getOriginalFilename();
 		String modifiedFileName = FilenameUtils.getBaseName(fileName) + "."
 				+ FilenameUtils.getExtension(fileName).toUpperCase();
-		File serverFile = new File("C:\\Temp\\MultiProcessor\\Target" + File.separator + modifiedFileName);
+		File serverFile = new File(initialFilePath + File.separator + modifiedFileName);
 
 		try {
 			FileUtils.writeByteArrayToFile(serverFile, file.getBytes());

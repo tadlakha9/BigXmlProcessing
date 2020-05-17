@@ -528,7 +528,7 @@ if [ -f $1 ];
 	echo "INFO: Extension of the file to be splitted: ${TYPE} "
     if [[ $TYPE = XML ]];
 		then
-		echo "We are in XML Sort"	
+		echo "INFO: We are in XML Sort"	
         if [ -z $2 ]; then
 			echo "INFO: You have not provided any Output File." 
 			echo "INFO: Default temp file will be created"
@@ -549,9 +549,9 @@ if [ -f $1 ];
 		
 	elif [[ $TYPE = SGM ]];
 	then
-		echo "We are in SGML Sort"							
+		echo "INFO: We are in SGML Sort"							
 		convertSGMLToXML ${1} $CATALOGUE_FILE $FLAG_SORT
-		echo "SGML converted to XML------------------------>"	        		
+		echo "SGML converted to XML"	        		
 		sortFile $XML_OUTPUT ${2}
 		#rm -rf $XML_OUTPUT			
     fi	
@@ -585,7 +585,7 @@ echo "In Method: convertSGMLToXML()"
 		#	 echo "xml output2----------------------${XML_ROOT_DIR}"
 		#fi		
 		osx -e -g -wall -E0 -c ${2} -x no-nl-in-tag -x pi-escape -x empty -f $ERROR_FILE $1 > $XML_OUTPUT
-		echo "ERROR_FILE-------${ERROR_FILE}"
+		echo "INFO: ERROR_FILE: ${ERROR_FILE}"
 		if [ $? -eq 0 ];
 		then
 			if [ -z $3 ]; then		
@@ -632,7 +632,7 @@ if [ -f $1 ];
 	
     if [[ $TYPE = XML ]];
         then
-		echo " We are in XML Split>"
+		echo "INFO: We are in XML Split"
         xml_split -s ${2} ${1}
         if [ $? -eq 0 ];
             then
@@ -644,9 +644,9 @@ if [ -f $1 ];
         fi
     elif [[ $TYPE = SGM ]];
 		then
-		echo "INFO: We are in SGML Split------>"							
+		echo "INFO: We are in SGML Split"							
 		convertSGMLToXML ${1} $CATALOGUE_FILE
-		echo "INFO: SGML converted to XML----------->"
+		echo "INFO: SGML converted to XML"
 		
 		splitBySize $XML_OUTPUT ${2} $CATALOGUE_FILE
 		
@@ -738,7 +738,7 @@ if [ -f $1 ];
 	
     if [[ $TYPE = XML ]];
         then
-		echo " We are in XML Split>"
+		echo "INFO: We are in XML Split"
         xml_split -l ${2} ${1}
         if [ $? -eq 0 ];
             then
@@ -750,9 +750,9 @@ if [ -f $1 ];
         fi
     elif [[ $TYPE = SGM ]];
 		then
-		echo "INFO: We are in SGML Split------>"							
+		echo "INFO: We are in SGML Split"							
 		convertSGMLToXML ${1} $CATALOGUE_FILE
-		echo "INFO: SGML converted to XML----------->"		
+		echo "INFO: SGML converted to XML"		
 		splitByLevel $XML_OUTPUT ${2}		
     fi									
 
@@ -788,7 +788,7 @@ if [ -f $1 ];
 	
 	if [[ $TYPE = XML ]];
         then
-		echo "We are in XML Split------>"
+		echo "INFO: We are in XML Split"
 		xml_split -c ${2} ${1}
 		if [ $? -eq 0 ];
 		then
@@ -800,9 +800,9 @@ if [ -f $1 ];
 		fi
 	elif [[ $TYPE = SGM ]];
 		then
-		echo "INFO: We are in SGML Split------>"							
+		echo "INFO: We are in SGML Split"							
 		convertSGMLToXML ${1} $CATALOGUE_FILE 
-		echo "INFO: SGML converted to XML----------->"		
+		echo "INFO: SGML converted to XML"		
 		splitByElement $XML_OUTPUT ${2}
     fi									
 
@@ -960,9 +960,9 @@ end_time=`date +%s%N`
 		if [ $Execution_time -ge 1000 ] 
 			then	
 			Execution_time=$(($((end_time-$1))/1000000000))
-			echo "Execution Time from script: ${Execution_time} seconds"
+			echo "INFO: Execution Time from script: ${Execution_time} seconds"
 		else
-			echo "Execution Time from script: ${Execution_time} ms"
+			echo "INFO: Execution Time from script: ${Execution_time} ms"
 		fi
 	fi
 }
