@@ -213,8 +213,7 @@ public class HomeController {
 		executeScript(cmd);
 
 		// calculate execution time
-		long stopTime = System.currentTimeMillis();
-		String executionTime = calculateTime(startTime, stopTime);
+		String executionTime = calculateTime(startTime);
 
 		// sending the response
 		ResponseEntity<String> statusInfo = null;
@@ -243,28 +242,28 @@ public class HomeController {
 			@RequestParam("sortType") String typeOfSort, @RequestParam("attribute") String attribute,
 			@RequestParam("keyattribute") String keyattribute, @RequestParam("idattribute") String idattribute) {
 		long startTime = System.currentTimeMillis();
-		
-		//calculating the file path
+
+		// calculating the file path
 		log.info("File name." + file.getOriginalFilename());
 		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
-		
-		//executing the script
-		String cmd = "-sort /mnt/" + filepath;;
-		log.info("command   "+cmd);
+
+		// executing the script
+		String cmd = "-sort /mnt/" + filepath;
+		;
+		log.info("command   " + cmd);
 		executeScript(cmd);
-		
+
 		// calculate execution time
-		long stopTime = System.currentTimeMillis();
-		String executionTime = calculateTime(startTime, stopTime);
-				
-		//sending the response
+		String executionTime = calculateTime(startTime);
+
+		// sending the response
 		ResponseEntity<String> statusInfo = null;
 		if (this.SttdCode != 0) {
 
 			String message = "There is some error in the sorting:" + this.StdErr;
 			statusInfo = alert(message, true);
 		} else {
-			String message = "File sorted Succesfully!!!" + "\n" + this.StdOut+ "\n" + executionTime;
+			String message = "File sorted Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
 			statusInfo = alert(message, false);
 
 		}
@@ -296,8 +295,7 @@ public class HomeController {
 		executeScript(cmd);
 
 		// calculate execution time
-		long stopTime = System.currentTimeMillis();
-		String executionTime = calculateTime(startTime, stopTime);
+		String executionTime = calculateTime(startTime);
 
 		// sending the response
 		ResponseEntity<String> statusInfo = null;
@@ -342,8 +340,7 @@ public class HomeController {
 		executeScript(cmd);
 
 		// calculate execution time
-		long stopTime = System.currentTimeMillis();
-		String executionTime = calculateTime(startTime, stopTime);
+		String executionTime = calculateTime(startTime);
 
 		// sending the response
 		ResponseEntity<String> statusInfo = null;
@@ -409,8 +406,7 @@ public class HomeController {
 		searchFlag = false;
 
 		// calculate execution time
-		long stopTime = System.currentTimeMillis();
-		String executionTime = calculateTime(startTime, stopTime);
+		String executionTime = calculateTime(startTime);
 
 		// sending the response
 		ResponseEntity<String> statusInfo = null;
@@ -472,12 +468,12 @@ public class HomeController {
 	 * Method for calculating the execution time of method
 	 * 
 	 * @param startTime
-	 * @param endTime   
 	 * @return
 	 * 
 	 */
-	private String calculateTime(long startTime, long endTime) {
-		long elapsedTime = endTime - startTime;
+	private String calculateTime(long startTime) {
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
 		String time = "Total Execution Time: " + elapsedTime + "ms";
 		if (elapsedTime >= 1000) {
 			elapsedTime = elapsedTime / 1000;
