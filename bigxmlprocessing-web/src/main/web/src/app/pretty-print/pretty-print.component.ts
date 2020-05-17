@@ -28,7 +28,7 @@ export class PrettyPrintComponent implements OnInit {
   }
 
   save(form:NgForm)
-  {
+  { this.spinner.show();
     console.log("Documented will be pretty Printed ");
     console.log(form.value);
     let formData = new FormData();
@@ -39,9 +39,9 @@ export class PrettyPrintComponent implements OnInit {
   
     this.appService.prettyPrintService(formData).
     subscribe((response) => {
+      this.spinner.hide();
       console.log("ok"+response);
       alert("Alert   " +response);
-      this.spinner.hide();
       this.toastr.success('Pretty Printed Successfully')
       },
       (error) => { console.log("ko"+error);
