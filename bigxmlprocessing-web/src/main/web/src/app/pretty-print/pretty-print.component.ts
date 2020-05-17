@@ -38,9 +38,11 @@ export class PrettyPrintComponent implements OnInit {
     this.appService.prettyPrintService(formData).
     subscribe((response) => {
       console.log("ok"+response);
+      alert("Alert   " +response);
       this.toastr.success('Pretty Printed Successfully')
       },
-      (error) => { console.log("ko"+error);  
+      (error) => { console.log("ko"+error);
+       alert("Alert   " +error); 
       this.toastr.error('Error in Pretty Print');  
     });
    

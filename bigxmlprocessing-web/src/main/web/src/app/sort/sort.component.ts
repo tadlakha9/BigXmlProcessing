@@ -31,10 +31,12 @@ export class SortComponent implements OnInit {
     subscribe(
       (response => {
         console.log("ok"+response);
+         alert("Alert   " +response);
         this.toastr.success('Sort Successfully')
         }),
       (error) => {
-        console.log("ko"+error);  
+        console.log("ko"+error);
+        alert("Alert   " +error);	    
         this.toastr.error('Error on Sorting');
       }
     );

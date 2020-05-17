@@ -72,6 +72,7 @@ export class SplitComponent implements OnInit {
         }),
       (error) => {
         console.log("ko"+error);  
+        alert("Alert   " +error);
         this.toastr.error('Error on Splitting');
       }
     );

@@ -20,17 +20,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.xml.sax.SAXException;
 import com.soprasteria.springboot.model.Converter;
 import com.soprasteria.springboot.model.PrettyPrint;
 import com.soprasteria.springboot.model.Split;
 import com.soprasteria.springboot.utils.ExecProcess;
+import com.soprasteria.springboot.utils.SendEmailSSL;
 
 
 /**
@@ -146,65 +149,57 @@ public class HomeController {
 			@RequestParam("splitBySize") String splitBySize, @RequestParam("fileType") String fileType,
 			@RequestParam("filecat") MultipartFile catFile) {
 
+		long startTime = System.currentTimeMillis();
+
 		log.info("File name." + file.getOriginalFilename());
 		Split split = new Split(typeOfSplit, level, size, splitByElement, splitBySize, splitBySize, splitBySize,
 				fileType);
 		log.info("splitObject:" + split);
 		log.info("catFile name." + catFile.getOriginalFilename());
 
+		// getting the file path and catalogue file path
 		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
 		String catfilepath = createLocalFile(catFile).replace('\\', '/').replaceFirst("C:", "c");
+
+		// commands for different operations
+		String cmd = "";
 		switch (typeOfSplit) {
 		case "Level":
-			if (fileType == "XML") {
-				String cmd1 = "-splitl /mnt/" + filepath + " " + level;
-				log.info("command   " + cmd1);
-				executeScript(cmd1);
+			if (fileType.equalsIgnoreCase("XML")) {
+				cmd = "-splitl /mnt/" + filepath + " " + level;
 			} else {
-				String cmd1 = "-splitl /mnt/" + filepath + " " + level + " " + catfilepath;
-				log.info("command   " + cmd1);
-				executeScript(cmd1);
+				cmd = "-splitl /mnt/" + filepath + " " + level + " " + catfilepath;
 			}
 
-			/*
-			 * log.info("command   " + cmd1); executeScript(cmd1);
-			 */
 			break;
 		case "Size":
-			if (fileType == "XML") {
-				String cmd2 = "-splits /mnt/" + filepath + " " + size + "Kb";
-				log.info("command   " + cmd2);
-				executeScript(cmd2);
+			if (fileType.equalsIgnoreCase("XML")) {
+				cmd = "-splits /mnt/" + filepath + " " + size + "Kb";
+
 			} else {
-				String cmd2 = "-splits /mnt/" + filepath + " " + size + "Kb" + " " + catfilepath;
-				log.info("command   " + cmd2);
-				executeScript(cmd2);
+				cmd = "-splits /mnt/" + filepath + " " + size + "Kb" + " " + catfilepath;
+
 			}
 			break;
 		case "Element":
-			if (fileType == "XML") {
-				String cmd3 = "-splite /mnt/" + filepath + " " + splitByElement;
-				log.info("command   " + cmd3);
-				executeScript(cmd3);
+			if (fileType.equalsIgnoreCase("XML")) {
+				cmd = "-splite /mnt/" + filepath + " " + splitByElement;
+
 			} else {
-				String cmd3 = "-splite /mnt/" + filepath + " " + splitByElement + " " + catfilepath;
-				log.info("command   " + cmd3);
-				executeScript(cmd3);
+				cmd = "-splite /mnt/" + filepath + " " + splitByElement + " " + catfilepath;
+
 			}
 			break;
+
 		case "Flat":
 			switch (splitType) {
 
 			case "line":
-				String cmd4 = "-fsplitl /mnt/" + filepath + " " + splitByLine;
-				log.info("command   " + cmd4);
-				executeScript(cmd4);
+				cmd = "-fsplitl /mnt/" + filepath + " " + splitByLine;
 				break;
 
 			case "size":
-				String cmd5 = "-fsplits /mnt/" + filepath + " " + splitBySize + "k";
-				log.info("command   " + cmd5);
-				executeScript(cmd5);
+				cmd = "-fsplits /mnt/" + filepath + " " + splitBySize + "k";
 				break;
 
 			}
@@ -213,8 +208,27 @@ public class HomeController {
 
 		}
 
-		return new ResponseEntity<String>("Split is working fine here" + this.StdOut, HttpStatus.OK);
+		// executing the script
+		log.info("command   " + cmd);
+		executeScript(cmd);
+
+		// calculate execution time
+		long stopTime = System.currentTimeMillis();
+		String executionTime = calculateTime(startTime, stopTime);
+
+		// sending the response
+		ResponseEntity<String> statusInfo = null;
+		if (this.SttdCode != 0) {
+			String message = "There is some error in splitting:" + this.StdErr;
+			statusInfo = alert(message, true);
+		} else {
+			String message = "File splitted Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
+			statusInfo = alert(message, false);
+		}
+
+		return statusInfo;
 	}
+	
 
 	/**
 	 * @param file
@@ -228,12 +242,35 @@ public class HomeController {
 	public ResponseEntity<String> sortXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("sortType") String typeOfSort, @RequestParam("attribute") String attribute,
 			@RequestParam("keyattribute") String keyattribute, @RequestParam("idattribute") String idattribute) {
+		long startTime = System.currentTimeMillis();
+		
+		//calculating the file path
 		log.info("File name." + file.getOriginalFilename());
 		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
+		
+		//executing the script
 		String cmd = "-sort /mnt/" + filepath;;
 		log.info("command   "+cmd);
 		executeScript(cmd);
-		return new ResponseEntity<String>(file.getOriginalFilename()+" is sorted succesfully", HttpStatus.OK);
+		
+		// calculate execution time
+		long stopTime = System.currentTimeMillis();
+		String executionTime = calculateTime(startTime, stopTime);
+				
+		//sending the response
+		ResponseEntity<String> statusInfo = null;
+		if (this.SttdCode != 0) {
+
+			String message = "There is some error in the sorting:" + this.StdErr;
+			statusInfo = alert(message, true);
+		} else {
+			String message = "File sorted Succesfully!!!" + "\n" + this.StdOut+ "\n" + executionTime;
+			statusInfo = alert(message, false);
+
+		}
+
+		return statusInfo;
+
 	}
 
 
@@ -244,19 +281,37 @@ public class HomeController {
 	 */
 	@PostMapping("/prettyPrintXml")
 	public ResponseEntity<String> prettyPrintXml(@RequestParam("file") MultipartFile file) {
+		long startTime = System.currentTimeMillis();
 		// to be included SGM file option as well
 		log.info("File name." + file.getOriginalFilename());
 
+		// create a local file
 		PrettyPrint print = new PrettyPrint(file.getOriginalFilename());
 		log.info("Pretty Print:" + print);
 		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
 
+		// execute the script
 		String cmd = "-format /mnt/" + filepath;
 		log.info("command   " + cmd);
 		executeScript(cmd);
-		return new ResponseEntity<String>("Format is working fine" + this.StdOut, HttpStatus.OK);
 
+		// calculate execution time
+		long stopTime = System.currentTimeMillis();
+		String executionTime = calculateTime(startTime, stopTime);
+
+		// sending the response
+		ResponseEntity<String> statusInfo = null;
+		if (this.SttdCode != 0) {
+			String message = "There is some error in the formatting:" + this.StdErr;
+			statusInfo = alert(message, true);
+		} else {
+			String message = "File formatted Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
+			statusInfo = alert(message, false);
+		}
+
+		return statusInfo;
 	}
+	
 
 	/**
 	 * @param file
@@ -267,6 +322,7 @@ public class HomeController {
 	@PostMapping("/convert")
 	public ResponseEntity<String> convert(@RequestParam("file0") MultipartFile sgmlfile,
 			@RequestParam("file1") MultipartFile catalogfile) {
+		long startTime = System.currentTimeMillis();
 
 		log.info("Sgmlfile name." + sgmlfile.getOriginalFilename());
 		log.info("catalogfile name." + catalogfile.getOriginalFilename());
@@ -276,12 +332,32 @@ public class HomeController {
 		Converter converter = new Converter(sgmlfile.getOriginalFilename(), catalogfile.getOriginalFilename());
 		log.info("Converter : " + converter);
 
+		// calculating the path of file and catalogue file
 		String filepath = createLocalFile(sgmlfile).replace('\\', '/').replaceFirst("C:", "c");
 		String catfilepath = createLocalFile(catalogfile).replace('\\', '/').replaceFirst("C:", "c");
+
+		// executing the script
 		String cmd = "-sgx /mnt/" + filepath + " " + catfilepath;
 		log.info("command   " + cmd);
 		executeScript(cmd);
-		return new ResponseEntity<String>("Conversion of sgml to xml is working fine" + this.StdOut, HttpStatus.OK);
+
+		// calculate execution time
+		long stopTime = System.currentTimeMillis();
+		String executionTime = calculateTime(startTime, stopTime);
+
+		// sending the response
+		ResponseEntity<String> statusInfo = null;
+		if (this.SttdCode != 0) {
+
+			String message = "There is some error in the conversion:" + this.StdErr;
+			statusInfo = alert(message, true);
+		} else {
+			String message = "File converted Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
+			statusInfo = alert(message, false);
+
+		}
+
+		return statusInfo;
 
 	}
 	
@@ -293,6 +369,8 @@ public class HomeController {
 	public ResponseEntity<String> searching(@RequestParam("file") MultipartFile[] files,
 			@RequestParam("searchId") String searchId, @RequestParam("extension") String extension,
 			@RequestParam("text") String text) {
+		long startTime = System.currentTimeMillis();
+
 		String dirPath = null;
 		searchFlag = true;
 		String output = "Result.txt";
@@ -305,6 +383,8 @@ public class HomeController {
 		dirPath = filenew.getParent();
 		dirPath = dirPath.replace("\\", "/");
 		System.out.println("searchID	:" + searchId);
+
+		// executing the script
 		if (searchId.equalsIgnoreCase("Text")) {
 			if (text != null) {
 				String cmd = "-searchp /mnt/" + dirPath + " " + text + " " + output;
@@ -324,10 +404,28 @@ public class HomeController {
 		log.info("searchId." + searchId);
 		log.info("extension." + extension);
 		log.info("text." + text);
+
 		// clear searchFlag
 		searchFlag = false;
 
-		return new ResponseEntity<String>("Search is successful", HttpStatus.OK);
+		// calculate execution time
+		long stopTime = System.currentTimeMillis();
+		String executionTime = calculateTime(startTime, stopTime);
+
+		// sending the response
+		ResponseEntity<String> statusInfo = null;
+		if (this.SttdCode != 0) {
+
+			String message = "There is some error searching:" + this.StdErr;
+			statusInfo = alert(message, true);
+		} else {
+			String message = "Searched Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
+			statusInfo = alert(message, false);
+
+		}
+
+		return statusInfo;
+
 	}
 	
 	/**
@@ -338,15 +436,55 @@ public class HomeController {
 	 * @param splitByElement
 	 * @return
 	 */
-	@PostMapping("/feedback")
-	public ResponseEntity<String> feedback(
-			@RequestParam("feedbacktype") String feedbacktype, @RequestParam("desfeedback") String desfeedback,
-			@RequestParam("name") String name, @RequestParam("email") String email, @RequestParam("projectname") String projectname) {
-		log.info("feedbacktype " + feedbacktype);
-		log.info("desfeedback " + desfeedback);
-		log.info("name " + name);
-		log.info("email " + email);
-		return new ResponseEntity<String>("Feedback service is working fine", HttpStatus.OK);
+    @PostMapping("/feedback")
+    public ResponseEntity<String> feedback(
+                @RequestParam("feedbacktype") String feedbacktype, @RequestParam("desfeedback") String desfeedback,
+                @RequestParam("name") String name, @RequestParam("email") String email, @RequestParam("projectname") String projectname) {
+          SendEmailSSL sslemail=new SendEmailSSL();
+          String subject = feedbacktype+" from "+name+" with email "+email+" from project "+projectname;
+          sslemail.sendemail(subject, desfeedback);
+          
+          log.info("feedbacktype " + feedbacktype);
+          log.info("desfeedback " + desfeedback);
+          log.info("name " + name);
+          log.info("email " + email);
+          return new ResponseEntity<String>("Feedback service is working fine", HttpStatus.OK);
+    }
+
+	
+	/**
+	 * Method for error handling
+	 * 
+	 * @param message
+	 * @param flag   
+	 * @return
+	 */
+	public ResponseEntity<String> alert(String statusInfo, boolean isError) {
+
+		if (isError) {
+			return new ResponseEntity<String>(statusInfo, HttpStatus.PRECONDITION_FAILED);
+		} else {
+			return new ResponseEntity<String>(statusInfo, HttpStatus.OK);
+		}
+	}
+	
+	/**
+	 * Method for calculating the execution time of method
+	 * 
+	 * @param startTime
+	 * @param endTime   
+	 * @return
+	 * 
+	 */
+	private String calculateTime(long startTime, long endTime) {
+		long elapsedTime = endTime - startTime;
+		String time = "Total Execution Time: " + elapsedTime + "ms";
+		if (elapsedTime >= 1000) {
+			elapsedTime = elapsedTime / 1000;
+			time = "Total Execution Time: " + elapsedTime + "seconds";
+		}
+
+		return time;
 	}
 	
 	/**
@@ -365,8 +503,8 @@ public class HomeController {
 	 */
 	private String createLocalFile(MultipartFile file) {
 
-		if (!searchFlag)
-			createLocalFolder();
+		// if (!searchFlag)
+		createLocalFolder();
 
 		String fileName = file.getOriginalFilename();
 		String modifiedFileName = FilenameUtils.getBaseName(fileName) + "."
