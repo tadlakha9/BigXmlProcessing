@@ -228,10 +228,7 @@ GetParameters()
 				
 				if [ $# = 4 ]; then
 				    echo "INFO: You have provided ${CATALOGUE_FILE} for SGML splitting"
-					echo "INFO: You are using Splitting for SGML file"
-					#If Size not provide then default value taken
-					echo "INFO: You have not provide required chunk size. Default chunk size of 1Mb will be used"
-					CHUNK_SIZE=$DEFAULT_CHUNCK_SIZE
+					echo "INFO: You are using Splitting for SGML file"					
 					shift 4
 				elif [ $# = 3 ]; then
 					shift 3
@@ -479,15 +476,7 @@ echo "In Method: formatAllFILES()------------------------>"
 		fi
 	fi
 echo "Out Method: formatAllFILES()---------------------->"
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
-else
-echo Execution_time-----${Execution_time}milliseconds
-fi	
+calculateTime $start_time	
 }
 
 #Method to Format XML file: $1 ==> Path to XML File $2 ==> Path to Output File
@@ -519,15 +508,7 @@ echo "In Method: formatXML()---------------------------->"
 	  	exit 1
 	fi
 echo "Out Method: formatXML()---------------------------->"
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
-else
-echo Execution_time-----${Execution_time}milliseconds
-fi
+calculateTime $start_time
 }
 
 #Method to Sort XML file: $1 ==> Path to XML File $2 ==> Path to Output File
@@ -537,14 +518,14 @@ echo "In Method: sortFile()-------------------------------->"
 if [ -f $1 ]; 
  then
 	
-	echo "INFO: File to be splitted ----------${1}"
-	echo "INFO: Path to Output File-----------${2}"
-	echo "INFO: CATALOGUE_FILE of the SGML file-------${3}"
+	echo "INFO: File to be splitted: ${1}"
+	echo "INFO: Path to Output File: ${2}"
+	echo "INFO: CATALOGUE_FILE of the SGML file: ${3}"
 	
 	#To get extension of file
 	FLAG_SORT="sort"
 	TYPE="${1##*.}"	
-	echo "INFO: Extension of the file to be splitted------${TYPE} "
+	echo "INFO: Extension of the file to be splitted: ${TYPE} "
     if [[ $TYPE = XML ]];
 		then
 		echo "We are in XML Sort"	
@@ -580,15 +561,7 @@ else
 	exit 1
 fi
 echo "Out Method: sortFile()--------------------------------->"
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
-else
-echo Execution_time-----${Execution_time}milliseconds
-fi
+calculateTime $start_time
 }
 
 #Method to Convert SGML into XML: 
@@ -636,15 +609,7 @@ echo "In Method: convertSGMLToXML()"
 	  	exit 1
 	fi
 echo "Out Method: convertSGMLToXML()"
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
-else
-echo Execution_time-----${Execution_time}milliseconds
-fi
+calculateTime $start_time
 }
 
 #Method to Spilt Big XML or SGML file into smaller chunks of given size: 
@@ -657,13 +622,13 @@ echo "In Method: splitBySize()------------------------>"
 if [ -f $1 ]; 
     then
     
-    echo "INFO: File to be splitted ----------${1}"
-	echo "INFO: Size to be splitted-----------${2}"
-	echo "INFO: CATALOGUE_FILE of the SGML file-------${3}"
+    echo "INFO: File to be splitted: ${1}"
+	echo "INFO: Size to be splitted: ${2}"
+	echo "INFO: CATALOGUE_FILE of the SGML file: ${3}"
 	
 	#To get extension of file
 	TYPE="${1##*.}"	
-	echo "INFO: Extension of the file to be splitted---- ${TYPE}"
+	echo "INFO: Extension of the file to be splitted: ${TYPE}"
 	
     if [[ $TYPE = XML ]];
         then
@@ -694,16 +659,7 @@ else
 fi
 
 echo "Out Method: splitBySize()------------------------>"
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
-else
-echo Execution_time-----${Execution_time}milliseconds
-fi
-
+calculateTime $start_time
 }
 
 
@@ -732,15 +688,7 @@ echo "WARNING: It doesn't guarantee that every splitted file will be of the give
 	  	exit 1
 	fi
 echo "Out Method: flatSplitBySize()------------------------>"
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-	Execution_time=$(($((end_time-start_time))/1000000000))
-	echo Execution_time in seconds-----${Execution_time} seconds
-else
-	echo Execution_time-----${Execution_time}milliseconds
-fi
+calculateTime $start_time
 }
 
 #Method to Flat Spilt Big XML file into smaller chunks of given size: 
@@ -766,15 +714,7 @@ start_time=`date +%s`
 	  	exit 1
 	fi
 echo "Out Method: flatsplitByLine()------------------------>"
-end_time=`date +%s`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-	Execution_time=$(($((end_time-start_time))/1000000000))
-	echo Execution_time in seconds-----${Execution_time} seconds
-else
-	echo Execution_time-----${Execution_time}milliseconds
-fi
+calculateTime $start_time
 }
 
 
@@ -788,13 +728,13 @@ echo "In Method: splitByLevel()------------------------>"
 if [ -f $1 ]; 
     then
     
-    echo "INFO: File to be splitted ----------${1}"
-	echo "INFO: Level to be splitted-----------${2}"
-	echo "INFO: CATALOGUE_FILE of the SGML file-------${3}"
+    echo "INFO: File to be splitted: ${1}"
+	echo "INFO: Level to be splitted: ${2}"
+	echo "INFO: CATALOGUE_FILE of the SGML file: ${3}"
 	
 	#To get extension of file
 	TYPE="${1##*.}"	
-	echo "INFO: Extension of the file to be splitted---- ${TYPE}"
+	echo "INFO: Extension of the file to be splitted: ${TYPE}"
 	
     if [[ $TYPE = XML ]];
         then
@@ -822,16 +762,7 @@ else
 fi
 
 echo "Out Method: splitByLevel()------------------------>"
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-	Execution_time=$(($((end_time-start_time))/1000000000))
-	echo Execution_time in seconds-----${Execution_time} seconds
-else
-	echo Execution_time-----${Execution_time}milliseconds
-fi
-
+calculateTime $start_time
 }
 
 
@@ -847,13 +778,13 @@ echo "WARNING: This Option is a lot slower than split by element (-splite)"
 if [ -f $1 ]; 
 	then
 	
-	echo "INFO: File to be splitted ----------${1}"
-	echo "INFO: Element to be splitted-----------${2}"
-	echo "INFO: CATALOGUE_FILE of the SGML file-------${3}"
+	echo "INFO: File to be splitted: ${1}"
+	echo "INFO: Element to be splitted: ${2}"
+	echo "INFO: CATALOGUE_FILE of the SGML file: ${3}"
 	
 	#To get extension of file
 	TYPE="${1##*.}"	
-	echo " Extension of the file to be splited------- ${TYPE} "
+	echo " Extension of the file to be splited: ${TYPE} "
 	
 	if [[ $TYPE = XML ]];
         then
@@ -881,18 +812,8 @@ else
 fi
 
 echo "Out Method: splitByElement()------------------------>"
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-	Execution_time=$(($((end_time-start_time))/1000000000))
-	echo Execution_time in seconds-----${Execution_time} seconds
-else
-	echo Execution_time-----${Execution_time}milliseconds
-fi
+calculateTime $start_time
 }
-
-
 
 
 #Method to Search all files of the given in the provided directory: 
@@ -908,12 +829,11 @@ echo "WARNING: You have chosen option of searching by type of the file"
 		if [[ ! -z $FILES_LIST ]];
 		then
 			echo "INFO: File of ${TYPE} Searched Successfully in the directory ${ROOT_DIR}" 
-			echo "List of file  :  " > $OUTPUT_FILE
-			echo -e '\r\n' >> $OUTPUT_FILE
+			echo -e 'Result: \n' > $OUTPUT_FILE
 			for f in ${FILES_LIST}
 				do 
-					basename ${f} >> $OUTPUT_FILE;
-					echo -e '\r\n' >> $OUTPUT_FILE;
+					echo ${f} >> $OUTPUT_FILE;
+					echo -e '\n' >> $OUTPUT_FILE;
 			done;
 			echo "INFO: Result has been saved in file ${OUTPUT_FILE}."
 		else
@@ -924,15 +844,7 @@ echo "WARNING: You have chosen option of searching by type of the file"
 	  	echo "ERROR: Directory ${ROOT_DIR} not found"
 	  	exit 1
 	fi
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-	Execution_time=$(($((end_time-start_time))/1000000000))
-	echo Execution_time in seconds-----${Execution_time} seconds
-else
-	echo Execution_time-----${Execution_time}milliseconds
-fi
+calculateTime $start_time
 }
 
 #Method to Search all files of the given in the provided directory with the given content: 
@@ -945,36 +857,28 @@ echo "WARNING: You have chosen option of searching by pattern of the content in 
 	if [ -d $ROOT_DIR ]; 
 	then
 		
-		FILES_LIST=$(find ${ROOT_DIR} -type f | grep -H -r ${PATTERN} ${ROOT_DIR} | cut -d: -f1)
-	    
+		FILES_LIST=$(find ${ROOT_DIR} -type f | grep -H -r ${PATTERN} ${ROOT_DIR})
+		
 	    if [[ ! -z $FILES_LIST ]];
 		then
 			echo "INFO: File of ${TYPE} Searched Successfully in the directory ${ROOT_DIR}" 
-			echo "List of file  :  " > $OUTPUT_FILE
-			echo -e '\r\n' >> $OUTPUT_FILE
+			echo -e 'Result: \n' > $OUTPUT_FILE
+			
 			for f in ${FILES_LIST}
 				do 
-					basename ${f} >> $OUTPUT_FILE;
-					echo -e '\r\n' >> $OUTPUT_FILE;
+					echo ${f} >> $OUTPUT_FILE;
+					echo -e '\n' >> $OUTPUT_FILE;
 			done;
 			echo "INFO: Result has been saved in file ${OUTPUT_FILE}."
 		else
-			echo "WARNING: There is no such file with content ${TYPE} exists in directory ${ROOT_DIR}."
+			echo "ERROR: There is no such file with content ${TYPE} exists in directory ${ROOT_DIR}."
 			exit 11
 		fi
 	else 
 	  	echo "ERROR: Directory ${ROOT_DIR} not found"
 	  	exit 1
 	fi
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
-else
-echo Execution_time-----${Execution_time}milliseconds
-fi
+calculateTime $start_time
 }
 
 
@@ -989,7 +893,7 @@ echo "In Method: validateXML()-------------------------------->"
 			echo "INFO: Validation with external file ${EXT_FILE}" 
 			#To get extension of file
 			TYPE="${2##*.}"	
-			echo "INFO: Extension of the external file------- ${TYPE} "
+			echo "INFO: Extension of the external file: ${TYPE} "
 	
 			if [[ $TYPE = dtd ]];
 				then
@@ -1019,15 +923,7 @@ echo "In Method: validateXML()-------------------------------->"
 	  	echo "ERROR: ${1} not found"
 	  	exit 1
 	fi
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
-else
-echo Execution_time-----${Execution_time}milliseconds
-fi
+calculateTime $start_time
 }
 
 validateSGML(){
@@ -1036,7 +932,7 @@ echo "In Method: validateSGML()"
 	if [ -f $1 ]; 
 	then
 		onsgmls -s -e -g -wall -E0 -c ${2} -f $ERROR_FILE $1
-		echo "ERROR_FILE-------${ERROR_FILE}"
+		echo "ERROR_FILE: ${ERROR_FILE}"
 		if [ $? -eq 0 ];
 		then
 			if [ -z $3 ]; then
@@ -1052,15 +948,23 @@ echo "In Method: validateSGML()"
 	  	exit 1
 	fi
 echo "Out Method: convertSGMLToXML()"
-end_time=`date +%s%N`
-Execution_time=$(($((end_time-start_time))/1000000))
-if [ $Execution_time -ge 1000 ] 
-then
-Execution_time=$(($((end_time-start_time))/1000000000))
-echo Execution_time in seconds-----${Execution_time} seconds
-else
-echo Execution_time-----${Execution_time}milliseconds
-fi
+calculateTime $start_time
+}
+
+#Method to calculate Script Execution Time
+calculateTime() {
+end_time=`date +%s%N`	
+	if [ ! -z $1 ]; 
+		then
+			Execution_time=$(($((end_time-$1))/1000000))
+		if [ $Execution_time -ge 1000 ] 
+			then	
+			Execution_time=$(($((end_time-$1))/1000000000))
+			echo "Execution Time from script: ${Execution_time} seconds"
+		else
+			echo "Execution Time from script: ${Execution_time} ms"
+		fi
+	fi
 }
 
 
