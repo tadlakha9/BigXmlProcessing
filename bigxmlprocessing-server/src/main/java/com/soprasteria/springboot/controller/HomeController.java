@@ -65,38 +65,46 @@ public class HomeController {
 	}
 
 	/**
-	 * @param file
-	 * @return
-	 * @throws IOException
+	 * @param file XML File
+	 * @param xsdFile Schema for the validation
+	 * @return response 
+	 * @throws Exception if any error in parsing or file not found
 	 */
 	@PostMapping("/parseXml")
-	public void transformXml(@RequestParam("file") MultipartFile file,@RequestParam("xsdFile") MultipartFile xsdFile) {	
-
+	public ResponseEntity<String> transformXml(@RequestParam("file") MultipartFile file, @RequestParam("xsdFile") MultipartFile xsdFile) throws Exception {	
 		createLocalFolder();
 		String filepath = createLocalFile(file);
-		String extfilepath = createLocalFile(xsdFile);
-		validate(filepath,extfilepath);
+		String schemaFilePath = createLocalFile(xsdFile);
+		ResponseEntity<String> response = validate(filepath, schemaFilePath);
+		return response;
 	}
 	
 	
-	//validate XML with external xsd
-	private ResponseEntity<String> validate(String xmlFile, String schemaFile) {
+	
+	/**
+	 * Method to validate XML file with external XSD
+	 * @param xmlFile
+	 * @param schemaFile
+	 * @return response
+	 * @throws Exception if any error in parsing
+	 */
+	private ResponseEntity<String> validate(String xmlFile, String schemaFile) throws Exception {
+		ResponseEntity<String> response = null;
 		try {
-            SchemaFactory factory = 
-                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = factory.newSchema(new File(schemaFile));
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(new File(xmlFile)));
             System.out.println("File parsed successfully");
-            return new ResponseEntity<String>("File parsed successfully "+  this.StdOut, HttpStatus.OK);
+            response = new ResponseEntity<String>("File parsed successfully", HttpStatus.OK);
         } catch (IOException | SAXException e) {
-            System.out.println("Exception: "+e.getMessage());
+            System.out.println("Exception: "+e.getLocalizedMessage());
             System.out.println("Error in file parsing");
-            return new ResponseEntity<String>("  Error "+  this.StdErr, HttpStatus.NOT_FOUND);   
+            response = new ResponseEntity<String>("Error" + e.getLocalizedMessage(), HttpStatus.NOT_FOUND);
+            throw new Exception(e); 
         }
-      
+		return response;
     }
-	
 
 	/**
 	 * 

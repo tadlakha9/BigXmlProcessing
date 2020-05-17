@@ -51,15 +51,14 @@ export class ConvertComponent implements OnInit {
     this.appService.convertService(formData).
     subscribe((response) => 
     { console.log("ok"+response);
-      setTimeout(() => {
-
+      alert("Alert   " +response);
       this.spinner.hide();
       this.toastr.success('Document Converted Successfully')
-    },5000);
 
     },
     (error) => 
     { console.log("ko"+error);  
+      alert("Alert   " +error);
       this.spinner.hide();
       this.toastr.error('Error in Conversion');  
     });

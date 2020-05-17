@@ -20,6 +20,7 @@ export class SortComponent implements OnInit {
     this.sortType="Default"
   }
   submitform(form:NgForm){
+  this.spinner.show();
     console.log(form.value);
     let formData = new FormData();
     formData.append('file', this.xmlFilePath, this.xmlFilePath.name); 
