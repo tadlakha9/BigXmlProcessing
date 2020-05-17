@@ -1,12 +1,12 @@
 
 <div class="panel panel-primary" style="width:50%;left:20%;position:relative">
-	<div class="panel-heading">Sorting</div>
-	<div class="panel-body">
+  <div class="panel-heading">Sorting</div>
+  <div class="panel-body">
 <form (ngSubmit)="submitform(f)" #f="ngForm" style="left: 35%;position: relative;width: 35%;" >
-	<br>
-	<div class=" row" >
-		<div class=" col-md-12">
-			<div class=" form-group">	
+  <br>
+  <div class=" row" >
+    <div class=" col-md-12">
+      <div class=" form-group"> 
         <label> Type of Sort: </label>
                     <select id="sortType" disabled
                     ngModel 
@@ -19,12 +19,12 @@
                       <option>Attribute Sort</option>
                       <option>Mixed Content Sort</option>
                     </select>
-			</div>
-		</div>
+      </div>
+    </div>
   </div>
   <div class=" row" >
-		<div class="col-md-12">
-			<div class=" form-group">	
+    <div class="col-md-12">
+      <div class=" form-group"> 
         <label> Select File : </label>
         <input type="file" id="xmlFileforSort" accept=".XML,.xml" title="Only XML format" name="xmlFileforSort" (change)="onSelectofXMLFile($event)"/>
         </div>
@@ -32,24 +32,24 @@
   </div>
 
   <div class=" row" [ngSwitch]="sortType" > 
-		<div class="col-md-12" *ngSwitchCase="'Attribute Sort'">
-			<div class=" form-group" display="inline-block">
-        <label for="attribute"> Attribute Name : </label>	
+    <div class="col-md-12" *ngSwitchCase="'Attribute Sort'">
+      <div class=" form-group" display="inline-block">
+        <label for="attribute"> Attribute Name : </label> 
         <input name="attribute" id="attribute" ngModel type="text"/>
       </div>
     </div>
 
-		<div class="col-md-12" *ngSwitchCase="'Mixed Content Sort'">
-			<div class=" form-group">
-        <label for="keyattribute"> Sort by Key attribute :&nbsp; </label>	
+    <div class="col-md-12" *ngSwitchCase="'Mixed Content Sort'">
+      <div class=" form-group">
+        <label for="keyattribute"> Sort by Key attribute :&nbsp; </label> 
         <input name="keyattribute" id="keyattribute" ngModel type="checkbox"/>
       </div>
     </div>  
 
     <div *ngSwitchCase="'Mixed Content Sort'">
-		<div class="col-md-12">
-			<div class=" form-group" display="inline-block">
-        <label for="idattribute"> Sort by Id :&nbsp; </label>	
+    <div class="col-md-12">
+      <div class=" form-group" display="inline-block">
+        <label for="idattribute"> Sort by Id :&nbsp; </label> 
         <input id="idattribute" name="idattribute" ngModel type="checkbox"/>
       </div>
     </div>
@@ -58,9 +58,16 @@
 
 
 
-	<div class="card-footer">
+  <div class="card-footer">
     <button class=" btn btn-fill btn-success" [routerLink]="['/sort']" type="submit" >Sort</button>
   </div>
 </form>
 </div>
 </div>
+<ngx-spinner
+bdColor = "rgba(51, 51, 51, 0.8)"
+size = "medium"
+color = "#fff"
+type = "ball-scale-multiple">
+<p style="font-size: 20px; color: white">File Processing in Progress. Please Wait!!!</p>
+</ngx-spinner>

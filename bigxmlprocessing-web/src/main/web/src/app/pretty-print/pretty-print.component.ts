@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AppService } from '../app.service';
 import { ToastrService } from 'ngx-toastr';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-pretty-print',
@@ -14,7 +15,8 @@ export class PrettyPrintComponent implements OnInit {
 
   inputfile:File;
 
-  constructor( private appService:AppService, private toastr:ToastrService) { }
+  constructor(private appService:AppService, private toastr:ToastrService,
+    private spinner: NgxSpinnerService) { }
 
   ngOnInit() {
  
@@ -26,7 +28,7 @@ export class PrettyPrintComponent implements OnInit {
   }
 
   save(form:NgForm)
-  {
+  { this.spinner.show();
     console.log("Documented will be pretty Printed ");
     console.log(form.value);
     let formData = new FormData();
@@ -37,12 +39,14 @@ export class PrettyPrintComponent implements OnInit {
   
     this.appService.prettyPrintService(formData).
     subscribe((response) => {
+      this.spinner.hide();
       console.log("ok"+response);
       alert("Alert   " +response);
       this.toastr.success('Pretty Printed Successfully')
       },
       (error) => { console.log("ko"+error);
-       alert("Alert   " +error); 
+      alert("Alert   " +error);  
+      this.spinner.hide();
       this.toastr.error('Error in Pretty Print');  
     });
    

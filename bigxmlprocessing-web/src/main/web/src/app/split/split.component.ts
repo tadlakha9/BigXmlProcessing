@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AppService } from '../app.service';
 import { splitAtColon } from '@angular/compiler/src/util';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 import { toBase64String } from '@angular/compiler/src/output/source_map';
 import { ToastrService } from 'ngx-toastr';
@@ -20,7 +21,8 @@ export class SplitComponent implements OnInit {
   splitByRadio='';
   fileType:String;
  
-  constructor(private appService:AppService, private toastr:ToastrService) { }
+  constructor(private appService:AppService, private toastr:ToastrService,
+    private spinner: NgxSpinnerService) { }
 
   
   ngOnInit() {
@@ -44,6 +46,7 @@ export class SplitComponent implements OnInit {
     this.Catfile = event.target.files[0];
   }
   save(form:NgForm){
+  this.spinner.show();
     console.log(form.value);
     let formData = new FormData();
     if(this.filePath == undefined){
@@ -66,16 +69,19 @@ export class SplitComponent implements OnInit {
     this.appService.splitService(formData).
     subscribe(
       (response => {
+        this.spinner.hide();
         console.log("ok"+response);
         alert("Alert   " +response);
-        this.toastr.success('Split Successfully')
+        this.toastr.success('File split done Successfully')
         }),
       (error) => {
-        console.log("ko"+error);  
-        alert("Alert   " +error);
-        this.toastr.error('Error on Splitting');
+        console.log("ko"+error); 
+        this.spinner.hide();
+        alert("Alert   " +error); 
+        this.toastr.error('Error on file search');
       }
     );
+
 
     form.reset();
     

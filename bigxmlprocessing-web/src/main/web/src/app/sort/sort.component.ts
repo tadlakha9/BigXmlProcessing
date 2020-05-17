@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AppService } from '../app.service';
 import { ToastrService } from 'ngx-toastr';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_directives/form_group_name';
 
 @Component({
@@ -12,9 +13,8 @@ import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_di
 export class SortComponent implements OnInit {
   xmlFilePath:File;
   sortType:string;
-  constructor(private appService:AppService, private toastr:ToastrService) { 
-    //form.value.sortType=""
-  }
+   constructor(private appService:AppService, private toastr:ToastrService,
+    private spinner: NgxSpinnerService) { }
   
   ngOnInit() {
     this.sortType="Default"
@@ -31,12 +31,14 @@ export class SortComponent implements OnInit {
     subscribe(
       (response => {
         console.log("ok"+response);
-         alert("Alert   " +response);
+        alert("Alert   " +response);
+        this.spinner.hide();
         this.toastr.success('Sort Successfully')
         }),
       (error) => {
         console.log("ko"+error);
-        alert("Alert   " +error);	    
+        alert("Alert   " +error);
+        this.spinner.hide();  
         this.toastr.error('Error on Sorting');
       }
     );
@@ -51,4 +53,3 @@ export class SortComponent implements OnInit {
   }
 
 }
-

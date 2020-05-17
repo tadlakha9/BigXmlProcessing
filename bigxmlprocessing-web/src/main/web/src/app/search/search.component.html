@@ -1,12 +1,12 @@
 
 <div class="panel panel-primary" style="width:50%;left:20%;position:relative">
-	<div class="panel-heading">Searching</div>
-	<div class="panel-body">
+  <div class="panel-heading">Searching</div>
+  <div class="panel-body">
 <form (ngSubmit)="save(f)" #f="ngForm" style="left: 35%;position: relative;width: 35%;" >
-	<br>
-	<div class=" row" >
-		<div class=" col-md-12">
-			<div class=" form-group">	
+  <br>
+  <div class=" row" >
+    <div class=" col-md-12">
+      <div class=" form-group"> 
         <label> Type of Search: </label>
                     <select id="searchId" 
                     ngModel 
@@ -18,12 +18,12 @@
                       <option>Text</option>
                       <option>Extension</option>
                     </select>
-			</div>
-		</div>
+      </div>
+    </div>
   </div>
   <div class=" row" >
-		<div class=" col-md-12">
-			<div class=" form-group">	
+    <div class=" col-md-12">
+      <div class=" form-group"> 
         <label for="ctrl"> Folder Path: </label>
         <input type="file" #folderInput id="ctrl" webkitdirectory directory (change)="filesPicked($event)" />
         </div>
@@ -32,9 +32,9 @@
 
   <div class=" row" [ngSwitch]="searchId"> 
     <div *ngSwitchCase="'Extension'" >
-		<div class=" col-md-12">
-			<div class=" form-group">
-        <label for="extension"> Type of Extension: </label>	
+    <div class=" col-md-12">
+      <div class=" form-group">
+        <label for="extension"> Type of Extension: </label> 
         <input id="extension" ngModel name="extension" type="text" placeholder=".xml"/>
       </div>
     </div>
@@ -42,20 +42,25 @@
 
   <div *ngSwitchCase="'Text'" >
     <div class=" col-md-12">
-      <div class=" form-group">	
+      <div class=" form-group"> 
         <label for="text"> Text: </label><br>
         <input id="text" ngModel name="text" type="text"/>
       </div>
     </div>
   </div>
   </div>
-
-
-	<div class="card-footer">
+  <div class="card-footer">
     <button class=" btn btn-fill btn-success"  type="submit" >Search</button>
   </div>
-		
-	
+    
+    
 </form>
 </div>
 </div>
+<ngx-spinner
+bdColor = "rgba(51, 51, 51, 0.8)"
+size = "medium"
+color = "#fff"
+type = "ball-scale-multiple">
+<p style="font-size: 20px; color: white">File Processing in Progress. Please Wait!!!</p>
+</ngx-spinner>
