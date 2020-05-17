@@ -1,12 +1,12 @@
 
 <div class="panel panel-primary" style="width:50%;left:20%;position:relative">
-	<div class="panel-heading">Split</div>
-	<div class="panel-body">
+  <div class="panel-heading">Split</div>
+  <div class="panel-body">
 <form (ngSubmit)="save(f)" #f="ngForm" style="left: 35%;position: relative;width: 35%;" >
-	<br>
-	<div class=" row" >
-		<div class=" col-md-12">
-			<div class=" form-group">	
+  <br>
+  <div class=" row" >
+    <div class=" col-md-12">
+      <div class=" form-group"> 
         <label> Type of Split: </label>
                     <select id="typeOfSplit" 
                     ngModel 
@@ -21,17 +21,17 @@
                       <option>Flat</option>
                       <option>Size</option>
                     </select>
-			</div>
-		</div>
+      </div>
+    </div>
   </div>
 
   <div class=" row" >
-		<div class=" col-md-12">
-			<div class=" form-group">				 
-				<label for="xmlFile"> File Input: </label>
-				<input type="file"  id="xmlFile" accept=".XML,.xml,.SGM" required (change)="onSelectedXMLFile($event)"/>
-			</div>
-		</div>
+    <div class=" col-md-12">
+      <div class=" form-group">        
+        <label for="xmlFile"> File Input: </label>
+        <input type="file"  id="xmlFile" accept=".XML,.xml,.SGM" required (change)="onSelectedXMLFile($event)"/>
+      </div>
+    </div>
   </div>
   
 
@@ -51,7 +51,7 @@
     <div *ngIf="fileType == 'SGML'" >
       <div class=" col-md-12">
         <div class=" form-group">
-          <label for="catalog"> Catalog file: </label>	<br>
+          <label for="catalog"> Catalog file: </label>  <br>
           <input type="file" id="catalog" ngModel name="catalog" (change)="onSelectedCatalogFile($event)"/>
         </div>
       </div>
@@ -60,9 +60,9 @@
   
  <div class=" row" [ngSwitch]="typeOfSplit"> 
    <div *ngSwitchCase="'Level'" >
-		 <div class=" col-md-12">
-		 	 <div class=" form-group">
-         <label for="level"> Level: </label>	<br>
+     <div class=" col-md-12">
+       <div class=" form-group">
+         <label for="level"> Level: </label>  <br>
          <input id="level" ngModel name="level" type="number"/>
        </div>
      </div>
@@ -70,7 +70,7 @@
    
    <div *ngSwitchCase="'Size'" >
     <div class=" col-md-12">
-      <div class=" form-group">	
+      <div class=" form-group"> 
         <label for="size"> Size(In KB): </label><br>
         <input id="size" ngModel name="size" type="number"/>
       </div>
@@ -79,7 +79,7 @@
 
    <div *ngSwitchCase="'Element'" >
       <div class=" col-md-12">
-       <div class=" form-group">	
+       <div class=" form-group">  
           <label for="splitByElement"> Split by Element: </label><br>
           <input id="splitByElement" ngModel name="splitByElement" type="text"/>
        </div>
@@ -88,7 +88,7 @@
     <div *ngSwitchCase="'Flat'" >
       <div class=" col-md-12">
         <label > Split Type: </label><br>
-        <div class=" radio" *ngFor="let type of splitType">	        
+        <div class=" radio" *ngFor="let type of splitType">         
           <label>
           <input id="splitType" [value]="type" [(ngModel)]="splitByRadio" name="splitType" type="radio"/>
           {{type}}
@@ -96,13 +96,13 @@
         </div>
       </div>
      <div class=" col-md-12" *ngIf="isSelected('line')">
-       <div class=" form-group">	
+       <div class=" form-group">  
         <label for="splitByLine"> Split by Line: </label><br>
         <input id="splitByLine" ngModel name="splitByLine" type="text"/>
       </div>
     </div>
     <div class=" col-md-12" *ngIf="isSelected('size')">
-      <div class=" form-group">	
+      <div class=" form-group"> 
         <label for="splitBySize"> Split by Size(Provide size in KB): </label><br>
         <input id="splitBySize" ngModel name="splitBySize" type="text"/>
       </div>
@@ -110,11 +110,18 @@
   </div>
   </div>
 
-	<div class="card-footer">
+  <div class="card-footer">
     <button class=" btn btn-fill btn-success" type="submit" >Split</button>
   </div>
-		
-	
+    
+  
 </form>
 </div>
 </div>
+<ngx-spinner
+bdColor = "rgba(51, 51, 51, 0.8)"
+size = "medium"
+color = "#fff"
+type = "ball-scale-multiple">
+<p style="font-size: 20px; color: white">File Uploading in Progress. Please Wait!!!</p>
+</ngx-spinner>
