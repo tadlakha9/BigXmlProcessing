@@ -1,22 +1,46 @@
 
-<div class="panel panel-primary" style="width:50%;left:20%;position:relative">
+<div class="panel panel-primary" style="width:50%;left:20%;position:relative;"><!--background-color:rgba(190, 234, 245, 0.822)-->
 	<div class="panel-heading">Parsing</div>
 	<div class="panel-body">
-<form (ngSubmit)="save(f)" #f="ngForm" style="left: 35%;position: relative;width: 35%;" >
+<form (ngSubmit)="parseXML(fm)" #fm="ngForm" style="left: 35%;position: relative;width: 35%;" >
 	<br>
 	<div class=" row" >
 		<div class=" col-md-12">
 			<div class=" form-group">				 
-				<b><label for="xmlFile">Select file Input: </label></b> 
-				<input type="file" id="xmlFile" accept=".XML,.xml,.SGM" name="profile" (change)="onSelectedXMLFile($event)"/>
+				<b><label for="inputFile">Select file Input: </label></b> 
+				<input type="file" id="inputFile" accept=".XML,.xml,.SGM"  required (change)="onSelectedXMLFile($event)"/>
 			</div>
 		</div>
 	</div>
+
+  <div class=" row" >
+    <div class=" col-md-12">
+     <div class=" form-group">
+      <b><label for="file">Select Your File Type</label></b> <br/>
+
+      <input id="XML" type="radio" value="XML" name="fileType" ngModel (click)= 'toggelXML()'/>
+      <label class="control-label" for="XML">XML </label>&nbsp;&nbsp;&nbsp;&nbsp;
+
+      <input id="SGML" type="radio" value="SGML" name="fileType" ngModel (click) =toggelcatalog()/>
+      <label class="control-label" for="SGML">SGML </label> 
+     </div>
+    </div>
+  
+    <div *ngIf="showcatalog" >
+      <div class=" col-md-12">
+        <div class=" form-group">
+          <label for="catalog"> Catalog file: </label>	<br>
+          <input type="file" id="catalog" ngModel name="catalog"  (change)="onSelectedCatalogFile($event)"/>
+        </div>
+      </div>
+    </div> 
+  </div>
+
 	<div class=" row" >
 		<div class=" col-md-12">
 			<div class=" form-group">				 
-				<b><label for="xsdFile">XSD/DTD file Input:</label></b> 
-				<input type="file" id="xsdFile" accept=".xsd, .dtd " name="profile" (change)="onSelectedXSDFile($event)"/>
+				<b><label for="xsdFile"> XSD/DTD file Input:</label></b> 
+				<input type="file" id="xsdFile" accept=".xsd, .dtd ,.XSD" name="xsdFile"  (change)="onSelectedXSDFile($event)"/>
 			</div>
 		</div>
 	</div>
@@ -25,14 +49,14 @@
 		<div class=" col-md-12">
 			<div class=" form-group">				 
 				<b><label for="errorFile"> Error File: </label> </b>
-				<input type="file" id="errorFile" name="profile" (change)="onSelectedERRORFile($event)"/>
+				<input type="file" id="errorFile" name="errorFile" (change)="onSelectedERRORFile($event)"/>
 			</div>
 		</div>
 	</div>
 	<div class=" row" >
 		<div class=" col-md-12">
 		<div class="form-group">
-			<button class=" btn btn-fill btn-success" type="submit" >Parse XML </button>  
+			<button class=" btn btn-fill btn-success" type="submit" >Parse File </button>  
 			<!-- <button class=" btn btn-fill btn-success" (click)="transformXML()" type="submit" >Transform XML</button> -->
 		</div>
 		</div>

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletContext;
+import javax.ws.rs.core.Response;
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -71,12 +72,26 @@ public class HomeController {
 	 * @throws Exception if any error in parsing or file not found
 	 */
 	@PostMapping("/parseXml")
-	public ResponseEntity<String> transformXml(@RequestParam("file") MultipartFile file, @RequestParam("xsdFile") MultipartFile xsdFile) throws Exception {	
-		createLocalFolder();
-		String filepath = createLocalFile(file);
-		String schemaFilePath = createLocalFile(xsdFile);
-		ResponseEntity<String> response = validate(filepath, schemaFilePath);
-		return response;
+	public Response transformXml(@RequestParam("file") MultipartFile file, @RequestParam("fileType") String fileType,
+			@RequestParam("fileXsd") MultipartFile xsdFile, @RequestParam("fileerror") MultipartFile fileError,
+			@RequestParam("filecatalog") MultipartFile filecatalog) throws IOException {
+		
+		log.info("File name." + file.getOriginalFilename());
+		log.info(" fileType.  " + fileType);
+		log.info("xsdFile name. " + xsdFile.getOriginalFilename());
+		log.info("fileError name. " + fileError.getOriginalFilename());
+		log.info("filecatalog  ." + filecatalog.getOriginalFilename());
+		
+		createLocalFile(file);
+	
+		/*
+		 * AJH code 
+		 * String filepath = createLocalFile(file); 
+		 * String schemaFilePath = createLocalFile(xsdFile);
+		 * ResponseEntity<String> response =validate(filepath, schemaFilePath);
+		 * return response;
+		 */
+		return Response.ok().build();
 	}
 	
 	
