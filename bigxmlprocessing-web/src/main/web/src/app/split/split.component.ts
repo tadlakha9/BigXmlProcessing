@@ -5,6 +5,7 @@ import { splitAtColon } from '@angular/compiler/src/util';
 
 import { toBase64String } from '@angular/compiler/src/output/source_map';
 import { ToastrService } from 'ngx-toastr';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-split',
@@ -19,6 +20,7 @@ export class SplitComponent implements OnInit {
   splitType = ['line', 'size'];
   splitByRadio='';
   fileType:String;
+  progress: number = 0;
  
   constructor(private appService:AppService, private toastr:ToastrService) { }
 
@@ -64,16 +66,25 @@ export class SplitComponent implements OnInit {
     formData.append('filecat', this.Catfile, this.Catfile.name);
     
     this.appService.splitService(formData).
-    subscribe(
-      (response => {
-        console.log("ok"+response);
-        alert("Alert   " +response);
+    subscribe((event: HttpEvent<any>) => {
+      switch (event.type) {
+        case HttpEventType.UploadProgress:
+          this.progress = Math.round(event.loaded / event.total * 100);
+          console.log(`Uploaded! ${this.progress}%`);
+          break;
+        case HttpEventType.Response:
+          console.log('Ok', event.body);
+          // alert("Alert   " +event.body);
         this.toastr.success('Split Successfully')
-        }),
-      (error) => {
-        console.log("ko"+error);  
-        this.toastr.error('Error on Splitting');
+          setTimeout(() => {
+            this.progress = 100;
+          }, 1500);
       }
+    },(error) => {
+      console.log("ko"+error);  
+      this.toastr.error('Error on Splitting');
+    }
+
     );
 
     form.reset();

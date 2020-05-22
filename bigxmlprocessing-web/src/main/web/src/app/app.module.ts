@@ -16,7 +16,7 @@ import { ConvertComponent } from './convert/convert.component';
 import { FeedbackComponent } from './feedback/feedback.component';
 import { ToastrModule} from 'ngx-toastr';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
-
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
@@ -43,7 +43,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     AppRoutingModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    NgbModule
     
   ],
   providers: [AppService,
