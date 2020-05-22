@@ -1,10 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AppService } from '../app.service';
-import { splitAtColon } from '@angular/compiler/src/util';
-import { NgxSpinnerService } from 'ngx-spinner';
-
-import { toBase64String } from '@angular/compiler/src/output/source_map';
 import { ToastrService } from 'ngx-toastr';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 
@@ -24,7 +20,7 @@ export class SplitComponent implements OnInit {
   progress: number = 0;
  
   constructor(private appService:AppService, private toastr:ToastrService,
-    private spinner: NgxSpinnerService) { }
+    ) { }
 
   
   ngOnInit() {
@@ -48,7 +44,7 @@ export class SplitComponent implements OnInit {
     this.Catfile = event.target.files[0];
   }
   save(form:NgForm){
-  // this.spinner.show();
+  
     console.log(form.value);
     let formData = new FormData();
     if(this.filePath == undefined){

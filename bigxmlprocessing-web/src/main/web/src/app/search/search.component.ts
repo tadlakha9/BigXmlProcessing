@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {  NgForm } from '@angular/forms';
 import { AppService } from '../app.service';
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
+
+import { HttpEventType, HttpEvent } from '@angular/common/http';
 
 
 
@@ -15,8 +16,10 @@ export class SearchComponent implements OnInit {
   
   files:File[]=[];
   searchId:string;
+  progress: number = 0;
+
   constructor(private appService:AppService, private toastr:ToastrService,
-    private spinner: NgxSpinnerService) { }
+    ) { }
 
   ngOnInit() {
   }
@@ -32,7 +35,7 @@ export class SearchComponent implements OnInit {
    
 
 save(form:NgForm){
-  this.spinner.show();
+  
   let formData = new FormData();
   for (var file of this.files) {
     formData.append('file' , file, file.name); 
@@ -43,20 +46,21 @@ save(form:NgForm){
     
   
   this.appService.searchService(formData).
-    subscribe(
-      (response => {
-        this.spinner.hide();
-        console.log("ok"+response);
-        alert("Alert   " +response);
-        this.toastr.success('File search done Successfully')
-        }),
-      (error) => {
-        console.log("ko"+error); 
-        alert("Alert   " +error);
-        this.spinner.hide(); 
-        this.toastr.error('Error on file search');
-      }
-    );
+  subscribe((event: HttpEvent<any>) => {
+    switch (event.type) {
+      case HttpEventType.UploadProgress:
+        this.progress = Math.round(event.loaded / event.total * 100);
+        console.log(`Uploaded! ${this.progress}%`);
+        break;
+      case HttpEventType.Response:
+        console.log('Ok', event.body);
+        // alert("Alert   " +event.body);
+      this.toastr.success('Search Successfully')
+        setTimeout(() => {
+          this.progress = 100;
+        }, 1500);
+    }
+  });
 
     form.reset();
 }

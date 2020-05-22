@@ -3,7 +3,8 @@ import {FormGroup, FormBuilder, FormControl} from "@angular/forms";
 import { NgForm } from '@angular/forms';
 import { AppService } from '../app.service';						
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
+
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-parsing',
@@ -21,10 +22,11 @@ export class ParsingComponent implements OnInit {
   catalogFile:File;
   fileType:String;
   showcatalog:boolean = false;
+  progress: number = 0;
  
 
   constructor(private fb:FormBuilder, private appService:AppService,private toastr:ToastrService,
-    private spinner: NgxSpinnerService){
+    ){
     
   }
   
@@ -61,7 +63,7 @@ export class ParsingComponent implements OnInit {
   parseXML(form:NgForm) {
 
     console.log("within on submit method" );
-    this.spinner.show();
+    
     let formData = new FormData();
     formData.append('file', this.inputFilePath, this.inputFilePath.name);
     formData.append('fileType', form.value.fileType);
@@ -80,17 +82,22 @@ export class ParsingComponent implements OnInit {
     }
     formData.append('filecatalog', this.catalogFile, this.catalogFile.name);
     
-    this.appService.parseXML(formData)
-    .subscribe(
-      (response => {this.spinner.hide();						
-				        console.log('response received is ', response); 
-                this.toastr.success('File parse done Successfully');
-                alert("Alert =>  " + response);
-              }),
-        (error) =>  {console.log("receivedError:"+error)
-                this.spinner.hide();
-                this.toastr.error('Error on Parsing'); }    
-    );
+    this.appService.parseXML(formData).
+    subscribe((event: HttpEvent<any>) => {
+      switch (event.type) {
+        case HttpEventType.UploadProgress:
+          this.progress = Math.round(event.loaded / event.total * 100);
+          console.log(`Uploaded! ${this.progress}%`);
+          break;
+        case HttpEventType.Response:
+          console.log('Ok', event.body);
+          // alert("Alert   " +event.body);
+        this.toastr.success('Parsing Successfully')
+          setTimeout(() => {
+            this.progress = 100;
+          }, 1500);
+      }
+    });
     form.reset();
   }
 

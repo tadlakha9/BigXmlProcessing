@@ -3,7 +3,8 @@ import {AppService } from '../app.service';
 import {ToastrService } from 'ngx-toastr';
 import { NgForm } from '@angular/forms';
 import { NAMED_ENTITIES } from '@angular/compiler';
-import { NgxSpinnerService } from 'ngx-spinner';
+
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-convert',
@@ -14,10 +15,10 @@ export class ConvertComponent implements OnInit {
 
   sgmlfile:File;
   catalogfile:File;
-
+  progress: number = 0;
 
   constructor(private appService:AppService, private toastr:ToastrService,
-    private spinner: NgxSpinnerService) { }
+    ) { }
 
   ngOnInit() { 
   }
@@ -34,7 +35,7 @@ export class ConvertComponent implements OnInit {
 
 
   save(form:NgForm){
-    this.spinner.show();
+    
     console.log("Document will be converted");
     let formData = new FormData();
     console.log(form.value);
@@ -49,18 +50,20 @@ export class ConvertComponent implements OnInit {
     }
 
     this.appService.convertService(formData).
-    subscribe((response) => 
-    { console.log("ok"+response);
-      alert("Alert   " +response);
-      this.spinner.hide();
-      this.toastr.success('Document Converted Successfully')
-
-    },
-    (error) => 
-    { console.log("ko"+error);  
-      alert("Alert   " +error);
-      this.spinner.hide();
-      this.toastr.error('Error in Conversion');  
+    subscribe((event: HttpEvent<any>) => {
+      switch (event.type) {
+        case HttpEventType.UploadProgress:
+          this.progress = Math.round(event.loaded / event.total * 100);
+          console.log(`Uploaded! ${this.progress}%`);
+          break;
+        case HttpEventType.Response:
+          console.log('Ok', event.body);
+          // alert("Alert   " +event.body);
+        this.toastr.success('Convert Successfully')
+          setTimeout(() => {
+            this.progress = 100;
+          }, 1500);
+      }
     });
     form.reset();
   }

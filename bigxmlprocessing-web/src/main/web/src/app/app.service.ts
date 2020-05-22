@@ -17,8 +17,10 @@ export class AppService{
 
 
     parseXML(data){
-        const newRequest = new HttpRequest('POST', 'http://127.0.0.1:8090/home/parseXml', data);
-        return this.httpClient.request(newRequest);
+        return this.httpClient.post('http://127.0.0.1:8090/home/parseXml', data, {
+            responseType: 'text',
+            reportProgress: true,
+            observe: 'events'});
     }
 
     splitService(formData){        
@@ -29,7 +31,10 @@ export class AppService{
     }
 
     sortService(formData){        
-        return this.httpClient.post(this.sortServiceUrl, formData, {responseType: 'text'});
+        return this.httpClient.post(this.sortServiceUrl, formData, {
+            responseType: 'text',
+            reportProgress: true,
+            observe: 'events'});
      }
 
      feedbackService(formData){        
@@ -38,14 +43,23 @@ export class AppService{
 
 
     prettyPrintService(formData){
-        return this.httpClient.post(this.prettyPrintServiceUrl,formData,{responseType: 'text'})
+        return this.httpClient.post(this.prettyPrintServiceUrl,formData, {
+            responseType: 'text',
+            reportProgress: true,
+            observe: 'events'});
     }
 
     searchService(formData){
-        return this.httpClient.post(this.searchServiceUrl,formData,{responseType: 'text'})
+        return this.httpClient.post(this.searchServiceUrl,formData, {
+            responseType: 'text',
+            reportProgress: true,
+            observe: 'events'});
     }
     convertService(formData){
-        return this.httpClient.post(this.convertURL, formData, {responseType: 'text'});
+        return this.httpClient.post(this.convertURL, formData, {
+            responseType: 'text',
+            reportProgress: true,
+            observe: 'events'});
     }
 
 }

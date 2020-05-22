@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AppService } from '../app.service';
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
+
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-pretty-print',
@@ -12,11 +13,11 @@ import { NgxSpinnerService } from 'ngx-spinner';
 export class PrettyPrintComponent implements OnInit {
 
   title = 'BigXMLProcessing';
-
+  progress: number = 0;
   inputfile:File;
 
   constructor(private appService:AppService, private toastr:ToastrService,
-    private spinner: NgxSpinnerService) { }
+    ) { }
 
   ngOnInit() {
  
@@ -28,7 +29,7 @@ export class PrettyPrintComponent implements OnInit {
   }
 
   save(form:NgForm)
-  { this.spinner.show();
+  { 
     console.log("Documented will be pretty Printed ");
     console.log(form.value);
     let formData = new FormData();
@@ -38,16 +39,20 @@ export class PrettyPrintComponent implements OnInit {
     //formData.append('fileType', form.value.fileType);
   
     this.appService.prettyPrintService(formData).
-    subscribe((response) => {
-      this.spinner.hide();
-      console.log("ok"+response);
-      alert("Alert   " +response);
-      this.toastr.success('Pretty Printed Successfully')
-      },
-      (error) => { console.log("ko"+error);
-      alert("Alert   " +error);  
-      this.spinner.hide();
-      this.toastr.error('Error in Pretty Print');  
+    subscribe((event: HttpEvent<any>) => {
+      switch (event.type) {
+        case HttpEventType.UploadProgress:
+          this.progress = Math.round(event.loaded / event.total * 100);
+          console.log(`Uploaded! ${this.progress}%`);
+          break;
+        case HttpEventType.Response:
+          console.log('Ok', event.body);
+          // alert("Alert   " +event.body);
+        this.toastr.success('Pretty-Print Successfully')
+          setTimeout(() => {
+            this.progress = 100;
+          }, 1500);
+      }
     });
    
    form.reset();

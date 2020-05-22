@@ -18,7 +18,7 @@ import { ToastrModule} from 'ngx-toastr';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgxSpinnerModule } from 'ngx-spinner';
+
 
 
 
@@ -42,8 +42,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     ReactiveFormsModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot(),
-    NgxSpinnerModule,
+    ToastrModule.forRoot(),    
     NgbModule
     
   ],
