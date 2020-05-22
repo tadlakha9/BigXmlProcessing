@@ -43,7 +43,7 @@ usage ()
   echo "             ex : FileFormatter.ksh -fsplits /home/td_b260_delivery/DATA_PA/Sample.SGML "
   echo "             ex : FileFormatter.ksh -fsplits /home/td_b260_delivery/DATA_PA/Sample.SGML 10m"
   echo ""
-  echo "          [-fsplitl : Split  File by given line of codes. Splitted files are present in same folder"
+  echo "          [-fsplitl : Split File by given line of codes. Splitted files are present in same folder"
   echo "					 INPUT_FILE: Absolute/Relative Path of BIG XML File"
   echo "					 LINE_SIZE: Lines of each Splitted XML File. This is Optional. Default LINE_SIZE is 100"
   echo "             ex : FileFormatter.ksh -fsplitl /home/td_b260_delivery/DATA_PA/Sample.XML 1000"
