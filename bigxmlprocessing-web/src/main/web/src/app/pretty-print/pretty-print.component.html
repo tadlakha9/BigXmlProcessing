@@ -1,11 +1,21 @@
-<div class="panel panel-primary" style="width:50%;left:20%;top:40px;position:relative">
+<div style="width:50%;left:20%;position:relative">
+  <fieldset>
+    <legend style="font-size: 14px;position:relative;"><i class="fa fa-tags" style="font-size:15px"></i>  What's in this tab?</legend>
+    <label style="left:2%;margin:0" [@help]="code">
+   {{code}}
+  </label>
+</fieldset>
+</div>
+
+<div class="panel panel-primary" style="width:50%;left:20%;top:1em;position:relative">
   <div class="panel-heading">Pretty Print</div>
   <div class="panel-body">
 
     <form (ngSubmit)="save(f)" #f="ngForm" style="left: 35%;position:relative;width: 35%;top:10px;" >
+
       <div class=" row" >
         <div class=" form-group"><br/>&nbsp;&nbsp;
-          <b><label for="input-file">Select XML file:</label></b>
+          <b><label for="input-file" >Select XML file:</label></b>
           <br/><br/>
           <input type="file" accept=".XML,.xml" id="input" title="Only XML format" name="profile" (change)="onSelectInputFile($event)" required />
         </div>

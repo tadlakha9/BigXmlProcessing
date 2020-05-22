@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AppService } from '../app.service';
 import { ToastrService } from 'ngx-toastr';
-
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 
 @Component({
@@ -15,13 +14,15 @@ export class PrettyPrintComponent implements OnInit {
   title = 'BigXMLProcessing';
   progress: number = 0;
   inputfile:File;
+  code:String;
 
   constructor(private appService:AppService, private toastr:ToastrService,
     ) { }
 
   ngOnInit() {
- 
+    this.code = "Here is the code beautifier. Makes it easier for you to read and understand the Document";
   }
+  
 
   onSelectInputFile(event) {
   console.log(event.target.files);

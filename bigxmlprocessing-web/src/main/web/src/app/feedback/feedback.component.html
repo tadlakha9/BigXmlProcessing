@@ -1,11 +1,21 @@
+<div style="width:50%;left:20%;position:relative">
+  <fieldset>
+    <legend style="font-size: 14px;position:relative;"><i class="fa fa-tags" style="font-size:15px"></i>  What's in this tab?</legend>
+    <label style="left:2%;margin:0">
+      We would love to hear your thoughts, concerns or problems with anything so we can improve.
+    </label>
+  </fieldset>
+</div>
 
-<div class="panel panel-primary" style="width:50%;left:20%;position:relative">
+
+
+<div class="panel panel-primary" style="width:50%;left:20%;top:1em;position:relative">
 	<div class="panel-heading">Feedback Form</div>
 	<div class="panel-body">
-    <div height= 100% width= 100% font-family= "Arial" font-size= 10px;>	
-      <label style="font-size : 12px" > We would love to hear your thoughts, concerns or problems with anything so we can improve :</label>
-    </div>
-<form (ngSubmit)="submitform(f)" #f= "ngForm" style="left: 35%;position: relative;width: 35%;" >
+<!-- <div height= 100% width= 100% font-family= "Arial" font-size= 10px;>	
+        <label style="font-size : 12px" > We would love to hear your thoughts, concerns or problems with anything so we can improve :</label>
+      </div>-->
+<form (ngSubmit)="submitform(f)" #f= "ngForm" style="left:35%;position:relative;width: 35%;" >
 	<br>
 	
   <div class=" row" >
@@ -58,7 +68,6 @@
       </div>
     </div>
   </div> 
-
 
 	<div class="card-footer">
     <button class=" btn btn-fill btn-success" [routerLink]="['/feedback']" type="submit" >Submit feedback</button>
