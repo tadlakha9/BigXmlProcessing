@@ -58,7 +58,7 @@ export class ConvertComponent implements OnInit {
           break;
         case HttpEventType.Response:
           console.log('Ok', event.body);
-          // alert("Alert   " +event.body);
+          alert("Alert   " +event.body);
         this.toastr.success('Convert Successfully')
           setTimeout(() => {
             this.progress = 100;

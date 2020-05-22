@@ -91,7 +91,7 @@ export class ParsingComponent implements OnInit {
           break;
         case HttpEventType.Response:
           console.log('Ok', event.body);
-          // alert("Alert   " +event.body);
+          alert("Alert   " +event.body);
         this.toastr.success('Parsing Successfully')
           setTimeout(() => {
             this.progress = 100;

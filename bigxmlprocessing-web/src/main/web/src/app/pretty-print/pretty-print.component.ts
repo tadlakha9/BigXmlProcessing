@@ -47,7 +47,7 @@ export class PrettyPrintComponent implements OnInit {
           break;
         case HttpEventType.Response:
           console.log('Ok', event.body);
-          // alert("Alert   " +event.body);
+          alert("Alert   " +event.body);
         this.toastr.success('Pretty-Print Successfully')
           setTimeout(() => {
             this.progress = 100;
