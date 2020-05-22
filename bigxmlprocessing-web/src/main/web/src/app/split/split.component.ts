@@ -6,6 +6,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
 import { toBase64String } from '@angular/compiler/src/output/source_map';
 import { ToastrService } from 'ngx-toastr';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-split',
@@ -20,6 +21,7 @@ export class SplitComponent implements OnInit {
   splitType = ['line', 'size'];
   splitByRadio='';
   fileType:String;
+  progress: number = 0;
  
   constructor(private appService:AppService, private toastr:ToastrService,
     private spinner: NgxSpinnerService) { }
@@ -46,7 +48,7 @@ export class SplitComponent implements OnInit {
     this.Catfile = event.target.files[0];
   }
   save(form:NgForm){
-  this.spinner.show();
+  // this.spinner.show();
     console.log(form.value);
     let formData = new FormData();
     if(this.filePath == undefined){
@@ -67,19 +69,25 @@ export class SplitComponent implements OnInit {
     formData.append('filecat', this.Catfile, this.Catfile.name);
     
     this.appService.splitService(formData).
-    subscribe(
-      (response => {
-        this.spinner.hide();
-        console.log("ok"+response);
-        alert("Alert   " +response);
-        this.toastr.success('File split done Successfully')
-        }),
-      (error) => {
-        console.log("ko"+error); 
-        this.spinner.hide();
-        alert("Alert   " +error); 
-        this.toastr.error('Error on file search');
+    subscribe((event: HttpEvent<any>) => {
+      switch (event.type) {
+        case HttpEventType.UploadProgress:
+          this.progress = Math.round(event.loaded / event.total * 100);
+          console.log(`Uploaded! ${this.progress}%`);
+          break;
+        case HttpEventType.Response:
+          console.log('Ok', event.body);
+          // alert("Alert   " +event.body);
+        this.toastr.success('Split Successfully')
+          setTimeout(() => {
+            this.progress = 100;
+          }, 1500);
       }
+    },(error) => {
+      console.log("ko"+error);  
+      this.toastr.error('Error on Splitting');
+    }
+
     );
 
 

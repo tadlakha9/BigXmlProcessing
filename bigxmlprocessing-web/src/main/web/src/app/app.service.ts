@@ -22,7 +22,10 @@ export class AppService{
     }
 
     splitService(formData){        
-        return this.httpClient.post(this.splitServiceUrl, formData, {responseType: 'text'});
+        return this.httpClient.post(this.splitServiceUrl, formData, {
+            responseType: 'text',
+            reportProgress: true,
+            observe: 'events'});
     }
 
     sortService(formData){        
