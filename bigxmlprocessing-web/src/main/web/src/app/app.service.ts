@@ -20,21 +20,21 @@ export class AppService{
         return this.httpClient.post('http://127.0.0.1:8090/home/parseXml', data, {
             responseType: 'text',
             reportProgress: true,
-            observe: 'events'});
+            observe: 'body'});
     }
 
     splitService(formData){        
         return this.httpClient.post(this.splitServiceUrl, formData, {
             responseType: 'text',
             reportProgress: true,
-            observe: 'events'});
+            observe: 'body'});
     }
 
     sortService(formData){        
         return this.httpClient.post(this.sortServiceUrl, formData, {
             responseType: 'text',
             reportProgress: true,
-            observe: 'events'});
+            observe: 'body'});
      }
 
      feedbackService(formData){        
@@ -46,20 +46,20 @@ export class AppService{
         return this.httpClient.post(this.prettyPrintServiceUrl,formData, {
             responseType: 'text',
             reportProgress: true,
-            observe: 'events'});
+            observe: 'body'});
     }
 
     searchService(formData){
         return this.httpClient.post(this.searchServiceUrl,formData, {
             responseType: 'text',
             reportProgress: true,
-            observe: 'events'});
+            observe: 'body'});
     }
     convertService(formData){
         return this.httpClient.post(this.convertURL, formData, {
             responseType: 'text',
             reportProgress: true,
-            observe: 'events'});
+            observe: 'body'});
     }
 
 }

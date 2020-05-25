@@ -70,7 +70,7 @@
     <button class=" btn btn-fill btn-success" [routerLink]="['/sort']" type="submit" >Sort</button>
   </div>
   <br>
-  <ngb-progressbar type="success" [value]="progress">{{progress}}%</ngb-progressbar>
+  <ngb-progressbar *ngIf="display" type="success" [value]="progress">{{progress}}%</ngb-progressbar>
 </form>
 </div>
 </div>

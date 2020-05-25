@@ -36,7 +36,7 @@
         </div>
       </div>
       <br>
-  <ngb-progressbar type="success" [value]="progress">{{progress}}%</ngb-progressbar>
+  <ngb-progressbar *ngIf="display" type="success" [value]="progress">{{progress}}%</ngb-progressbar>
     </form>
 
   </div>

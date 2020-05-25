@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AppService } from '../app.service';
 import { ToastrService } from 'ngx-toastr';
-import { HttpEvent, HttpEventType } from '@angular/common/http';
+
+
 
 @Component({
   selector: 'app-split',
@@ -18,8 +19,9 @@ export class SplitComponent implements OnInit {
   splitByRadio='';
   fileType:String;
   progress: number = 0;
+  display = true;
  
-  constructor(private appService:AppService, private toastr:ToastrService,
+  constructor(private appService:AppService, private toastr:ToastrService
     ) { }
 
   
@@ -44,7 +46,7 @@ export class SplitComponent implements OnInit {
     this.Catfile = event.target.files[0];
   }
   save(form:NgForm){
-  
+    this.display = true;
     console.log(form.value);
     let formData = new FormData();
     if(this.filePath == undefined){
@@ -65,32 +67,66 @@ export class SplitComponent implements OnInit {
     formData.append('filecat', this.Catfile, this.Catfile.name);
     
     this.appService.splitService(formData).
-    subscribe((event: HttpEvent<any>) => {
-      switch (event.type) {
-        case HttpEventType.UploadProgress:
-          this.progress = Math.round(event.loaded / event.total * 100);
-          console.log(`Uploaded! ${this.progress}%`);
-          break;
-        case HttpEventType.Response:
-          console.log('Ok', event.body);
-          alert("Alert   " +event.body);
+    subscribe((response) => {      
+          console.log('Ok', response);          
+          alert("Alert   " +response);
         this.toastr.success('Split Successfully')
-          setTimeout(() => {
-            this.progress = 100;
-          }, 1500);
-      }
+        this.progress = 100;
+        setTimeout(() => {          
+          this.display = false;
+        }, 1100);
+        
+      
     },(error) => {
       console.log("ko"+error);  
       this.toastr.error('Error on Splitting');
     }
 
     );
-
-
-    form.reset();
+    this.updatingProgressBar();
     
 
+    form.reset();
   }
+
+  updatingProgressBar(){
+    console.log(this.progress);
+    setTimeout(() => {
+      this.progress = 1;
+    }, 1000);
+    setTimeout(() => {
+      this.progress = 4;
+    }, 1500);
+    setTimeout(() => {
+      this.progress = 11;
+    }, 2000);
+    setTimeout(() => {
+      this.progress = 23;
+    }, 7000);
+    setTimeout(() => {
+      this.progress = 29;
+    }, 10000);
+    setTimeout(() => {
+      this.progress = 36;
+    }, 15000);
+    setTimeout(() => {
+      this.progress = 46;
+    }, 20000);
+    setTimeout(() => {
+      this.progress = 52;
+    }, 30000);
+    setTimeout(() => {
+      this.progress = 62;
+    }, 40000);
+    setTimeout(() => {
+      this.progress = 70;
+    }, 50000);
+    setTimeout(() => {
+      this.progress = 90;
+    }, 70000);
+  }
+
+  
 
 
 }
