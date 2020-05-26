@@ -22,15 +22,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 import org.xml.sax.SAXException;
+
+import com.soprasteria.springboot.config.BigXmlProcessingConfig;
 import com.soprasteria.springboot.model.Converter;
 import com.soprasteria.springboot.model.PrettyPrint;
 import com.soprasteria.springboot.model.Split;
@@ -51,10 +51,13 @@ public class HomeController {
 	String StdErr = null;
 	String message=null;
 	boolean searchFlag=false;
-	String initialFilePath="C:\\Temp\\MultiProcessor\\Target";
+//	String initialFilePath="C:\\Temp\\MultiProcessor\\Target";
 	
 	@Autowired
 	ServletContext context;
+	
+	@Autowired
+	BigXmlProcessingConfig bigXmlConfig;
 
 	private final Logger log = LoggerFactory.getLogger(HomeController.class);
 
@@ -503,7 +506,7 @@ public class HomeController {
 	 * local folder creation
 	 */
 	private void createLocalFolder() {
-		boolean isExist = new File(initialFilePath).exists();
+		boolean isExist = new File(bigXmlConfig.getUsersFolderPath()).exists();
 		if (!isExist) {
 			new File(context.getRealPath("/webapp")).mkdir();
 		}
@@ -522,7 +525,7 @@ public class HomeController {
 		String fileName = file.getOriginalFilename();
 		String modifiedFileName = FilenameUtils.getBaseName(fileName) + "."
 				+ FilenameUtils.getExtension(fileName).toUpperCase();
-		File serverFile = new File(initialFilePath + File.separator + modifiedFileName);
+		File serverFile = new File(bigXmlConfig.getUsersFolderPath() + File.separator + modifiedFileName);
 
 		try {
 			FileUtils.writeByteArrayToFile(serverFile, file.getBytes());
