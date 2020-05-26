@@ -16,6 +16,7 @@ import javax.xml.validation.Validator;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.glassfish.jersey.message.internal.MsgTraceEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,8 +95,7 @@ public class HomeController {
 		return Response.ok().build();
 	}
 	
-	
-	
+		
 	/**
 	 * Method to validate XML file with external XSD
 	 * @param xmlFile
@@ -130,7 +130,7 @@ public class HomeController {
 		ExecProcess exec = null;
 		String cmd = "";
 		File localScript = new File("src//main//resources//FileFormatter.ksh");
-		String localScriptPath = localScript.getAbsolutePath().replace("\\", "/").replaceFirst("C:", "/mnt/c");
+		String localScriptPath = "'"+convertToScriptPath(localScript.getAbsolutePath()).toString()+ "'";
 
 		try {
 
@@ -139,16 +139,18 @@ public class HomeController {
 			exec.run();
 			this.StdOut = exec.getStdout();
 			this.SttdCode = exec.getReturnValue();
-
+			this.StdErr = exec.getStderr();
+			
 		} catch (Exception e) {
 			this.StdErr = exec.getStderr();
 
 			e.printStackTrace();
-
+			//to add throw and locla msg
 		}
 	}
 
 	/**
+	 * Method for Split functionality
 	 * @param file
 	 * @param      typeOfSplit(Level, Element,Flat,Size)
 	 * @param      level(split:Level)
@@ -178,58 +180,49 @@ public class HomeController {
 		log.info("catFile name." + catFile.getOriginalFilename());
 
 		// getting the file path and catalogue file path
-		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
-		String catfilepath = createLocalFile(catFile).replace('\\', '/').replaceFirst("C:", "c");
+		String filepath = convertToScriptPath(createLocalFile(file)).toString();
+		String catfilepath = convertToScriptPath(createLocalFile(catFile)).toString();
 
 		// commands for different operations
 		String cmd = "";
 		switch (typeOfSplit) {
 		case "Level":
 			if (fileType.equalsIgnoreCase("XML")) {
-				cmd = "-splitl /mnt/" + filepath + " " + level;
+				cmd = "-splitl " + filepath + " " + level;
 			} else {
-				cmd = "-splitl /mnt/" + filepath + " " + level + " " + catfilepath;
+				cmd = "-splitl " + filepath + " " + level + " " + catfilepath;
 			}
-
 			break;
 		case "Size":
 			if (fileType.equalsIgnoreCase("XML")) {
-				cmd = "-splits /mnt/" + filepath + " " + size + "Kb";
-
+				cmd = "-splits " + filepath + " " + size + "Kb";
 			} else {
-				cmd = "-splits /mnt/" + filepath + " " + size + "Kb" + " " + catfilepath;
-
+				cmd = "-splits " + filepath + " " + size + "Kb" + " " + catfilepath;
 			}
 			break;
 		case "Element":
 			if (fileType.equalsIgnoreCase("XML")) {
-				cmd = "-splite /mnt/" + filepath + " " + splitByElement;
-
+				cmd = "-splite " + filepath + " " + splitByElement;
 			} else {
-				cmd = "-splite /mnt/" + filepath + " " + splitByElement + " " + catfilepath;
-
+				cmd = "-splite " + filepath + " " + splitByElement + " " + catfilepath;
 			}
 			break;
 
 		case "Flat":
 			switch (splitType) {
-
 			case "line":
-				cmd = "-fsplitl /mnt/" + filepath + " " + splitByLine;
+				cmd = "-fsplitl " + filepath + " " + splitByLine;
 				break;
 
 			case "size":
-				cmd = "-fsplits /mnt/" + filepath + " " + splitBySize + "k";
+				cmd = "-fsplits " + filepath + " " + splitBySize + "k";
 				break;
-
 			}
-
 			break;
-
 		}
 
 		// executing the script
-		log.info("command   " + cmd);
+		log.info("command :  " + cmd);
 		executeScript(cmd);
 
 		// calculate execution time
@@ -244,12 +237,12 @@ public class HomeController {
 			String message = "File splitted Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
 			statusInfo = alert(message, false);
 		}
-
 		return statusInfo;
 	}
 	
 
 	/**
+	 * Method for Sorting functionality
 	 * @param file
 	 * @param typeOfSort
 	 * @param attribute
@@ -261,14 +254,15 @@ public class HomeController {
 	public ResponseEntity<String> sortXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("sortType") String typeOfSort, @RequestParam("attribute") String attribute,
 			@RequestParam("keyattribute") String keyattribute, @RequestParam("idattribute") String idattribute) {
+		
 		long startTime = System.currentTimeMillis();
 
 		// calculating the file path
 		log.info("File name." + file.getOriginalFilename());
-		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
+		String filepath = convertToScriptPath(createLocalFile(file)).toString();
 
 		// executing the script
-		String cmd = "-sort /mnt/" + filepath;
+		String cmd = "-sort " + filepath;
 		;
 		log.info("command   " + cmd);
 		executeScript(cmd);
@@ -294,31 +288,34 @@ public class HomeController {
 
 
 	/**
+	 * Method for Pretty Print functionality
 	 * @param file
 	 * @param fileType
 	 * @return
 	 */
 	@PostMapping("/prettyPrintXml")
 	public ResponseEntity<String> prettyPrintXml(@RequestParam("file") MultipartFile file) {
+		
 		long startTime = System.currentTimeMillis();
 		// to be included SGM file option as well
 		log.info("File name." + file.getOriginalFilename());
 
 		// create a local file
 		PrettyPrint print = new PrettyPrint(file.getOriginalFilename());
-		log.info("Pretty Print:" + print);
-		String filepath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
+		log.info("Pretty Print fields:" + print);
+		String filepath = convertToScriptPath(createLocalFile(file)).toString();
 
 		// execute the script
-		String cmd = "-format /mnt/" + filepath;
-		log.info("command   " + cmd);
+		String cmd = "-format " + filepath;
+		log.info("command executing  :  " + cmd);
 		executeScript(cmd);
 
 		// calculate execution time
 		String executionTime = calculateTime(startTime);
 
-		// sending the response
-		ResponseEntity<String> statusInfo = null;
+		
+		  // sending the response
+		ResponseEntity<String> statusInfo = null; 
 		if (this.SttdCode != 0) {
 			String message = "There is some error in the formatting:" + this.StdErr;
 			statusInfo = alert(message, true);
@@ -328,10 +325,12 @@ public class HomeController {
 		}
 
 		return statusInfo;
+		
 	}
 	
 
 	/**
+	 * Method for Convert functionality
 	 * @param file
 	 * @param file
 	 * @param file
@@ -340,6 +339,7 @@ public class HomeController {
 	@PostMapping("/convert")
 	public ResponseEntity<String> convert(@RequestParam("file0") MultipartFile sgmlfile,
 			@RequestParam("file1") MultipartFile catalogfile) {
+		
 		long startTime = System.currentTimeMillis();
 
 		log.info("Sgmlfile name." + sgmlfile.getOriginalFilename());
@@ -351,12 +351,12 @@ public class HomeController {
 		log.info("Converter : " + converter);
 
 		// calculating the path of file and catalogue file
-		String filepath = createLocalFile(sgmlfile).replace('\\', '/').replaceFirst("C:", "c");
-		String catfilepath = createLocalFile(catalogfile).replace('\\', '/').replaceFirst("C:", "c");
+		String filepath = convertToScriptPath(createLocalFile(sgmlfile)).toString();
+		String catfilepath = convertToScriptPath(createLocalFile(catalogfile)).toString();
 
 		// executing the script
-		String cmd = "-sgx /mnt/" + filepath + " " + catfilepath;
-		log.info("command   " + cmd);
+		String cmd = "-sgx " + filepath + " " + catfilepath;
+		log.info("command  : " + cmd);
 		executeScript(cmd);
 
 		// calculate execution time
@@ -365,20 +365,17 @@ public class HomeController {
 		// sending the response
 		ResponseEntity<String> statusInfo = null;
 		if (this.SttdCode != 0) {
-
 			String message = "There is some error in the conversion:" + this.StdErr;
 			statusInfo = alert(message, true);
 		} else {
 			String message = "File converted Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
 			statusInfo = alert(message, false);
-
 		}
-
 		return statusInfo;
-
 	}
 	
 	/**
+	 * Method for Searching functionality
 	 * @param files
 	 * @return
 	 */
@@ -393,26 +390,25 @@ public class HomeController {
 		String output = "Result.txt";
 		createLocalFolder();
 		for (MultipartFile file : files) {
-			dirPath = createLocalFile(file).replace('\\', '/').replaceFirst("C:", "c");
+			dirPath = convertToScriptPath(createLocalFile(file)).toString();
 		}
 
 		File filenew = new File(dirPath);
 		dirPath = filenew.getParent();
 		dirPath = dirPath.replace("\\", "/");
-		System.out.println("searchID	:" + searchId);
+		System.out.println("searchID : " + searchId);
 
 		// executing the script
 		if (searchId.equalsIgnoreCase("Text")) {
 			if (text != null) {
-				String cmd = "-searchp /mnt/" + dirPath + " " + text + " " + output;
-				log.info("command   " + cmd);
+				String cmd = "-searchp " + dirPath + " " + text + " " + output;
+				log.info("command :  " + cmd);
 				executeScript(cmd);
 			}
 		} else {
 			if (extension != null) {
-				String cmd = "-searcht /mnt/" + dirPath + " " + extension + " " + output;
-
-				log.info("command   " + cmd);
+				String cmd = "-searcht " + dirPath + " " + extension + " " + output;
+				log.info("command  : " + cmd);
 				executeScript(cmd);
 			}
 		}
@@ -437,7 +433,6 @@ public class HomeController {
 		} else {
 			String message = "Searched Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
 			statusInfo = alert(message, false);
-
 		}
 
 		return statusInfo;
@@ -445,6 +440,7 @@ public class HomeController {
 	}
 	
 	/**
+	 * Method for Feedback form
 	 * @param file
 	 * @param typeOfSplit
 	 * @param level
@@ -504,7 +500,7 @@ public class HomeController {
 	}
 	
 	/**
-	 * 
+	 * local folder creation
 	 */
 	private void createLocalFolder() {
 		boolean isExist = new File(initialFilePath).exists();
@@ -514,6 +510,7 @@ public class HomeController {
 	}
 	
 	/**
+	 * local file creation
 	 * @param file
 	 * @return
 	 */
@@ -536,4 +533,32 @@ public class HomeController {
 		return serverFile.getAbsolutePath();
 	}
 	
+	
+	/**
+     * Method to convert window path to Linux Path
+     * @param path original Path
+     * @return Processed Path
+     * @throws IllegalArgumentException if an invalid path is provided
+     */
+    private static StringBuilder convertToScriptPath(String path) {
+        StringBuilder processedPath = new StringBuilder();
+       
+        // Return Empty Path if there is nothing to process in original Path
+        if ((path == null)  || (path.isEmpty()))
+            throw new IllegalArgumentException("Path is invalid");
+       
+        String[] driveAndFolder = path.split(":");
+       
+        // Handle invalid Paths
+        if (driveAndFolder.length == 0 || driveAndFolder.length == 1)
+            throw new IllegalArgumentException("Path is invalid");
+        else {
+            processedPath.append("/mnt/");
+            processedPath.append(driveAndFolder[0].toLowerCase());
+            processedPath.append(driveAndFolder[1].replace("\\", "/"));
+        }
+        return processedPath;
+    }
+	
+		
 }
