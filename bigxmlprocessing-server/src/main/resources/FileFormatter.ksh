@@ -110,6 +110,7 @@ Initialize()
 	SORT_MODE=""
 	SEARCH_MODE=""
 	XML_VALIDATE_MODE=""
+	DELETE_MODE=""
 	
 	# Other Provided Arguments
 	ROOT_DIR=""
@@ -355,7 +356,8 @@ GetParameters()
 				ROOT_DIR="$2"
 				TYPE="*.$3"
 				if [ ! -z $4 ];then
-					OUTPUT_FILE=$ROOT_DIR/$4
+					PARENT_DIR="$(dirname "$ROOT_DIR")"
+					OUTPUT_FILE=$PARENT_DIR/$4 
 				fi
 				
 				if [ $# = 3 ]; then
@@ -372,13 +374,25 @@ GetParameters()
 				ROOT_DIR="$2"
 				PATTERN="$3"
 				if [ ! -z $4 ];then
-					OUTPUT_FILE=$ROOT_DIR/$4
+					PARENT_DIR="$(dirname "$ROOT_DIR")"
+					OUTPUT_FILE=$PARENT_DIR/$4 
 				fi
 				
 				if [ $# = 3 ]; then
 					shift 3
 				elif [ $# = 4 ]; then
 					shift 4
+				else 
+					usage
+					exit 1
+				fi
+			;;
+			-deletedir)
+				DELETE_MODE="$1"
+				ROOT_DIR="$2"
+				
+			    if [ $# = 2 ]; then
+					shift 2
 				else 
 					usage
 					exit 1
@@ -844,6 +858,7 @@ echo "WARNING: You have chosen option of searching by type of the file"
 	  	echo "ERROR: Directory ${ROOT_DIR} not found"
 	  	exit 1
 	fi
+echo "Out Method: searchFilesByType()"
 calculateTime $start_time
 }
 
@@ -878,6 +893,26 @@ echo "WARNING: You have chosen option of searching by pattern of the content in 
 	  	echo "ERROR: Directory ${ROOT_DIR} not found"
 	  	exit 1
 	fi
+echo "Out Method: searchFilesByPattern()"
+calculateTime $start_time
+}
+
+
+#Method to delete all files/folders of the given in the provided directory : 
+#$1 ==> Absolute Path of the directory 
+deleteContentsInFolder() {
+start_time=`date +%s%N`
+echo "In Method: deleteContentsInFolder()	:"
+echo "INFO: You have chosen option of deleting all contents in folder"
+	if [ -d $ROOT_DIR ]; 
+	then
+		rm -r $ROOT_DIR/*
+		echo "Deleted all contents in the directory $ROOT_DIR successfully"
+	else 
+	  	echo "ERROR: Directory ${ROOT_DIR} not found"
+	  	exit 1
+	fi
+echo "Out Method: deleteContentsInFolder()"
 calculateTime $start_time
 }
 
@@ -885,7 +920,7 @@ calculateTime $start_time
 #Method to validate XML file: $1 ==> Path to XML File $2 ==> Path to external file if therevalidatexml
 validateXML() {
 start_time=`date +%s%N`
-echo "In Method: validateXML()-------------------------------->"	
+echo "In Method: validateXML()"	
 	if [ -f $1 ]; 
 	then
 		if [ ! -z $2 ]; 
@@ -923,6 +958,7 @@ echo "In Method: validateXML()-------------------------------->"
 	  	echo "ERROR: ${1} not found"
 	  	exit 1
 	fi
+echo "Out Method: validateXML()"
 calculateTime $start_time
 }
 
@@ -947,7 +983,7 @@ echo "In Method: validateSGML()"
 	  	echo "ERROR: ${1} not found"
 	  	exit 1
 	fi
-echo "Out Method: convertSGMLToXML()"
+echo "Out Method: validateSGML()"
 calculateTime $start_time
 }
 
@@ -1002,4 +1038,6 @@ elif [ "${SEARCH_MODE}" = "-searchp" ];then
 	searchFilesByPattern
 elif [ "${SGML_CONV_XML_MODE}" = "-sgx" ];then
 	convertSGMLToXML $SGML_FILE $CATALOGUE_FILE
+elif [ "${DELETE_MODE}" = "-deletedir" ];then
+	deleteContentsInFolder
 fi

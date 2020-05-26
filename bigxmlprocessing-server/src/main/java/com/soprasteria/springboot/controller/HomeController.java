@@ -4,19 +4,10 @@
 package com.soprasteria.springboot.controller;
 
 import java.io.File;
-import java.io.IOException;
-
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.Response;
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.glassfish.jersey.message.internal.MsgTraceEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.xml.sax.SAXException;
 
 import com.soprasteria.springboot.config.BigXmlProcessingConfig;
 import com.soprasteria.springboot.model.Converter;
 import com.soprasteria.springboot.model.PrettyPrint;
 import com.soprasteria.springboot.model.Split;
 import com.soprasteria.springboot.utils.ExecProcess;
+import com.soprasteria.springboot.utils.MultiprocessorUtil;
 import com.soprasteria.springboot.utils.SendEmailSSL;
 
 
@@ -69,61 +60,7 @@ public class HomeController {
 		return "forward:/index.html";
 	}
 
-	/**
-	 * @param file XML File
-	 * @param xsdFile Schema for the validation
-	 * @return response 
-	 * @throws Exception if any error in parsing or file not found
-	 */
-	@PostMapping("/parseXml")
-	public Response transformXml(@RequestParam("file") MultipartFile file, @RequestParam("fileType") String fileType,
-			@RequestParam("fileXsd") MultipartFile xsdFile, @RequestParam("fileerror") MultipartFile fileError,
-			@RequestParam("filecatalog") MultipartFile filecatalog) throws IOException {
 		
-		log.info("File name." + file.getOriginalFilename());
-		log.info(" fileType.  " + fileType);
-		log.info("xsdFile name. " + xsdFile.getOriginalFilename());
-		log.info("fileError name. " + fileError.getOriginalFilename());
-		log.info("filecatalog  ." + filecatalog.getOriginalFilename());
-		
-		createLocalFile(file);
-	
-		/*
-		 * AJH code 
-		 * String filepath = createLocalFile(file); 
-		 * String schemaFilePath = createLocalFile(xsdFile);
-		 * ResponseEntity<String> response =validate(filepath, schemaFilePath);
-		 * return response;
-		 */
-		return Response.ok().build();
-	}
-	
-		
-	/**
-	 * Method to validate XML file with external XSD
-	 * @param xmlFile
-	 * @param schemaFile
-	 * @return response
-	 * @throws Exception if any error in parsing
-	 */
-	private ResponseEntity<String> validate(String xmlFile, String schemaFile) throws Exception {
-		ResponseEntity<String> response = null;
-		try {
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = factory.newSchema(new File(schemaFile));
-            Validator validator = schema.newValidator();
-            validator.validate(new StreamSource(new File(xmlFile)));
-            System.out.println("File parsed successfully");
-            response = new ResponseEntity<String>("File parsed successfully", HttpStatus.OK);
-        } catch (IOException | SAXException e) {
-            System.out.println("Exception: "+e.getLocalizedMessage());
-            System.out.println("Error in file parsing");
-            response = new ResponseEntity<String>("Error" + e.getLocalizedMessage(), HttpStatus.NOT_FOUND);
-            throw new Exception(e); 
-        }
-		return response;
-    }
-
 	/**
 	 * 
 	 */
@@ -133,7 +70,7 @@ public class HomeController {
 		ExecProcess exec = null;
 		String cmd = "";
 		File localScript = new File("src//main//resources//FileFormatter.ksh");
-		String localScriptPath = "'"+convertToScriptPath(localScript.getAbsolutePath()).toString()+ "'";
+		String localScriptPath = "'"+MultiprocessorUtil.convertToScriptPath(localScript.getAbsolutePath()).toString()+ "'";
 
 		try {
 
@@ -183,8 +120,8 @@ public class HomeController {
 		log.info("catFile name." + catFile.getOriginalFilename());
 
 		// getting the file path and catalogue file path
-		String filepath = convertToScriptPath(createLocalFile(file)).toString();
-		String catfilepath = convertToScriptPath(createLocalFile(catFile)).toString();
+		String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
+		String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catFile)).toString();
 
 		// commands for different operations
 		String cmd = "";
@@ -262,7 +199,7 @@ public class HomeController {
 
 		// calculating the file path
 		log.info("File name." + file.getOriginalFilename());
-		String filepath = convertToScriptPath(createLocalFile(file)).toString();
+		String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
 
 		// executing the script
 		String cmd = "-sort " + filepath;
@@ -306,7 +243,7 @@ public class HomeController {
 		// create a local file
 		PrettyPrint print = new PrettyPrint(file.getOriginalFilename());
 		log.info("Pretty Print fields:" + print);
-		String filepath = convertToScriptPath(createLocalFile(file)).toString();
+		String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
 
 		// execute the script
 		String cmd = "-format " + filepath;
@@ -354,8 +291,8 @@ public class HomeController {
 		log.info("Converter : " + converter);
 
 		// calculating the path of file and catalogue file
-		String filepath = convertToScriptPath(createLocalFile(sgmlfile)).toString();
-		String catfilepath = convertToScriptPath(createLocalFile(catalogfile)).toString();
+		String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(sgmlfile)).toString();
+		String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catalogfile)).toString();
 
 		// executing the script
 		String cmd = "-sgx " + filepath + " " + catfilepath;
@@ -393,7 +330,7 @@ public class HomeController {
 		String output = "Result.txt";
 		createLocalFolder();
 		for (MultipartFile file : files) {
-			dirPath = convertToScriptPath(createLocalFile(file)).toString();
+			dirPath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
 		}
 
 		File filenew = new File(dirPath);
@@ -535,33 +472,6 @@ public class HomeController {
 		// return serverFile.getParent();
 		return serverFile.getAbsolutePath();
 	}
-	
-	
-	/**
-     * Method to convert window path to Linux Path
-     * @param path original Path
-     * @return Processed Path
-     * @throws IllegalArgumentException if an invalid path is provided
-     */
-    private static StringBuilder convertToScriptPath(String path) {
-        StringBuilder processedPath = new StringBuilder();
-       
-        // Return Empty Path if there is nothing to process in original Path
-        if ((path == null)  || (path.isEmpty()))
-            throw new IllegalArgumentException("Path is invalid");
-       
-        String[] driveAndFolder = path.split(":");
-       
-        // Handle invalid Paths
-        if (driveAndFolder.length == 0 || driveAndFolder.length == 1)
-            throw new IllegalArgumentException("Path is invalid");
-        else {
-            processedPath.append("/mnt/");
-            processedPath.append(driveAndFolder[0].toLowerCase());
-            processedPath.append(driveAndFolder[1].replace("\\", "/"));
-        }
-        return processedPath;
-    }
 	
 		
 }
