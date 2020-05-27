@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.soprasteria.springboot.config.BigXmlProcessingConfig;
+import com.soprasteria.springboot.constants.Messages;
+import com.soprasteria.springboot.constants.MultiProcessorConstants;
+import com.soprasteria.springboot.constants.ScriptConstants;
 import com.soprasteria.springboot.model.Converter;
 import com.soprasteria.springboot.model.PrettyPrint;
 import com.soprasteria.springboot.model.Split;
@@ -40,13 +43,13 @@ public class HomeController {
 	int SttdCode = 0;
 	String StdOut = null;
 	String StdErr = null;
-	String message=null;
-	boolean searchFlag=false;
+	String message = null;
+	boolean searchFlag = false;
 //	String initialFilePath="C:\\Temp\\MultiProcessor\\Target";
-	
+
 	@Autowired
 	ServletContext context;
-	
+
 	@Autowired
 	BigXmlProcessingConfig bigXmlConfig;
 
@@ -68,24 +71,27 @@ public class HomeController {
 	public void executeScript(String command) {
 		log.info("inside executeScript method");
 		ExecProcess exec = null;
-		String cmd = "";
+		String cmd = MultiProcessorConstants.EMPTY_STRING;
 		File localScript = new File("src//main//resources//FileFormatter.ksh");
-		String localScriptPath = "'"+MultiprocessorUtil.convertToScriptPath(localScript.getAbsolutePath()).toString()+ "'";
+		String localScriptPath = MultiProcessorConstants.INVERTED_COMMA
+				+ MultiprocessorUtil.convertToScriptPath(localScript.getAbsolutePath()).toString()
+				+ MultiProcessorConstants.INVERTED_COMMA;
 
 		try {
 
-			cmd = "bash " + localScriptPath + " " + command;
+			cmd = ScriptConstants.BASH + MultiProcessorConstants.SPACE + localScriptPath + MultiProcessorConstants.SPACE
+					+ command;
 			exec = new ExecProcess(cmd);
 			exec.run();
 			this.StdOut = exec.getStdout();
 			this.SttdCode = exec.getReturnValue();
 			this.StdErr = exec.getStderr();
-			
+
 		} catch (Exception e) {
 			this.StdErr = exec.getStderr();
 
 			e.printStackTrace();
-			//to add throw and locla msg
+			// to add throw and locla msg
 		}
 	}
 
@@ -124,38 +130,48 @@ public class HomeController {
 		String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catFile)).toString();
 
 		// commands for different operations
-		String cmd = "";
+		String cmd = MultiProcessorConstants.EMPTY_STRING;
+
 		switch (typeOfSplit) {
-		case "Level":
-			if (fileType.equalsIgnoreCase("XML")) {
-				cmd = "-splitl " + filepath + " " + level;
+		case MultiProcessorConstants.OPTION_SPLIT_BY_LEVEL:
+			if (fileType.equalsIgnoreCase(MultiProcessorConstants.XML)) {
+				cmd = ScriptConstants.SPLIT_BY_LEVEL + MultiProcessorConstants.SPACE + filepath
+						+ MultiProcessorConstants.SPACE + level;
 			} else {
-				cmd = "-splitl " + filepath + " " + level + " " + catfilepath;
+				cmd = ScriptConstants.SPLIT_BY_LEVEL + MultiProcessorConstants.SPACE + filepath
+						+ MultiProcessorConstants.SPACE + level + MultiProcessorConstants.SPACE + catfilepath;
 			}
 			break;
-		case "Size":
-			if (fileType.equalsIgnoreCase("XML")) {
-				cmd = "-splits " + filepath + " " + size + "Kb";
+		case MultiProcessorConstants.OPTION_SPLIT_BY_SIZE:
+			if (fileType.equalsIgnoreCase(MultiProcessorConstants.XML)) {
+				cmd = ScriptConstants.SPLIT_BY_SIZE + MultiProcessorConstants.SPACE + filepath
+						+ MultiProcessorConstants.SPACE + size + ScriptConstants.SIZE_IN_KB;
 			} else {
-				cmd = "-splits " + filepath + " " + size + "Kb" + " " + catfilepath;
+				cmd = ScriptConstants.SPLIT_BY_SIZE + MultiProcessorConstants.SPACE + filepath
+						+ MultiProcessorConstants.SPACE + size + ScriptConstants.SIZE_IN_KB
+						+ MultiProcessorConstants.SPACE + catfilepath;
 			}
 			break;
-		case "Element":
-			if (fileType.equalsIgnoreCase("XML")) {
-				cmd = "-splite " + filepath + " " + splitByElement;
+		case MultiProcessorConstants.OPTION_SPLIT_BY_ELEMENT:
+			if (fileType.equalsIgnoreCase(MultiProcessorConstants.XML)) {
+				cmd = ScriptConstants.SPLIT_BY_ELEMENT + MultiProcessorConstants.SPACE + filepath
+						+ MultiProcessorConstants.SPACE + splitByElement;
 			} else {
-				cmd = "-splite " + filepath + " " + splitByElement + " " + catfilepath;
+				cmd = ScriptConstants.SPLIT_BY_ELEMENT + MultiProcessorConstants.SPACE + filepath
+						+ MultiProcessorConstants.SPACE + splitByElement + MultiProcessorConstants.SPACE + catfilepath;
 			}
 			break;
 
-		case "Flat":
+		case MultiProcessorConstants.OPTION_FLAT_SPLIT:
 			switch (splitType) {
-			case "line":
-				cmd = "-fsplitl " + filepath + " " + splitByLine;
+			case MultiProcessorConstants.OPTION_FLAT_SPLIT_BY_LINE:
+				cmd = ScriptConstants.FLAT_SPLIT_BY_LINE + MultiProcessorConstants.SPACE + filepath
+						+ MultiProcessorConstants.SPACE + splitByLine;
 				break;
 
-			case "size":
-				cmd = "-fsplits " + filepath + " " + splitBySize + "k";
+			case MultiProcessorConstants.OPTION_FLAT_SPLIT_BY_SIZE:
+				cmd = ScriptConstants.FLAT_SPLIT_BY_SIZE + MultiProcessorConstants.SPACE + filepath
+						+ MultiProcessorConstants.SPACE + splitBySize + ScriptConstants.SIZE_KB;
 				break;
 			}
 			break;
@@ -171,10 +187,11 @@ public class HomeController {
 		// sending the response
 		ResponseEntity<String> statusInfo = null;
 		if (this.SttdCode != 0) {
-			String message = "There is some error in splitting:" + this.StdErr;
+			String message = Messages.ERROR_IN_SPLIT + this.StdErr;
 			statusInfo = alert(message, true);
 		} else {
-			String message = "File splitted Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
+			String message = Messages.SPLIT_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.StdOut
+					+ MultiProcessorConstants.NEWLINE + executionTime;
 			statusInfo = alert(message, false);
 		}
 		return statusInfo;
@@ -194,7 +211,7 @@ public class HomeController {
 	public ResponseEntity<String> sortXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("sortType") String typeOfSort, @RequestParam("attribute") String attribute,
 			@RequestParam("keyattribute") String keyattribute, @RequestParam("idattribute") String idattribute) {
-		
+
 		long startTime = System.currentTimeMillis();
 
 		// calculating the file path
@@ -202,7 +219,7 @@ public class HomeController {
 		String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
 
 		// executing the script
-		String cmd = "-sort " + filepath;
+		String cmd = ScriptConstants.SORT + MultiProcessorConstants.SPACE + filepath;
 		;
 		log.info("command   " + cmd);
 		executeScript(cmd);
@@ -214,10 +231,11 @@ public class HomeController {
 		ResponseEntity<String> statusInfo = null;
 		if (this.SttdCode != 0) {
 
-			String message = "There is some error in the sorting:" + this.StdErr;
+			String message = Messages.ERROR_IN_SORT + this.StdErr;
 			statusInfo = alert(message, true);
 		} else {
-			String message = "File sorted Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
+			String message = Messages.SORT_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.StdOut
+					+ MultiProcessorConstants.NEWLINE + executionTime;
 			statusInfo = alert(message, false);
 
 		}
@@ -225,7 +243,6 @@ public class HomeController {
 		return statusInfo;
 
 	}
-
 
 	/**
 	 * Method for Pretty Print functionality
@@ -235,7 +252,7 @@ public class HomeController {
 	 */
 	@PostMapping("/prettyPrintXml")
 	public ResponseEntity<String> prettyPrintXml(@RequestParam("file") MultipartFile file) {
-		
+
 		long startTime = System.currentTimeMillis();
 		// to be included SGM file option as well
 		log.info("File name." + file.getOriginalFilename());
@@ -246,26 +263,26 @@ public class HomeController {
 		String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
 
 		// execute the script
-		String cmd = "-format " + filepath;
+		String cmd = ScriptConstants.FORMAT + MultiProcessorConstants.SPACE + filepath;
 		log.info("command executing  :  " + cmd);
 		executeScript(cmd);
 
 		// calculate execution time
 		String executionTime = calculateTime(startTime);
 
-		
-		  // sending the response
-		ResponseEntity<String> statusInfo = null; 
+		// sending the response
+		ResponseEntity<String> statusInfo = null;
 		if (this.SttdCode != 0) {
-			String message = "There is some error in the formatting:" + this.StdErr;
+			String message = Messages.ERROR_IN_FORMATTING + this.StdErr;
 			statusInfo = alert(message, true);
 		} else {
-			String message = "File formatted Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
+			String message = Messages.FORMAT_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.StdOut
+					+ MultiProcessorConstants.NEWLINE + executionTime;
 			statusInfo = alert(message, false);
 		}
 
 		return statusInfo;
-		
+
 	}
 	
 
@@ -279,7 +296,7 @@ public class HomeController {
 	@PostMapping("/convert")
 	public ResponseEntity<String> convert(@RequestParam("file0") MultipartFile sgmlfile,
 			@RequestParam("file1") MultipartFile catalogfile) {
-		
+
 		long startTime = System.currentTimeMillis();
 
 		log.info("Sgmlfile name." + sgmlfile.getOriginalFilename());
@@ -295,7 +312,8 @@ public class HomeController {
 		String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catalogfile)).toString();
 
 		// executing the script
-		String cmd = "-sgx " + filepath + " " + catfilepath;
+		String cmd = ScriptConstants.SGML_TO_XML + MultiProcessorConstants.SPACE + filepath
+				+ MultiProcessorConstants.SPACE + catfilepath;
 		log.info("command  : " + cmd);
 		executeScript(cmd);
 
@@ -305,10 +323,11 @@ public class HomeController {
 		// sending the response
 		ResponseEntity<String> statusInfo = null;
 		if (this.SttdCode != 0) {
-			String message = "There is some error in the conversion:" + this.StdErr;
+			String message = Messages.ERROR_IN_CONVERSION + this.StdErr;
 			statusInfo = alert(message, true);
 		} else {
-			String message = "File converted Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
+			String message = Messages.CONVERSION_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.StdOut
+					+ MultiProcessorConstants.NEWLINE + executionTime;
 			statusInfo = alert(message, false);
 		}
 		return statusInfo;
@@ -327,7 +346,7 @@ public class HomeController {
 
 		String dirPath = null;
 		searchFlag = true;
-		String output = "Result.txt";
+		String output = MultiProcessorConstants.OUTPUT_FILE_NAME;
 		createLocalFolder();
 		for (MultipartFile file : files) {
 			dirPath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
@@ -341,13 +360,15 @@ public class HomeController {
 		// executing the script
 		if (searchId.equalsIgnoreCase("Text")) {
 			if (text != null) {
-				String cmd = "-searchp " + dirPath + " " + text + " " + output;
+				String cmd = ScriptConstants.SEARCH_BY_PATTERN + MultiProcessorConstants.SPACE + dirPath
+						+ MultiProcessorConstants.SPACE + text + MultiProcessorConstants.SPACE + output;
 				log.info("command :  " + cmd);
 				executeScript(cmd);
 			}
 		} else {
 			if (extension != null) {
-				String cmd = "-searcht " + dirPath + " " + extension + " " + output;
+				String cmd = ScriptConstants.SEARCH_BY_TEXT + MultiProcessorConstants.SPACE + dirPath
+						+ MultiProcessorConstants.SPACE + extension + MultiProcessorConstants.SPACE + output;
 				log.info("command  : " + cmd);
 				executeScript(cmd);
 			}
@@ -368,10 +389,11 @@ public class HomeController {
 		ResponseEntity<String> statusInfo = null;
 		if (this.SttdCode != 0) {
 
-			String message = "There is some error searching:" + this.StdErr;
+			String message = Messages.ERROR_IN_SEARCH + this.StdErr;
 			statusInfo = alert(message, true);
 		} else {
-			String message = "Searched Succesfully!!!" + "\n" + this.StdOut + "\n" + executionTime;
+			String message = Messages.SEARCH_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.StdOut
+					+ MultiProcessorConstants.NEWLINE + executionTime;
 			statusInfo = alert(message, false);
 		}
 
@@ -391,17 +413,19 @@ public class HomeController {
     @PostMapping("/feedback")
     public ResponseEntity<String> feedback(
                 @RequestParam("feedbacktype") String feedbacktype, @RequestParam("desfeedback") String desfeedback,
-                @RequestParam("name") String name, @RequestParam("email") String email, @RequestParam("projectname") String projectname) {
-          SendEmailSSL sslemail=new SendEmailSSL();
-          String subject = feedbacktype+" from "+name+" with email "+email+" from project "+projectname;
-          sslemail.sendemail(subject, desfeedback);
-          
-          log.info("feedbacktype " + feedbacktype);
-          log.info("desfeedback " + desfeedback);
-          log.info("name " + name);
-          log.info("email " + email);
-          return new ResponseEntity<String>("Feedback service is working fine", HttpStatus.OK);
-    }
+			@RequestParam("name") String name, @RequestParam("email") String email,
+			@RequestParam("projectname") String projectname) {
+		SendEmailSSL sslemail = new SendEmailSSL();
+		String subject = feedbacktype + Messages.FEEDBACK_FROM + name + Messages.FEEDBACK_FROM_EMAIL_ID + email
+				+ Messages.FEEDBACK_FROM_PROJECT + projectname;
+		sslemail.sendemail(subject, desfeedback);
+
+		log.info("feedbacktype " + feedbacktype);
+		log.info("desfeedback " + desfeedback);
+		log.info("name " + name);
+		log.info("email " + email);
+		return new ResponseEntity<String>(Messages.FEEDBACK_SUBMITTED_SUCCESSFULLY, HttpStatus.OK);
+	}
 
 	
 	/**
@@ -430,10 +454,10 @@ public class HomeController {
 	private String calculateTime(long startTime) {
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
-		String time = "Total Execution Time: " + elapsedTime + "ms";
+		String time = Messages.EXECUTION_TIME + elapsedTime + MultiProcessorConstants.MILLISECONDS;
 		if (elapsedTime >= 1000) {
 			elapsedTime = elapsedTime / 1000;
-			time = "Total Execution Time: " + elapsedTime + "seconds";
+			time = Messages.EXECUTION_TIME + elapsedTime + MultiProcessorConstants.SECONDS;
 		}
 
 		return time;
@@ -460,7 +484,7 @@ public class HomeController {
 		createLocalFolder();
 
 		String fileName = file.getOriginalFilename();
-		String modifiedFileName = FilenameUtils.getBaseName(fileName) + "."
+		String modifiedFileName = FilenameUtils.getBaseName(fileName) + MultiProcessorConstants.DOT_CONST
 				+ FilenameUtils.getExtension(fileName).toUpperCase();
 		File serverFile = new File(bigXmlConfig.getUsersFolderPath() + File.separator + modifiedFileName);
 

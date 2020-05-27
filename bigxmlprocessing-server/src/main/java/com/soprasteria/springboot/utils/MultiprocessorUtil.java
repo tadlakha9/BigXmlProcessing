@@ -1,5 +1,8 @@
 package com.soprasteria.springboot.utils;
 
+import com.soprasteria.springboot.constants.MultiProcessorConstants;
+import com.soprasteria.springboot.constants.ScriptConstants;
+
 public class MultiprocessorUtil {
 	
 	/**
@@ -15,15 +18,15 @@ public class MultiprocessorUtil {
         if ((path == null)  || (path.isEmpty()))
             throw new IllegalArgumentException("Path is invalid");
        
-        String[] driveAndFolder = path.split(":");
+        String[] driveAndFolder = path.split(MultiProcessorConstants.COLON);
        
         // Handle invalid Paths
         if (driveAndFolder.length == 0 || driveAndFolder.length == 1)
             throw new IllegalArgumentException("Path is invalid");
         else {
-            processedPath.append("/mnt/");
+            processedPath.append(ScriptConstants.ROOTPATH);
             processedPath.append(driveAndFolder[0].toLowerCase());
-            processedPath.append(driveAndFolder[1].replace("\\", "/"));
+            processedPath.append(driveAndFolder[1].replace(MultiProcessorConstants.BACKSLASH, MultiProcessorConstants.SLASH));
         }
         return processedPath;
     }
