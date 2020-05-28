@@ -140,7 +140,7 @@ public class HomeController {
 			@RequestParam("splitType") String splitType, @RequestParam("splitByLine") String splitByLine,
 			@RequestParam("splitBySize") String splitBySize, @RequestParam("fileType") String fileType,
 			@RequestParam("filecat") MultipartFile catFile) throws Exception {
-		
+
 		ResponseEntity<String> statusInfo = null;
 
 		try {
@@ -159,47 +159,46 @@ public class HomeController {
 			// commands for different operations
 			String cmd = MultiProcessorConstants.EMPTY_STRING;
 
-			//switch case for different types of split
+			// switch case for different types of split
 			switch (typeOfSplit) {
 			case MultiProcessorConstants.OPTION_SPLIT_BY_LEVEL:
 				if (fileType.equalsIgnoreCase(MultiProcessorConstants.XML)) {
-					cmd = ScriptConstants.SPLIT_BY_LEVEL + MultiProcessorConstants.SPACE + filepath
-							+ MultiProcessorConstants.SPACE + level;
+					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_LEVEL, filepath, level);
 				} else {
-					cmd = ScriptConstants.SPLIT_BY_LEVEL + MultiProcessorConstants.SPACE + filepath
-							+ MultiProcessorConstants.SPACE + level + MultiProcessorConstants.SPACE + catfilepath;
+					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_LEVEL, filepath, level,
+							catfilepath);
 				}
 				break;
 			case MultiProcessorConstants.OPTION_SPLIT_BY_SIZE:
 				if (fileType.equalsIgnoreCase(MultiProcessorConstants.XML)) {
-					cmd = ScriptConstants.SPLIT_BY_SIZE + MultiProcessorConstants.SPACE + filepath
-							+ MultiProcessorConstants.SPACE + size + ScriptConstants.SIZE_IN_KB;
+					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_SIZE, filepath, size,
+							ScriptConstants.SIZE_IN_KB);
 				} else {
-					cmd = ScriptConstants.SPLIT_BY_SIZE + MultiProcessorConstants.SPACE + filepath
-							+ MultiProcessorConstants.SPACE + size + ScriptConstants.SIZE_IN_KB
-							+ MultiProcessorConstants.SPACE + catfilepath;
+					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_SIZE, filepath, size,
+							ScriptConstants.SIZE_IN_KB, catfilepath);
 				}
 				break;
 			case MultiProcessorConstants.OPTION_SPLIT_BY_ELEMENT:
 				if (fileType.equalsIgnoreCase(MultiProcessorConstants.XML)) {
-					cmd = ScriptConstants.SPLIT_BY_ELEMENT + MultiProcessorConstants.SPACE + filepath
-							+ MultiProcessorConstants.SPACE + splitByElement;
+					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_ELEMENT, filepath,
+							splitByElement);
+
 				} else {
-					cmd = ScriptConstants.SPLIT_BY_ELEMENT + MultiProcessorConstants.SPACE + filepath
-							+ MultiProcessorConstants.SPACE + splitByElement + MultiProcessorConstants.SPACE + catfilepath;
+					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_ELEMENT, filepath,
+							splitByElement, catfilepath);
 				}
 				break;
 
 			case MultiProcessorConstants.OPTION_FLAT_SPLIT:
 				switch (splitType) {
 				case MultiProcessorConstants.OPTION_FLAT_SPLIT_BY_LINE:
-					cmd = ScriptConstants.FLAT_SPLIT_BY_LINE + MultiProcessorConstants.SPACE + filepath
-							+ MultiProcessorConstants.SPACE + splitByLine;
+					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.FLAT_SPLIT_BY_LINE, filepath,
+							splitByLine);
 					break;
 
 				case MultiProcessorConstants.OPTION_FLAT_SPLIT_BY_SIZE:
-					cmd = ScriptConstants.FLAT_SPLIT_BY_SIZE + MultiProcessorConstants.SPACE + filepath
-							+ MultiProcessorConstants.SPACE + splitBySize + ScriptConstants.SIZE_KB;
+					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.FLAT_SPLIT_BY_SIZE, filepath,
+							splitBySize, ScriptConstants.SIZE_KB);
 					break;
 				}
 				break;
@@ -243,10 +242,11 @@ public class HomeController {
 	@PostMapping("/sortXml")
 	public ResponseEntity<String> sortXml(@RequestParam("file") MultipartFile file,
 			@RequestParam("sortType") String typeOfSort, @RequestParam("attribute") String attribute,
-			@RequestParam("keyattribute") String keyattribute, @RequestParam("idattribute") String idattribute) throws Exception {
+			@RequestParam("keyattribute") String keyattribute, @RequestParam("idattribute") String idattribute)
+			throws Exception {
 
 		ResponseEntity<String> statusInfo = null;
-		
+
 		try {
 			long startTime = System.currentTimeMillis();
 
@@ -255,15 +255,15 @@ public class HomeController {
 			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
 
 			// executing the script
-			String cmd = ScriptConstants.SORT + MultiProcessorConstants.SPACE + filepath;
-			
+			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SORT, filepath);
+
 			log.info("command   " + cmd);
 			executeScript(cmd);
 
 			// calculate execution time
 			String executionTime = calculateTime(startTime);
 
-			//sending the response
+			// sending the response
 			if (this.SttdCode != 0) {
 				String message = Messages.ERROR_IN_SORT + this.StdErr;
 				statusInfo = alert(message, true);
@@ -304,7 +304,7 @@ public class HomeController {
 			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
 
 			// execute the script
-			String cmd = ScriptConstants.FORMAT + MultiProcessorConstants.SPACE + filepath;
+			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.FORMAT, filepath);
 			log.info("command executing  :  " + cmd);
 			executeScript(cmd);
 
@@ -357,8 +357,7 @@ public class HomeController {
 			String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catalogfile)).toString();
 
 			// executing the script
-			String cmd = ScriptConstants.SGML_TO_XML + MultiProcessorConstants.SPACE + filepath
-					+ MultiProcessorConstants.SPACE + catfilepath;
+			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SGML_TO_XML, filepath, catfilepath);
 			log.info("command  : " + cmd);
 			executeScript(cmd);
 
@@ -417,15 +416,15 @@ public class HomeController {
 			// executing the script
 			if (searchId.equalsIgnoreCase("Text")) {
 				if (text != null) {
-					String cmd = ScriptConstants.SEARCH_BY_PATTERN + MultiProcessorConstants.SPACE + dirPath
-							+ MultiProcessorConstants.SPACE + text + MultiProcessorConstants.SPACE + output;
+					String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SEARCH_BY_PATTERN, dirPath,
+							text, output);
 					log.info("command :  " + cmd);
 					executeScript(cmd);
 				}
 			} else {
 				if (extension != null) {
-					String cmd = ScriptConstants.SEARCH_BY_EXTENSION + MultiProcessorConstants.SPACE + dirPath
-							+ MultiProcessorConstants.SPACE + extension + MultiProcessorConstants.SPACE + output;
+					String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SEARCH_BY_EXTENSION, dirPath,
+							extension, output);
 					log.info("command  : " + cmd);
 					executeScript(cmd);
 				}
