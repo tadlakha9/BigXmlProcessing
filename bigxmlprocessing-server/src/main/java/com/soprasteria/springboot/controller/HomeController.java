@@ -79,7 +79,7 @@ public class HomeController {
 	 */
 	@GetMapping
 	public String home() {
-		return "forward:/index.html";
+		return bigXmlConfig.getIndexPage();
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class HomeController {
 		log.info("inside executeScript method");
 		ExecProcess exec = null;
 		String cmd = MultiProcessorConstants.EMPTY_STRING;
-		File localScript = new File("src//main//resources//FileFormatter.ksh");
+		File localScript = new File(bigXmlConfig.getScriptFilePath());
 		
 		//getting file path for FileFormatter script
 		String localScriptPath = MultiProcessorConstants.INVERTED_COMMA
@@ -498,7 +498,7 @@ public class HomeController {
 		
 		//sending response
 		if (isError) {
-			return new ResponseEntity<String>(statusInfo, HttpStatus.PRECONDITION_FAILED);
+			return new ResponseEntity<String>(statusInfo, HttpStatus.EXPECTATION_FAILED);
 		} else {
 			return new ResponseEntity<String>(statusInfo, HttpStatus.OK);
 		}
