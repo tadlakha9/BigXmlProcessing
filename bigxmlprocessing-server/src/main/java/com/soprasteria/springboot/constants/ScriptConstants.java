@@ -49,6 +49,6 @@ public class ScriptConstants {
 	public static final String SEARCH_BY_PATTERN = "-searchp";
 
 	/** constant for search by text */
-	public static final String SEARCH_BY_TEXT = "-searcht";
+	public static final String SEARCH_BY_EXTENSION = "-searcht";
 
 }

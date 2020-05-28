@@ -532,14 +532,14 @@ echo "In Method: sortFile()-------------------------------->"
 if [ -f $1 ]; 
  then
 	
-	echo "INFO: File to be splitted: ${1}"
+	echo "INFO: File to be sorted: ${1}"
 	echo "INFO: Path to Output File: ${2}"
 	echo "INFO: CATALOGUE_FILE of the SGML file: ${3}"
 	
 	#To get extension of file
 	FLAG_SORT="sort"
 	TYPE="${1##*.}"	
-	echo "INFO: Extension of the file to be splitted: ${TYPE} "
+	echo "INFO: Extension of the file to be sorted: ${TYPE} "
     if [[ $TYPE = XML ]];
 		then
 		echo "INFO: We are in XML Sort"	
