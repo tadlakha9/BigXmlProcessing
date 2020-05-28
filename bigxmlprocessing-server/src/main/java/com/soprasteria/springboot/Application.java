@@ -20,13 +20,14 @@ import com.soprasteria.springboot.utils.MultiprocessorUtil;
  */
 @SpringBootApplication
 public class Application extends SpringBootServletInitializer {
-	
+
 	public static void main(String[] args) throws Exception {
 		try {
 
 			ExecProcess exec = null;
 			String cmd;
-			//String dirPath = "C:\\Temp\\MultiProcessor\\Target";
+
+			// getting directory path
 			String dirPath = MultiprocessorUtil.getApplicationProperty("users.folder.path");
 			File localScript = new File("src//main//resources//FileFormatter.ksh");
 			String localScriptPath = "'"
@@ -34,6 +35,7 @@ public class Application extends SpringBootServletInitializer {
 					+ MultiProcessorConstants.INVERTED_COMMA;
 			dirPath = MultiprocessorUtil.convertToScriptPath(dirPath).toString();
 
+			// deleting contents in folder before start of application
 			cmd = ScriptConstants.BASH + MultiProcessorConstants.SPACE + localScriptPath + MultiProcessorConstants.SPACE
 					+ ScriptConstants.DELETE_CONTENT + MultiProcessorConstants.SPACE + dirPath;
 			exec = new ExecProcess(cmd);
