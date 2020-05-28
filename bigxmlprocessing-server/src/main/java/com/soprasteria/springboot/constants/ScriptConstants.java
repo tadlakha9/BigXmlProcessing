@@ -49,7 +49,7 @@ public class ScriptConstants {
 	public static final String SEARCH_BY_PATTERN = "-searchp";
 
 	/** constant for search by text */
-	public static final String SEARCH_BY_TEXT = "-searcht";
+	public static final String SEARCH_BY_EXTENSION = "-searcht";
 
 	/** constant for deleting the content of the directory */
 	public static final String DELETE_CONTENT = "-deletedir";

@@ -26,7 +26,8 @@ public class Application extends SpringBootServletInitializer {
 
 			ExecProcess exec = null;
 			String cmd;
-			String dirPath = "C:\\Temp\\MultiProcessor\\Target";
+			//String dirPath = "C:\\Temp\\MultiProcessor\\Target";
+			String dirPath = MultiprocessorUtil.getApplicationProperty("users.folder.path");
 			File localScript = new File("src//main//resources//FileFormatter.ksh");
 			String localScriptPath = "'"
 					+ MultiprocessorUtil.convertToScriptPath(localScript.getAbsolutePath()).toString()

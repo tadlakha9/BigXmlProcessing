@@ -1,17 +1,30 @@
 package com.soprasteria.springboot.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 import com.soprasteria.springboot.constants.Messages;
 import com.soprasteria.springboot.constants.MultiProcessorConstants;
 import com.soprasteria.springboot.constants.ScriptConstants;
 
 public class MultiprocessorUtil {
-	
+
 	/**
-     * Method to convert window path to Linux Path
-     * @param path original Path
-     * @return Processed Path
-     * @throws IllegalArgumentException if an invalid path is provided
-     */
+	 * Properties object application parameters
+	 */
+	private static Properties applicationProperties;
+	/** * Application.properties path */
+	private static final String applicationPropertiesFilePath = "src//main//resources//application.properties";
+
+	/**
+	 * Method to convert window path to Linux Path
+	 * 
+	 * @param path original Path
+	 * @return Processed Path
+	 * @throws IllegalArgumentException if an invalid path is provided
+	 */
 	public static StringBuilder convertToScriptPath(String path) {
 		StringBuilder processedPath = new StringBuilder();
 
@@ -32,4 +45,45 @@ public class MultiprocessorUtil {
 		}
 		return processedPath;
 	}
+
+	/**
+	 * Method to Load the specified parameter file into Properties object.
+	 * 
+	 * @param filePath   : propertyFile
+	 * @param obligatory : if mandatory throw an exception if file not exist
+	 * @return the Properties
+	 * @throws IOException : If file not found or any other issue in loading the
+	 *                     property file
+	 */
+	private static Properties loadParamFile(boolean obligatory) throws IOException {
+		Properties properties = null;
+		File applicationPropertyFile = new File(applicationPropertiesFilePath);
+		try (FileInputStream paramStream = new FileInputStream(applicationPropertyFile)) {
+			properties = new Properties();
+			properties.load(paramStream);
+		} catch (IOException ixe) {
+			if (obligatory)
+				throw new IOException(ixe.getLocalizedMessage());
+		}
+		return properties;
+	}
+
+	/**
+	 * Search property in application.properties file
+	 * 
+	 * @param property property to be searched
+	 * @return value corresponding to property if found
+	 * @throws IOException if error in loading property File
+	 */
+
+	public static String getApplicationProperty(String property) throws IOException {
+		String value = null;
+		if (applicationProperties == null) {
+			applicationProperties = loadParamFile(true);
+			if (applicationProperties != null)
+				value = applicationProperties.getProperty(property);
+		}
+		return value;
+	}
 }
+

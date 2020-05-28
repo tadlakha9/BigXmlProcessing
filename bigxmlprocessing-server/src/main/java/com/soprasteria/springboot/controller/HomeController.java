@@ -120,7 +120,7 @@ public class HomeController {
 	/**
 	 * Method for Split functionality
 	 * 
-	 * @param file
+	 * @param file XMLFile/SGML file for split
 	 * @param typeOfSplit(Level,Element,Flat,Size)
 	 * @param level(split:Level)
 	 * @param size(split:Size)
@@ -232,7 +232,7 @@ public class HomeController {
 
 	/**
 	 * Method for Sorting functionality
-	 * @param file
+	 * @param file XMLFile to be formatted
 	 * @param typeOfSort
 	 * @param attribute
 	 * @param keyattribute
@@ -424,7 +424,7 @@ public class HomeController {
 				}
 			} else {
 				if (extension != null) {
-					String cmd = ScriptConstants.SEARCH_BY_TEXT + MultiProcessorConstants.SPACE + dirPath
+					String cmd = ScriptConstants.SEARCH_BY_EXTENSION + MultiProcessorConstants.SPACE + dirPath
 							+ MultiProcessorConstants.SPACE + extension + MultiProcessorConstants.SPACE + output;
 					log.info("command  : " + cmd);
 					executeScript(cmd);
@@ -542,7 +542,7 @@ public class HomeController {
 	 * @param file
 	 * @return absolute path of server file
 	 */
-	private String createLocalFile(MultipartFile file) {
+	private String createLocalFile(MultipartFile file) throws Exception {
 		
 		//create local folder
 		createLocalFolder();
@@ -557,6 +557,7 @@ public class HomeController {
 			FileUtils.writeByteArrayToFile(serverFile, file.getBytes());
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw new Exception(e.getLocalizedMessage());
 		}
 		
 		return serverFile.getAbsolutePath();
