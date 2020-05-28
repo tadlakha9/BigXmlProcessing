@@ -85,5 +85,30 @@ public class MultiprocessorUtil {
 		}
 		return value;
 	}
+	
+	/**
+	 * Method for command creation
+	 * 
+	 * @param option   For e.g. -splits, -sort, -format
+	 * @param filePath path of the file
+	 * @param args     all the other parameters
+	 * @return cmd command to be executed
+	 * 
+	 */
+
+	public static String getProcessorCommand(String option, String filePath, String... args) {
+
+		StringBuilder cmd = new StringBuilder(option);
+		cmd.append(MultiProcessorConstants.SPACE);
+		cmd.append(filePath);
+
+		for (String argument : args) {
+			cmd.append(MultiProcessorConstants.SPACE);
+			cmd.append(argument);
+			cmd.append(MultiProcessorConstants.SPACE);
+		}
+		return cmd.toString();
+
+	}
 }
 
