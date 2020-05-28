@@ -403,8 +403,8 @@ public class HomeController {
 			String dirPath = null;
 			String output = MultiProcessorConstants.OUTPUT_FILE_NAME;
 			createLocalFolder();
-			
-			//conversion to linux path
+
+			// conversion to linux path
 			for (MultipartFile file : files) {
 				dirPath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
 			}
@@ -412,7 +412,7 @@ public class HomeController {
 			// getting directory path
 			File filenew = new File(dirPath);
 			dirPath = filenew.getParent();
-			dirPath = dirPath.replace("\\", "/");
+			dirPath = dirPath.replace(MultiProcessorConstants.BACKSLASH, MultiProcessorConstants.SLASH);
 
 			// executing the script
 			if (searchId.equalsIgnoreCase("Text")) {

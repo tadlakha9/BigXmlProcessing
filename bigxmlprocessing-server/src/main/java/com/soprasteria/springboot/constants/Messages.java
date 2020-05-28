@@ -53,4 +53,7 @@ public class Messages {
 	/** message for total execution time **/
 	public static final String EXECUTION_TIME = "Total Execution Time: ";
 
+	/** message for invalid path **/
+	public static final String INVALID_PATH = "Path is invalid";
+
 }
