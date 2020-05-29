@@ -25,7 +25,7 @@ public class MultiprocessorUtil {
 	 * @return Processed Path
 	 * @throws IllegalArgumentException if an invalid path is provided
 	 */
-	public static StringBuilder convertToScriptPath(String path) {
+	public static String convertToScriptPath(String path) {
 		StringBuilder processedPath = new StringBuilder();
 
 		// Return Empty Path if there is nothing to process in original Path
@@ -43,7 +43,7 @@ public class MultiprocessorUtil {
 			processedPath.append(
 					driveAndFolder[1].replace(MultiProcessorConstants.BACKSLASH, MultiProcessorConstants.SLASH));
 		}
-		return processedPath;
+		return processedPath.toString();
 	}
 
 	/**

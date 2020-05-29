@@ -96,7 +96,7 @@ public class HomeController {
 		
 		//getting file path for FileFormatter script
 		String localScriptPath = MultiProcessorConstants.INVERTED_COMMA
-				+ MultiprocessorUtil.convertToScriptPath(localScript.getAbsolutePath()).toString()
+				+ MultiprocessorUtil.convertToScriptPath(localScript.getAbsolutePath())
 				+ MultiProcessorConstants.INVERTED_COMMA;
 
 		try {
@@ -153,8 +153,8 @@ public class HomeController {
 			log.info("catFile name." + catFile.getOriginalFilename());
 
 			// getting the file path and catalogue file path
-			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
-			String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catFile)).toString();
+			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
+			String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catFile));
 
 			// commands for different operations
 			String cmd = MultiProcessorConstants.EMPTY_STRING;
@@ -256,7 +256,7 @@ public class HomeController {
 
 			// calculating the file path
 			log.info("File name." + file.getOriginalFilename());
-			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
+			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
 
 			// executing the script
 			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SORT, filepath);
@@ -308,7 +308,7 @@ public class HomeController {
 			// create a local file
 			PrettyPrint print = new PrettyPrint(file.getOriginalFilename());
 			log.info("Pretty Print fields:" + print);
-			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
+			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
 
 			// execute the script
 			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.FORMAT, filepath);
@@ -364,8 +364,8 @@ public class HomeController {
 			log.info("Converter : " + converter);
 
 			// calculating the path of file and catalog file
-			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(sgmlfile)).toString();
-			String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catalogfile)).toString();
+			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(sgmlfile));
+			String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catalogfile));
 
 			// executing the script
 			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SGML_TO_XML, filepath, catfilepath);
@@ -420,7 +420,7 @@ public class HomeController {
 
 			// conversion to linux path
 			for (MultipartFile file : files) {
-				dirPath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file)).toString();
+				dirPath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
 			}
 
 			// getting directory path
