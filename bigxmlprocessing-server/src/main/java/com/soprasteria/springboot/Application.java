@@ -37,16 +37,15 @@ public class Application extends SpringBootServletInitializer {
 	 */
 	private static void cleanTargetFolder() throws Exception {
 		try {
-
+			
 			ExecProcess exec = null;
 			String cmd;
 
 			// getting directory path
-			String dirPath = MultiprocessorUtil.getApplicationProperty(PropertyConstants.FOLDER_PATH); 
-			
-			String localScript = MultiprocessorUtil.getApplicationProperty(PropertyConstants.SCRIPT_PATH);
+			String dirPath = MultiprocessorUtil.getApplicationProperty(PropertyConstants.FOLDER_PATH);
+			File localScript = new File("src//main//resources//FileFormatter.ksh"); 
 			String localScriptPath = MultiProcessorConstants.INVERTED_COMMA
-					+ MultiprocessorUtil.convertToScriptPath(localScript)
+					+ MultiprocessorUtil.convertToScriptPath(localScript.getAbsolutePath()) 
 					+ MultiProcessorConstants.INVERTED_COMMA;
 			dirPath = MultiprocessorUtil.convertToScriptPath(dirPath);
 
