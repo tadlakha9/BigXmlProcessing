@@ -171,11 +171,11 @@ public class HomeController {
 				break;
 			case MultiProcessorConstants.OPTION_SPLIT_BY_SIZE:
 				if (fileType.equalsIgnoreCase(MultiProcessorConstants.XML)) {
-					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_SIZE, filepath, size,
-							ScriptConstants.SIZE_IN_KB);
+					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_SIZE, filepath,
+							size + ScriptConstants.SIZE_IN_KB);
 				} else {
-					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_SIZE, filepath, size,
-							ScriptConstants.SIZE_IN_KB, catfilepath);
+					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_SIZE, filepath,
+							size + ScriptConstants.SIZE_IN_KB, catfilepath);
 				}
 				break;
 			case MultiProcessorConstants.OPTION_SPLIT_BY_ELEMENT:
@@ -198,7 +198,7 @@ public class HomeController {
 
 				case MultiProcessorConstants.OPTION_FLAT_SPLIT_BY_SIZE:
 					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.FLAT_SPLIT_BY_SIZE, filepath,
-							splitBySize, ScriptConstants.SIZE_KB);
+							splitBySize + ScriptConstants.SIZE_KB);
 					break;
 				}
 				break;
@@ -226,8 +226,8 @@ public class HomeController {
 			if (this.SttdCode != 0) {
 				String message = Messages.ERROR_IN_SPLIT + this.StdErr;
 				throw new Exception(message);
-			}else 
-				throw new Exception(e.getLocalizedMessage());	
+			} else
+				throw new Exception(e.getLocalizedMessage());
 		}
 		return statusInfo;
 	}
