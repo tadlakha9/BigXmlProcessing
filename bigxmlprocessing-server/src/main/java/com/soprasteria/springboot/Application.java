@@ -24,7 +24,7 @@ public class Application extends SpringBootServletInitializer {
 
 	public static void main(String[] args) throws Exception {
 		
-		//calling method to clean folder
+		//calling method to clean Target folder
 		cleanTargetFolder();
 		
 		SpringApplication.run(Application.class, args);
@@ -43,15 +43,19 @@ public class Application extends SpringBootServletInitializer {
 
 			// getting directory path
 			String dirPath = MultiprocessorUtil.getApplicationProperty(PropertyConstants.FOLDER_PATH);
-			File localScript = new File("src//main//resources//FileFormatter.ksh"); 
+			
+			// getting script path
+			String scriptpath = MultiprocessorUtil.getApplicationProperty(PropertyConstants.SCRIPT_PATH);
+			
+			File localScript = new File(scriptpath); 
 			String localScriptPath = MultiProcessorConstants.INVERTED_COMMA
-					+ MultiprocessorUtil.convertToScriptPath(localScript.getAbsolutePath()) 
+					+ MultiprocessorUtil.convertToScriptPath(localScript.getAbsolutePath())
 					+ MultiProcessorConstants.INVERTED_COMMA;
 			dirPath = MultiprocessorUtil.convertToScriptPath(dirPath);
 
 			// deleting contents in folder before start of application
-			cmd = ScriptConstants.BASH + MultiProcessorConstants.SPACE + localScriptPath + MultiProcessorConstants.SPACE
-					+ ScriptConstants.DELETE_CONTENT + MultiProcessorConstants.SPACE + dirPath;
+			cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.BASH, localScriptPath, ScriptConstants.DELETE_CONTENT,dirPath);
+			
 			exec = new ExecProcess(cmd);
 			exec.run();
 

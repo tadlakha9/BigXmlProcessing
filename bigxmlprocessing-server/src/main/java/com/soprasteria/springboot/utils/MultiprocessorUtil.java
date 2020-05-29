@@ -80,9 +80,9 @@ public class MultiprocessorUtil {
 		String value = null;
 		if (applicationProperties == null) {
 			applicationProperties = loadParamFile(true);
-			if (applicationProperties != null)
-				value = applicationProperties.getProperty(property);
 		}
+		if (applicationProperties != null)
+			value = applicationProperties.getProperty(property);
 		return value;
 	}
 	
