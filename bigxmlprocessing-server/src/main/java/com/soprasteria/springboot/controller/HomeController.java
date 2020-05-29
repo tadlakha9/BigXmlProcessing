@@ -111,9 +111,9 @@ public class HomeController {
 
 		} catch (Exception e) {
 			this.StdErr = exec.getStderr();
-
+			this.StdOut = exec.getStdout();
 			e.printStackTrace();
-			throw new Exception(e.getLocalizedMessage());
+			throw new Exception(e.getMessage());
 		}
 	}
 
@@ -223,7 +223,11 @@ public class HomeController {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception(e.getLocalizedMessage());
+			if (this.SttdCode != 0) {
+				String message = Messages.ERROR_IN_SPLIT + this.StdErr;
+				throw new Exception(message);
+			}else 
+				throw new Exception(e.getLocalizedMessage());	
 		}
 		return statusInfo;
 	}
@@ -275,7 +279,11 @@ public class HomeController {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception(e.getLocalizedMessage());
+			if (this.SttdCode != 0) {
+				String message = Messages.ERROR_IN_SORT + this.StdErr;
+				throw new Exception(message);
+			}else 
+				throw new Exception(e.getLocalizedMessage());	
 		}
 
 		return statusInfo;
@@ -284,7 +292,6 @@ public class HomeController {
 
 	/**
 	 * Method for Pretty Print functionality
-	 * 
 	 * @param file XMLFile to be formatted
 	 * @return statusInfo
 	 * @throws Exception
@@ -312,7 +319,7 @@ public class HomeController {
 			String executionTime = calculateTime(startTime);
 
 			// sending the response
-			if (this.SttdCode != 0) {
+				if (this.SttdCode != 0) {
 				String message = Messages.ERROR_IN_FORMATTING + this.StdErr;
 				statusInfo = alert(message, true);
 			} else {
@@ -322,7 +329,11 @@ public class HomeController {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception(e.getLocalizedMessage());
+			if (this.SttdCode != 0) {
+				String message = Messages.ERROR_IN_FORMATTING + this.StdErr;
+				throw new Exception(message);
+			}else 
+				throw new Exception(e.getLocalizedMessage());	
 		}
 
 		return statusInfo;
@@ -375,7 +386,11 @@ public class HomeController {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception(e.getLocalizedMessage());
+			if (this.SttdCode != 0) {
+				String message = Messages.ERROR_IN_CONVERSION + this.StdErr;
+				throw new Exception(message);
+			}else 
+				throw new Exception(e.getLocalizedMessage());	
 		}
 		return statusInfo;
 	}
@@ -440,7 +455,6 @@ public class HomeController {
 
 			// sending the response
 			if (this.SttdCode != 0) {
-
 				String message = Messages.ERROR_IN_SEARCH + this.StdErr;
 				statusInfo = alert(message, true);
 			} else {
@@ -450,7 +464,11 @@ public class HomeController {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception(e.getLocalizedMessage());
+			if (this.SttdCode != 0) {
+				String message = Messages.ERROR_IN_SEARCH + this.StdErr;
+				throw new Exception(message);
+			}else 
+				throw new Exception(e.getLocalizedMessage());	
 		}
 
 		return statusInfo;
@@ -505,7 +523,6 @@ public class HomeController {
 	
 	/**
 	 * Method for calculating the execution time of method
-	 * 
 	 * @param startTime
 	 * @return time
 	 * 

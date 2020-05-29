@@ -48,16 +48,20 @@ save(form:NgForm){
   
   this.appService.searchService(formData).
   subscribe((response) => {
-    
-        console.log('Ok', response);
+            console.log('Ok', response);
         alert("Alert   " +response);
       this.toastr.success('Search Successfully')
       this.progress = 100;
       setTimeout(() => {          
         this.display = false;
       }, 1100);
-    
-  });
+    },
+    (error) => { 
+     console.log("Error "+error.error);  
+     this.toastr.error('Error in Searching '); 
+     alert("Alert : \r\n  " + error.error); 
+    }
+ );
     this.updatingProgressBar();
     form.reset();
 }

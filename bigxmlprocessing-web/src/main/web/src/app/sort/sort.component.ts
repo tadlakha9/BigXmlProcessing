@@ -41,12 +41,16 @@ export class SortComponent implements OnInit {
         setTimeout(() => {          
           this.display = false;
         }, 1100);
-      
-    });
+      },
+      (error) => { 
+       console.log("Error "+error.error);  
+       this.toastr.error(' Error in Sorting '); 
+       alert("Alert : \r\n  " + error.error); 
+      });
 
     this.updatingProgressBar();
     form.reset();
-    console.log('inside submit button');
+    
   }
 
   onSelectofXMLFile(event){

@@ -3,6 +3,11 @@ import { NgForm } from '@angular/forms';
 import { AppService } from '../app.service';
 import { ToastrService } from 'ngx-toastr';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
+import { log } from 'util';
+import { TagPlaceholder } from '@angular/compiler/src/i18n/i18n_ast';
+import { CATCH_ERROR_VAR } from '@angular/compiler/src/output/output_ast';
+import { NG_MODEL_WITH_FORM_CONTROL_WARNING } from '@angular/forms/src/directives';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-pretty-print',
@@ -45,15 +50,18 @@ export class PrettyPrintComponent implements OnInit {
     subscribe((response) => {      
           console.log('Ok', response);
           alert("Alert   " +response);
-        this.toastr.success('Pretty-Print Successfully')
-        this.progress = 100;
-        setTimeout(() => {          
-          this.display = false;
-        }, 1100);
-      
-    });
-   
+          this.toastr.success('Pretty-Print Successfully')
+          this.progress = 100;
+          setTimeout(() => { 
+          this.display = false;}, 1100); 
+        },(error) => { 
+          console.log("Error "+error.error);  
+          this.toastr.error('Error in Pretty Print'); 
+          alert("Alert : \r\n  " + error.error); 
+         }
+      );
     this.updatingProgressBar();
+  
    form.reset();
   }
 

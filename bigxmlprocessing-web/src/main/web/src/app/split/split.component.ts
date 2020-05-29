@@ -75,17 +75,14 @@ export class SplitComponent implements OnInit {
         setTimeout(() => {          
           this.display = false;
         }, 1100);
-        
-      
-    },(error) => {
-      console.log("ko"+error);  
-      this.toastr.error('Error on Splitting');
-    }
-
+      },(error) => {
+        console.log("ko"+ error.error);  
+        this.toastr.error('Error on Splitting');
+        alert("Alert : \r\n  " + error.error); 
+      }
     );
     this.updatingProgressBar();
     
-
     form.reset();
   }
 

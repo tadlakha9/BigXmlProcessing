@@ -59,7 +59,10 @@ export class ConvertComponent implements OnInit {
         setTimeout(() => {          
           this.display = false;
         }, 1100);
-      
+    },(error) => {
+      console.log("ko"+ error.error);  
+      this.toastr.error('Error in Conversion');
+      alert("Alert : \r\n  " + error.error); 
     });
     this.updatingProgressBar();
     form.reset();
