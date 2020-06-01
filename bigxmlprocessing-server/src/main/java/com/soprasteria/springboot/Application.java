@@ -44,6 +44,7 @@ public class Application extends SpringBootServletInitializer {
 			// getting directory path
 			String dirPath = MultiprocessorUtil.getApplicationProperty(PropertyConstants.FOLDER_PATH);
 			
+			if(new File(dirPath).exists()) {
 			// getting script path
 			String scriptpath = MultiprocessorUtil.getApplicationProperty(PropertyConstants.SCRIPT_PATH);
 			
@@ -58,7 +59,7 @@ public class Application extends SpringBootServletInitializer {
 			
 			exec = new ExecProcess(cmd);
 			exec.run();
-
+			}
 		} catch (Exception e) {
 			throw new Exception(e.getLocalizedMessage());
 		}
