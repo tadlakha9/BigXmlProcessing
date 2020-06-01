@@ -3,55 +3,51 @@ package com.soprasteria.springboot.utils;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.soprasteria.springboot.constants.PropertyConstants;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-	public class SendEmailSSL {
+public class SendEmailSSL {
 
-	    public void sendemail(String subject,String content) {
-	    	Properties prop = new Properties();
-	    	try{
-	    	InputStream input =getClass().getClassLoader().getResourceAsStream("mail.properties");
-	    	   if (input == null) {
-	               System.out.println("Sorry, unable to find config.properties");
-	               return;
-	           }
-	    	  //load a properties file from class path, inside static method
-	         prop.load(input);
+	public void sendemail(String subject, String content) {
+		Properties prop = new Properties();
+		try {
+			InputStream input = getClass().getClassLoader().getResourceAsStream(PropertyConstants.MAIL_PROPERTIES);
+			if (input == null) {
+				return;
+			}
+			// load a properties file from class path, inside static method
+			prop.load(input);
 
-	     } catch (IOException ex) {
-	         ex.printStackTrace();
-	     }
-	    	
-	        final String username = prop.getProperty("username");
-	        final String password =prop.getProperty("password");
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 
-	        Session session = Session.getInstance(prop,
-	                new javax.mail.Authenticator() {
-	                    protected PasswordAuthentication getPasswordAuthentication() {
-	                        return new PasswordAuthentication(username, password);
-	                    }
-	                });
+		final String username = prop.getProperty(PropertyConstants.USER_NAME);
+		final String password = prop.getProperty(PropertyConstants.PASSWORD);
 
-	        try {
+		Session session = Session.getInstance(prop, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
 
-	            Message message = new MimeMessage(session);
-	            message.setFrom(new InternetAddress(prop.getProperty("from")));
-	            message.setRecipients(
-	                    Message.RecipientType.TO,
-	                    InternetAddress.parse(prop.getProperty("to"))
-	            );
-	            message.setSubject(subject);
-	            message.setText(content);
+		try {
 
-	            Transport.send(message);
+			Message message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(prop.getProperty(PropertyConstants.FEEDBACK_FROM)));
+			message.setRecipients(Message.RecipientType.TO,
+					InternetAddress.parse(prop.getProperty(PropertyConstants.FEEDBACK_TO)));
+			message.setSubject(subject);
+			message.setText(content);
 
-	            System.out.println("Done");
+			Transport.send(message);
 
-	        } catch (MessagingException e) {
-	            e.printStackTrace();
-	        }
-	    }
-
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
 	}
+
+}
