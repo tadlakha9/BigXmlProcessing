@@ -14,7 +14,7 @@ import { HttpEvent, HttpEventType } from '@angular/common/http';
 export class ConvertComponent implements OnInit {
 
   sgmlfile:File;
-  catalogfile:File;
+  catalogfile:File[]=[];
   progress: number = 0;
   display = true;
 
@@ -29,9 +29,9 @@ export class ConvertComponent implements OnInit {
     this.sgmlfile= event.target.files[0];
   }
 
-  onSelectCatalogFile(event) {
+  onSelectCatalogFolder(event) {
     console.log(event.target.files);
-    this.catalogfile= event.target.files[0];
+    this.catalogfile= event.target.files;
   }
 
 
@@ -43,11 +43,11 @@ export class ConvertComponent implements OnInit {
 
     formData.append('file0', this.sgmlfile, this.sgmlfile.name);
   
-    if(this.catalogfile == undefined ){
-      this.catalogfile = new File([""], "filecatalog.txt");
-      formData.append('file1', this.catalogfile, this.catalogfile.name);
-    } else{
-      formData.append('file1', this.catalogfile, this.catalogfile.name); 
+    if(this.catalogfile.length==0 ){
+      this.catalogfile.push( new File([""], "filecatalog.txt"));
+      }
+    for(var file of this.catalogfile){
+      formData.append('file1', file, file.name);
     }
 
     this.appService.convertService(formData).

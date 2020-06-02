@@ -23,8 +23,8 @@
       <br/>
       <div class=" row" >
         <div class=" form-group">
-          <b><label for="catalog-file">Catalog File:</label></b>&nbsp;&nbsp;
-          <input type="file" id="catalogfile" name="profile" (change)="onSelectCatalogFile($event)"/>
+          <b><label for="catalog-file">Catalog Folder:</label></b>&nbsp;&nbsp;
+          <input type="file" #folderInput id="catalogfile" webkitdirectory name="profile" (change)="onSelectCatalogFolder($event)"/>
         </div>
       </div>
 
