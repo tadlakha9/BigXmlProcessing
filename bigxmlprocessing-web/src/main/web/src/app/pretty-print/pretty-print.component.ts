@@ -58,6 +58,9 @@ export class PrettyPrintComponent implements OnInit {
           console.log("Error "+error.error);  
           this.toastr.error('Error in Pretty Print'); 
           alert("Alert : \r\n  " + error.error); 
+          setTimeout(() => {          
+            this.display = false;
+          }, 1100);
          }
       );
     this.updatingProgressBar();

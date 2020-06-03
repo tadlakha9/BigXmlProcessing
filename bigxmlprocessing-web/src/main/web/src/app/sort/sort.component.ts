@@ -46,6 +46,9 @@ export class SortComponent implements OnInit {
        console.log("Error "+error.error);  
        this.toastr.error(' Error in Sorting '); 
        alert("Alert : \r\n  " + error.error); 
+       setTimeout(() => {          
+        this.display = false;
+      }, 1100);
       });
 
     this.updatingProgressBar();

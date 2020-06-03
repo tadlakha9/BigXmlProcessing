@@ -97,6 +97,9 @@ export class ParsingComponent implements OnInit {
       console.log("ko"+ error.error);  
       this.toastr.error('Error on Parsing');
       alert("Alert : \r\n  " + error.error); 
+      setTimeout(() => {          
+        this.display = false;
+      }, 1100);
     });
     this.updatingProgressBar();
     form.reset();

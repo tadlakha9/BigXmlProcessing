@@ -60,6 +60,9 @@ save(form:NgForm){
      console.log("Error "+error.error);  
      this.toastr.error('Error in Searching '); 
      alert("Alert : \r\n  " + error.error); 
+     setTimeout(() => {          
+      this.display = false;
+    }, 1100);
     }
  );
     this.updatingProgressBar();
