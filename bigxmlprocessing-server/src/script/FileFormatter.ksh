@@ -174,9 +174,11 @@ GetParameters()
 			-format)
 				XML_FORMAT_MODE="$1"
 				INPUT_FILE="$2"
+				OUTPUT_FILE="${2##*/}"
 				ROOT_DIR=$(dirname $2)
+				OUTPUT_DIR="$3"
 				if [ ! -z $3 ];then
-					XML_OUTPUT=$ROOT_DIR/$3
+					XML_OUTPUT=$OUTPUT_DIR/${OUTPUT_FILE}".formatted"
 				fi
 				
 				if [ $# = 2 ]; then
@@ -315,11 +317,11 @@ GetParameters()
 			    INPUT_FILE="$2"
 				CATALOGUE_FILE="$4"
 				XML_ROOT_DIR=$(dirname $2)				
-				
+				OUTPUT_FILE="${2##*/}"
+				OUTPUT_DIR="$3"
 				
 				if [ ! -z $3 ];then
-					XML_OUTPUT=$XML_ROOT_DIR/$3
-						
+					XML_OUTPUT=$OUTPUT_DIR/${OUTPUT_FILE}".sorted"
 				fi
 				
 				if [ ! -z $4 ];then
@@ -363,9 +365,9 @@ GetParameters()
 				SEARCH_MODE="$1"
 				ROOT_DIR="$2"
 				TYPE="*.$3"
+				OUTPUT_DIR="$4"
 				if [ ! -z $4 ];then
-					PARENT_DIR="$(dirname "$ROOT_DIR")"
-					OUTPUT_FILE=$PARENT_DIR/$4 
+					OUTPUT_FILE=$OUTPUT_DIR/Result.txt
 				fi
 				
 				if [ $# = 3 ]; then
@@ -381,9 +383,9 @@ GetParameters()
 				SEARCH_MODE="$1"
 				ROOT_DIR="$2"
 				PATTERN="$3"
+				OUTPUT_DIR="$4"
 				if [ ! -z $4 ];then
-					PARENT_DIR="$(dirname "$ROOT_DIR")"
-					OUTPUT_FILE=$PARENT_DIR/$4 
+					OUTPUT_FILE=$OUTPUT_DIR/Result.txt
 				fi
 				
 				if [ $# = 3 ]; then
@@ -532,6 +534,7 @@ echo "In Method: formatXML()---------------------------->"
 		if [ -z $2 ]; then
 			echo "INFO: You have not provided any Output File. Default temp file will be created"
 			XML_FILE_TEMP=${1}".formatted"
+			
 		else
 			XML_FILE_TEMP=$2
 		fi

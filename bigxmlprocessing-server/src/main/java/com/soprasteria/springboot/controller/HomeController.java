@@ -1,6 +1,8 @@
 package com.soprasteria.springboot.controller;
 
 import java.io.File;
+import java.io.IOException;
+
 import javax.servlet.ServletContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.soprasteria.springboot.config.BigXmlProcessingConfig;
 import com.soprasteria.springboot.constants.Messages;
 import com.soprasteria.springboot.constants.MultiProcessorConstants;
+import com.soprasteria.springboot.constants.PropertyConstants;
 import com.soprasteria.springboot.constants.ScriptConstants;
 import com.soprasteria.springboot.model.Converter;
 import com.soprasteria.springboot.model.PrettyPrint;
@@ -257,9 +260,12 @@ public class HomeController {
 			// calculating the file path
 			log.info("File name." + file.getOriginalFilename());
 			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
+			
+			//create output directory
+			String outputDir = createOutputDir();
 
 			// executing the script
-			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SORT, filepath);
+			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SORT, filepath,outputDir);
 
 			log.info("command   " + cmd);
 			executeScript(cmd);
@@ -309,9 +315,13 @@ public class HomeController {
 			PrettyPrint print = new PrettyPrint(file.getOriginalFilename());
 			log.info("Pretty Print fields:" + print);
 			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
-
+			
+			//create output directory
+			String outputDir = createOutputDir();
+			
 			// execute the script
-			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.FORMAT, filepath);
+			//String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.FORMAT, filepath);
+			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.FORMAT, filepath,outputDir);
 			log.info("command executing  :  " + cmd);
 			executeScript(cmd);
 
@@ -338,6 +348,16 @@ public class HomeController {
 
 		return statusInfo;
 
+	}
+
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	private String createOutputDir() throws IOException {
+		String outputDir = MultiprocessorUtil.getApplicationProperty(PropertyConstants.OUTPUT_PATH);
+		outputDir=MultiprocessorUtil.convertToScriptPath(outputDir);
+		return outputDir;
 	}
 	
 
@@ -366,7 +386,7 @@ public class HomeController {
 			// calculating the path of file and catalog file
 			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(sgmlfile));
 			String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catalogfile));
-
+			
 			// executing the script
 			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SGML_TO_XML, filepath, catfilepath);
 			log.info("command  : " + cmd);
@@ -427,19 +447,23 @@ public class HomeController {
 			File filenew = new File(dirPath);
 			dirPath = filenew.getParent();
 			dirPath = dirPath.replace(MultiProcessorConstants.BACKSLASH, MultiProcessorConstants.SLASH);
+			
+			//create output directory
+			String outputDir = createOutputDir(); //have to check to add outputname of resultfile as well
+
 
 			// executing the script
 			if (searchId.equalsIgnoreCase("Text")) {
 				if (text != null) {
 					String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SEARCH_BY_PATTERN, dirPath,
-							text, output);
+							text, outputDir);
 					log.info("command :  " + cmd);
 					executeScript(cmd);
 				}
 			} else {
 				if (extension != null) {
 					String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SEARCH_BY_EXTENSION, dirPath,
-							extension, output);
+							extension, outputDir);
 					log.info("command  : " + cmd);
 					executeScript(cmd);
 				}
