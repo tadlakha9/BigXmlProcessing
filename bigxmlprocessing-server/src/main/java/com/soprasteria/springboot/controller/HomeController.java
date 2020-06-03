@@ -1,6 +1,7 @@
 package com.soprasteria.springboot.controller;
 
 import java.io.File;
+
 import java.io.IOException;
 
 import javax.servlet.ServletContext;
@@ -371,27 +372,34 @@ public class HomeController {
 	 */
 	@PostMapping("/convert")
 	public ResponseEntity<String> convert(@RequestParam("file0") MultipartFile sgmlfile,
-			@RequestParam("file1") MultipartFile catalogfile) throws Exception {
-
+			@RequestParam("file1") MultipartFile[]  catalogfolder) throws Exception {	
+		
 		ResponseEntity<String> statusInfo = null;
 		try {
 			long startTime = System.currentTimeMillis();
-
-			log.info("Sgmlfile name." + sgmlfile.getOriginalFilename());
-			log.info("catalogfile name." + catalogfile.getOriginalFilename());
-
-			Converter converter = new Converter(sgmlfile.getOriginalFilename(), catalogfile.getOriginalFilename());
-			log.info("Converter : " + converter);
-
-			// calculating the path of file and catalog file
+			String catalogdir= null;
+			// calculating the path of file 
 			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(sgmlfile));
-			String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catalogfile));
-			
+
+
+			// conversion to linux path
+			for (MultipartFile file : catalogfolder) {
+				catalogdir = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
+				}
+			// after uploading, now getting directory path
+			File filenew = new File(catalogdir);
+			catalogdir = filenew.getParent();
+			catalogdir = catalogdir.replace(MultiProcessorConstants.BACKSLASH, MultiProcessorConstants.SLASH);	
+					
+					
+
 			// executing the script
-			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SGML_TO_XML, filepath, catfilepath);
+			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SGML_TO_XML, filepath, catalogdir);
 			log.info("command  : " + cmd);
 			executeScript(cmd);
 
+			log.info("Sgmlfile name." + sgmlfile.getOriginalFilename());
+			
 			// calculate execution time
 			String executionTime = calculateTime(startTime);
 
