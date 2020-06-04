@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.soprasteria.springboot.constants.Messages;
+
 /**
  * Class for launching an UNIX (Windows) command
  */
@@ -181,19 +183,19 @@ public class ExecProcess {
                 s.append(mCmd);
             }
             
-            theLoggger.log(Level.SEVERE, "Something went wrong with Command: {0}.", s.toString());
-            theLoggger.log(Level.SEVERE, "Return Value: {0}", mRet);
+            theLoggger.log(Level.SEVERE, Messages.SOMETHING_WRONG_IN_COMMAND, s.toString());
+            theLoggger.log(Level.SEVERE, Messages.RETURN_VALUE, mRet);
             
             // print Standard Output
             if ((mStdout != null) && (mStdout.length() > 0)) {
-            	theLoggger.log(Level.SEVERE, "Standard Output: {0}", mStdout);
+            	theLoggger.log(Level.SEVERE, Messages.OUTPUT, mStdout);
             }
             
             // print Standard Error
             if ((mStderr != null) && (mStderr.length() > 0)) {
-            	theLoggger.log(Level.SEVERE, "Standared Error: {0}", mStderr);
+            	theLoggger.log(Level.SEVERE, Messages.ERROR, mStderr);
             }
-            throw new ExecStatusException("IOException for command: " + mRet);
+            throw new ExecStatusException(Messages.SOMETHING_WRONG_IN_COMMAND + s.toString() + Messages.DETAILS   + getStdout());
         }
 	}
 
@@ -216,7 +218,7 @@ public class ExecProcess {
 		    proc.getInputStream().close();
 		    proc.getOutputStream().close();
 		} catch (InterruptedException ie) {
-		    theLoggger.log(Level.SEVERE, "An error occured while waiting the result of the command.");
+		    theLoggger.log(Level.SEVERE, Messages.ERROR_WHILE_WAITING);
 		    throw ie;
 		}
 	}
@@ -235,7 +237,7 @@ public class ExecProcess {
 		    	process = Runtime.getRuntime().exec(mCmd, mEnv);
 		    }
 		} catch (IOException e) {
-			theLoggger.log(Level.SEVERE, "Something Went Wrong with the command: {0}", getCmdString());
+			theLoggger.log(Level.SEVERE, Messages.SOMETHING_WRONG_IN_COMMAND, getCmdString());
 		    throw e;
 		}
 		return process;
@@ -343,7 +345,7 @@ public class ExecProcess {
                     sb.append(line);
                 }
             } catch (IOException ioe) {
-            	theLoggger.log(Level.SEVERE, "Error while reading output of an execution");
+            	theLoggger.log(Level.SEVERE, Messages.ERROR_WHILE_READING_EXECUTION);
             	theLoggger.log(Level.SEVERE, ioe.getMessage());
             }
         }

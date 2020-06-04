@@ -352,13 +352,19 @@ public class HomeController {
 	}
 
 	/**
+	 * To create an Output dir for genarated files
 	 * @return
 	 * @throws IOException
 	 */
 	private String createOutputDir() throws IOException {
-		String outputDir = MultiprocessorUtil.getApplicationProperty(PropertyConstants.OUTPUT_PATH);
-		outputDir=MultiprocessorUtil.convertToScriptPath(outputDir);
-		return outputDir;
+		
+		 String outputDir = MultiprocessorUtil.getApplicationProperty(PropertyConstants.OUTPUT_PATH);
+	     File dir= new File(outputDir);
+	      if (!dir.exists()) {
+	          dir.mkdir();
+	        }
+	     outputDir = MultiprocessorUtil.convertToScriptPath(outputDir);
+	     return outputDir;
 	}
 	
 

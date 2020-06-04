@@ -2,7 +2,6 @@ package com.soprasteria.springboot.constants;
 
 /**
  * Class for all the concerned messages
- * 
  * @author swtiwari
  *
  */
@@ -56,4 +55,26 @@ public class Messages {
 	/** message for invalid path **/
 	public static final String INVALID_PATH = "Path is invalid";
 
+	/** message for wrong command **/
+	public static final String SOMETHING_WRONG_IN_COMMAND = "Something went wrong with Command: {0}.";
+	
+	
+	/** Actual error **/
+	public static final String DETAILS  = "    DETAILS   : ";
+	
+	/** Return Value  **/
+	public static final String RETURN_VALUE = "Return Value: {0}";
+
+	/** message for OUTPUT  **/
+	public static final String OUTPUT = "Standard Output: {0}";
+	
+	/** message for Error  **/
+	public static final String ERROR = "Standared Error: {0}";
+	
+	/** message for Error while waiting  **/
+	public static final String ERROR_WHILE_WAITING = "An error occured while waiting the result of the command.";
+	
+	/** message for Error while reading output of execution **/
+	public static final String ERROR_WHILE_READING_EXECUTION =  "Error while reading output of an execution";
+	
 }
