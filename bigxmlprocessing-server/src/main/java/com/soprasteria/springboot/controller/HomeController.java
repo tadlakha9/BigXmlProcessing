@@ -62,6 +62,11 @@ public class HomeController {
 	String message = null;
 	
 	/**
+	 * Flag for search method
+	 */
+	Boolean searchFlag = false;
+	
+	/**
 	 * constructor
 	 */
 	@Autowired
@@ -146,6 +151,7 @@ public class HomeController {
 			@RequestParam("filecat") MultipartFile catFile) throws Exception {
 
 		ResponseEntity<String> statusInfo = null;
+		String errorDir = null;
 
 		try {
 			long startTime = System.currentTimeMillis();
@@ -162,7 +168,11 @@ public class HomeController {
 
 			// commands for different operations
 			String cmd = MultiProcessorConstants.EMPTY_STRING;
-
+			
+			if (fileType.equalsIgnoreCase(MultiProcessorConstants.SGML)) {
+				errorDir = createLogDir();
+			}
+			
 			// switch case for different types of split
 			switch (typeOfSplit) {
 			case MultiProcessorConstants.OPTION_SPLIT_BY_LEVEL:
@@ -170,7 +180,7 @@ public class HomeController {
 					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_LEVEL, filepath, level);
 				} else {
 					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_LEVEL, filepath, level,
-							catfilepath);
+							catfilepath,errorDir);
 				}
 				break;
 			case MultiProcessorConstants.OPTION_SPLIT_BY_SIZE:
@@ -179,7 +189,7 @@ public class HomeController {
 							size + ScriptConstants.SIZE_IN_KB);
 				} else {
 					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_SIZE, filepath,
-							size + ScriptConstants.SIZE_IN_KB, catfilepath);
+							size + ScriptConstants.SIZE_IN_KB, catfilepath, errorDir);
 				}
 				break;
 			case MultiProcessorConstants.OPTION_SPLIT_BY_ELEMENT:
@@ -189,7 +199,7 @@ public class HomeController {
 
 				} else {
 					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_ELEMENT, filepath,
-							splitByElement, catfilepath);
+							splitByElement, catfilepath, errorDir);
 				}
 				break;
 
@@ -321,7 +331,6 @@ public class HomeController {
 			String outputDir = createOutputDir();
 			
 			// execute the script
-			//String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.FORMAT, filepath);
 			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.FORMAT, filepath,outputDir);
 			log.info("command executing  :  " + cmd);
 			executeScript(cmd);
@@ -352,19 +361,36 @@ public class HomeController {
 	}
 
 	/**
-	 * To create an Output dir for genarated files
-	 * @return
+	 * To create an Output directory for genarated files
+	 * 
+	 * @return outputDir 
 	 * @throws IOException
 	 */
 	private String createOutputDir() throws IOException {
-		
-		 String outputDir = MultiprocessorUtil.getApplicationProperty(PropertyConstants.OUTPUT_PATH);
-	     File dir= new File(outputDir);
-	      if (!dir.exists()) {
-	          dir.mkdir();
-	        }
-	     outputDir = MultiprocessorUtil.convertToScriptPath(outputDir);
-	     return outputDir;
+		String outputDir = MultiprocessorUtil.getApplicationProperty(PropertyConstants.OUTPUT_PATH);
+		File dir = new File(outputDir);
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+		outputDir = MultiprocessorUtil.convertToScriptPath(outputDir);
+
+		return outputDir;
+	}
+
+	/**
+	 * Method for log directory
+	 * @return
+	 * @throws IOException
+	 */
+	private String createLogDir() throws IOException {
+		String errorDir = MultiprocessorUtil.getApplicationProperty(PropertyConstants.ERROR_PATH);
+		File edir = new File(errorDir);
+		if (!edir.exists()) {
+			edir.mkdir();
+		}
+		errorDir = MultiprocessorUtil.convertToScriptPath(errorDir);
+
+		return errorDir;
 	}
 	
 
@@ -386,25 +412,27 @@ public class HomeController {
 			String catalogdir= null;
 			// calculating the path of file 
 			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(sgmlfile));
-
-
+			
+			//create output and logdirectory
+			String outputDir = createOutputDir();
+			String errorDir = createLogDir();
+			
+			Converter converter = new Converter(sgmlfile.getOriginalFilename(), errorDir);
+			log.info("Converter : " + converter);
+			
 			// conversion to linux path
 			for (MultipartFile file : catalogfolder) {
 				catalogdir = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
-				}
+			}
 			// after uploading, now getting directory path
 			File filenew = new File(catalogdir);
 			catalogdir = filenew.getParent();
 			catalogdir = catalogdir.replace(MultiProcessorConstants.BACKSLASH, MultiProcessorConstants.SLASH);	
 					
-					
-
 			// executing the script
-			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SGML_TO_XML, filepath, catalogdir);
+			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SGML_TO_XML, filepath, catalogdir, outputDir, errorDir);
 			log.info("command  : " + cmd);
 			executeScript(cmd);
-
-			log.info("Sgmlfile name." + sgmlfile.getOriginalFilename());
 			
 			// calculate execution time
 			String executionTime = calculateTime(startTime);
@@ -447,10 +475,14 @@ public class HomeController {
 		ResponseEntity<String> statusInfo = null;
 		try {
 			long startTime = System.currentTimeMillis();
+			
+			searchFlag=true;
 
 			String dirPath = null;
 			String output = MultiProcessorConstants.OUTPUT_FILE_NAME;
-			createLocalFolder();
+			
+			//creating folder for search
+			createLocalFolderForSearch();
 
 			// conversion to linux path
 			for (MultipartFile file : files) {
@@ -490,6 +522,9 @@ public class HomeController {
 
 			// calculate execution time
 			String executionTime = calculateTime(startTime);
+			
+			//clearing searchFlag
+			searchFlag=false;
 
 			// sending the response
 			if (this.SttdCode != 0) {
@@ -592,20 +627,41 @@ public class HomeController {
 	}
 	
 	/**
+	 * Method for creating a local folder for search
+	 */
+	private void createLocalFolderForSearch() {
+
+		// boolean to check if folder exists
+		boolean isExist = new File(bigXmlConfig.getSearchFolderPath()).exists();
+		if (!isExist) {
+			new File(context.getRealPath("/webapp")).mkdir();
+		}
+	}
+	
+	/**
 	 * Method for local file creation
 	 * @param file
 	 * @return absolute path of server file
 	 */
 	private String createLocalFile(MultipartFile file) throws Exception {
 		
+		File serverFile=null;
 		//create local folder
-		createLocalFolder();
+		if(!searchFlag) {
+			createLocalFolder();
+		}
 
 		String fileName = file.getOriginalFilename();
 		String modifiedFileName = FilenameUtils.getBaseName(fileName) + MultiProcessorConstants.DOT_CONST
 				+ FilenameUtils.getExtension(fileName).toUpperCase();
-		File serverFile = new File(bigXmlConfig.getUsersFolderPath() + File.separator + modifiedFileName);
+		if (searchFlag) {
+			serverFile = new File(bigXmlConfig.getSearchFolderPath() + File.separator + modifiedFileName);
+		} else {
+			serverFile = new File(bigXmlConfig.getUsersFolderPath() + File.separator + modifiedFileName);
+		}
 		
+		
+
 		//copy files and folder to Target folder
 		try {
 			FileUtils.writeByteArrayToFile(serverFile, file.getBytes());

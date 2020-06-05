@@ -181,10 +181,10 @@ GetParameters()
 					XML_OUTPUT=$OUTPUT_DIR/${OUTPUT_FILE}".formatted"
 				fi
 				
-				if [ $# = 2 ]; then
-					shift 2
-				elif [ $# = 3 ]; then
+				if [ $# = 3 ]; then
 					shift 3
+				elif [ $# = 2 ]; then
+					shift 2
 				else 
 					usage
 					exit 1
@@ -195,6 +195,7 @@ GetParameters()
 				INPUT_FILE="$2"
 				LEVEL="$3"
 				CATALOGUE_FILE="$4"
+				ERROR_DIR="$5"
 				OUTPUT_FILE=$(echo "$INPUT_FILE" | cut -f 1 -d '.')				
 				ROOT_DIR=$(dirname $2)
 				
@@ -202,13 +203,13 @@ GetParameters()
 				
 				if [ ! -z $4 ];then
 					#initialize special parameter
-					initializeForSGML				
+					initializeForSGML $ERROR_DIR				
 				fi
 				
-				if [ $# = 4 ]; then
+				if [ $# = 5 ]; then
 				    echo "INFO: You have provided ${CATALOGUE_FILE} for SGML splitting"
 					echo "INFO: You are using Splitting for SGML file"
-					shift 4
+					shift 5
 				elif [ $# = 3 ]; then
 					shift 3
 				elif [ $# = 2 ]; then
@@ -227,6 +228,7 @@ GetParameters()
 				INPUT_FILE="$2"
 				CHUNK_SIZE="$3"
 				CATALOGUE_FILE="$4"
+				ERROR_DIR="$5"
 				OUTPUT_FILE=$(echo "$INPUT_FILE" | cut -f 1 -d '.')				
 				ROOT_DIR=$(dirname $2)
 				
@@ -234,13 +236,13 @@ GetParameters()
 				
 				if [ ! -z $4 ];then
 					#initialize special parameter
-					initializeForSGML				
+					initializeForSGML $ERROR_DIR				
 				fi
 				
-				if [ $# = 4 ]; then
+				if [ $# = 5 ]; then
 				    echo "INFO: You have provided ${CATALOGUE_FILE} for SGML splitting"
 					echo "INFO: You are using Splitting for SGML file"					
-					shift 4
+					shift 5
 				elif [ $# = 3 ]; then
 					shift 3
 				elif [ $# = 2 ]; then
@@ -291,6 +293,7 @@ GetParameters()
 				INPUT_FILE="$2"
 				ELEMENT="$3"
 				CATALOGUE_FILE="$4"
+				ERROR_DIR="$5"
 				OUTPUT_FILE=$(echo "$INPUT_FILE" | cut -f 1 -d '.')				
 				ROOT_DIR=$(dirname $2)
 				
@@ -298,13 +301,13 @@ GetParameters()
 				
 				if [ ! -z $4 ];then
 					#initialize special parameter
-					initializeForSGML				
+					initializeForSGML $ERROR_DIR				
 				fi
 				
-				if [ $# = 4 ]; then
+				if [ $# = 5 ]; then
 				    echo "INFO: You have provided ${CATALOGUE_FILE} for SGML splitting"
 					echo "INFO: You are using Splitting for SGML file"
-					shift 4
+					shift 5
 				elif [ $# = 3 ]; then
 					shift 3
 				else 
@@ -346,16 +349,22 @@ GetParameters()
 			-sgx)
 				SGML_CONV_XML_MODE="$1"
 				SGML_FILE="$2"
-				CATALOGUE_FILE=$3
-				OUTPUT_FILE=$(echo "$SGML_FILE" | cut -f 1 -d '.')
+				OUTPUT_DIR="$4"
+				ERROR_DIR="$5"
+				FILE_NAME="${2##*/}"
+				MANUAL="${FILE_NAME%.*}"
+				CATALOGUE_FILE=$3/$MANUAL".CAT"
+				TMP_FILE=$3/$MANUAL".TMP"
+				#copy of catalog file as tmp in same folder
+				cp $CATALOGUE_FILE $TMP_FILE
 				ROOT_DIR=$(dirname $SGML_FILE)
-				XML_OUTPUT=$OUTPUT_FILE.XML
+				XML_OUTPUT=$OUTPUT_DIR/$MANUAL".XML"
 				
 				#initialize special parameter
-				initializeForSGML
+				initializeForSGML $ERROR_DIR
 				
-				if [ $# = 3 ]; then
-					shift 3
+				if [ $# = 5 ]; then
+					shift 5
 				else 
 					usage
 					exit 1
@@ -473,7 +482,7 @@ GetParameters()
 #Method to initialize some basic parameters for SGML files only
 initializeForSGML() {	
 	# Create an Empty Error file. Used to hold erros raised during SGML formatting
-	ERROR_FILE=$ROOT_DIR/PARSING.ERROR
+	ERROR_FILE=$ERROR_DIR/PARSING.ERROR
 	touch $ERROR_FILE
 }
 
@@ -541,7 +550,8 @@ echo "In Method: formatXML()---------------------------->"
 		xmllint --format --recover ${1} --output ${XML_FILE_TEMP}
 		if [ $? -eq 0 ];
 		then
-			if [ -z $FLAG_SGML ]; then
+			if [ -z $FLAG_SGML ]; 
+			then
 				echo "INFO: XML File ${1} formatted to ${XML_FILE_TEMP} Successfully."
 				echo "WARNING: Some Special Characters may have been dropped as they are not supported by XML Files!!!"
 			fi
@@ -624,12 +634,14 @@ convertSGMLToXML() {
 echo "In Method: convertSGMLToXML()"	
 	if [ -f $1 ]; 
 	then
+		
+		sed -i 's:./DTD/::g' $TMP_FILE
 		# Converting SGML into XML		
-		osx -e -g -wall -E0 -c ${2} -x no-nl-in-tag -x pi-escape -x empty -f $ERROR_FILE $1 > $XML_OUTPUT
+		osx -e -g -wall -E0 -c $TMP_FILE -x no-nl-in-tag -x pi-escape -x empty -f $ERROR_FILE $1 > $XML_OUTPUT
 		echo "INFO: ERROR_FILE: ${ERROR_FILE}"
 		if [ $? -eq 0 ];
 		then
-			if [ -z $ERROR_FILE ]; then		
+			if [ ! -z $XML_OUTPUT ]; then		
 				# To set flag if SGML formatting option has been taken
 				FLAG_SGML=1
 				# FORMAT Converted XML File
@@ -1112,7 +1124,7 @@ elif [ "${SEARCH_MODE}" = "-searcht" ];then
 elif [ "${SEARCH_MODE}" = "-searchp" ];then
 	searchFilesByPattern
 elif [ "${SGML_CONV_XML_MODE}" = "-sgx" ];then
-	convertSGMLToXML $SGML_FILE $CATALOGUE_FILE
+	convertSGMLToXML $SGML_FILE $TMP_FILE
 elif [ "${DELETE_MODE}" = "-deletedir" ];then
 	deleteContentsInFolder
 elif [ "${OPEN_MODE}" = "-opendir" ];then

@@ -10,6 +10,9 @@ public class MultiProcessorConstants {
 
 	/** .XML extension constant */
 	public static final String XML = "XML";
+	
+	/** .XML extension constant */
+	public static final String SGML = "SGML";
 
 	/** constant for . (dot) */
 	public static final String DOT_CONST = ".";

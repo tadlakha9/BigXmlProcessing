@@ -25,6 +25,14 @@ public class BigXmlProcessingConfig  {
 		 return usersFolderPath;
 	}
 	
+	/** The search folder path. */
+    @Value("${search.folder.path}")
+    private String searchFolderPath;
+   
+	public String getSearchFolderPath() {
+		 return searchFolderPath;
+	}
+	
 	/**
 	 * Index file name
 	 */
