@@ -865,19 +865,15 @@ calculateTime $start_time
 #$2 ==> Type of the file (Extension of the file).
 searchFilesByType() {
 echo "In Method: searchFilesByType()------------------------>"
-echo "WARNING: You have chosen option of searching by type of the file"
+echo "INFO: You have chosen option of searching by type of the file"
 	if [ -d $ROOT_DIR ]; 
 	then
 		FILES_LIST=$(find $ROOT_DIR -type f -iname "$TYPE")
 		if [[ ! -z $FILES_LIST ]];
 		then
+			echo ${FILES_LIST} | sed -e 's|/mnt/|\n\n|g' > $OUTPUT_FILE
+			
 			echo "INFO: File of ${TYPE} Searched Successfully in the directory ${ROOT_DIR}" 
-			echo -e 'Result: \n' > $OUTPUT_FILE
-			for f in ${FILES_LIST}
-			do 
-				echo ${f} >> $OUTPUT_FILE;
-				echo -e '\n' >> $OUTPUT_FILE;
-			done;
 			echo "INFO: Result has been saved in file ${OUTPUT_FILE}."
 		else
 			echo "WARNING: There is no such file of ${TYPE} exists in directory ${ROOT_DIR}."
@@ -898,24 +894,19 @@ calculateTime $start_time
 #$2 ==> content of the file.
 searchFilesByPattern() {
 echo "In Method: searchFilesByPattern()------------------------>"
-echo "WARNING: You have chosen option of searching by pattern of the content in  file"
+echo "INFO: You have chosen option of searching by pattern of the content in file"
 	if [ -d $ROOT_DIR ]; 
 	then
 		FILES_LIST=$(find ${ROOT_DIR} -type f | grep -H -r ${PATTERN} ${ROOT_DIR})
 		
 	    if [[ ! -z $FILES_LIST ]];
 		then
-			echo "INFO: File of ${TYPE} Searched Successfully in the directory ${ROOT_DIR}" 
-			echo -e 'Result: \n' > $OUTPUT_FILE
+			echo ${FILES_LIST} | sed -e 's|/mnt/|\n\n|g' > $OUTPUT_FILE
 			
-			for f in ${FILES_LIST}
-			do 
-				echo ${f} >> $OUTPUT_FILE;
-				echo -e '\n' >> $OUTPUT_FILE;
-			done;
+			echo "INFO: Search Successful for Content ${PATTERN} in the directory ${ROOT_DIR}." 
 			echo "INFO: Result has been saved in file ${OUTPUT_FILE}."
 		else
-			echo "ERROR: There is no such file with content ${TYPE} exists in directory ${ROOT_DIR}."
+			echo "WARNING: There is no such file with content ${PATTERN} exists in directory ${ROOT_DIR}."
 			exit 11
 		fi
 	else 
@@ -977,8 +968,7 @@ echo "In Method: validateXML()"
 		then
 			echo "INFO: XML File parsed successfully."
 		else
-			echo "ERROR: There is some error in File parsing Process." 
-			echo "ERROR: XML File can't be parsed proper"
+			echo "ERROR: There is some Parsing Error in File." 
 			exit 12
 		fi
 	else 
@@ -1004,7 +994,7 @@ echo "In Method: validateSGML()"
 				echo "INFO: SGML file is validated successfully"
 			fi			
 		else
-			echo "ERROR: There is some error in Coversion of SGML into XML." 
+			echo "ERROR: There is some error in Parsing of SGML." 
 			echo "ERROR: Check ${ERROR_FILE} file for more details"
 			exit 4
 		fi
