@@ -8,7 +8,7 @@ package com.soprasteria.springboot.constants;
 public class PropertyConstants {
 
 	/** constant for folder path */
-	public static final String FOLDER_PATH = "users.folder.path";
+	public static final String FOLDER_PATH = "multiprocessor.folder.path";
 	
 	/** constant for output folder path */
 	public static final String OUTPUT_PATH = "output.folder.path";
@@ -33,5 +33,8 @@ public class PropertyConstants {
 
 	/** constant for feedback to */
 	public static final String FEEDBACK_TO = "to";
+	
+	/** constant for search path */
+	public static final String SEARCH_PATH = "search.folder.path";
 
 }

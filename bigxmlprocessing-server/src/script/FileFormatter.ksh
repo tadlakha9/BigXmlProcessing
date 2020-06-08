@@ -375,12 +375,13 @@ GetParameters()
 				ROOT_DIR="$2"
 				TYPE="*.$3"
 				OUTPUT_DIR="$4"
-				if [ ! -z $4 ];then
-					OUTPUT_FILE=$OUTPUT_DIR/Result.txt
+				OUTPUT_FILE="$5"
+				if [ ! -z $5 ];then
+					OUTPUT_FILE=$OUTPUT_DIR/$OUTPUT_FILE
 				fi
 				
-				if [ $# = 3 ]; then
-					shift 3
+				if [ $# = 5 ]; then
+					shift 5
 				elif [ $# = 4 ]; then
 					shift 4
 				else 
@@ -393,12 +394,12 @@ GetParameters()
 				ROOT_DIR="$2"
 				PATTERN="$3"
 				OUTPUT_DIR="$4"
-				if [ ! -z $4 ];then
-					OUTPUT_FILE=$OUTPUT_DIR/Result.txt
+				if [ ! -z $5 ];then
+					OUTPUT_FILE=$OUTPUT_DIR/$OUTPUT_FILE
 				fi
 				
-				if [ $# = 3 ]; then
-					shift 3
+				if [ $# = 5 ]; then
+					shift 5
 				elif [ $# = 4 ]; then
 					shift 4
 				else 
@@ -409,7 +410,6 @@ GetParameters()
 			-deletedir)
 				DELETE_MODE="$1"
 				ROOT_DIR="$2"
-				
 			    if [ $# = 2 ]; then
 					shift 2
 				else 

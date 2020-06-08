@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import com.soprasteria.springboot.constants.Messages;
 import com.soprasteria.springboot.constants.MultiProcessorConstants;
+import com.soprasteria.springboot.constants.PropertyConstants;
 import com.soprasteria.springboot.constants.ScriptConstants;
 
 public class MultiprocessorUtil {
@@ -109,6 +110,39 @@ public class MultiprocessorUtil {
 		}
 		return cmd.toString();
 
+	}
+	
+	
+	/**
+	 * Method to clean given directory
+	 * 
+	 * @param dirPath Directory given to delete its content
+	 * @throws Exception
+	 */
+	public static void deleteDirectory(String dirPath) throws Exception {
+		ExecProcess exec = null;
+		String cmd;
+
+		if (new File(dirPath).exists()) {
+			// getting script path
+			String scriptpath = getApplicationProperty(PropertyConstants.SCRIPT_PATH);
+
+			File localScript = new File(scriptpath);
+			String localScriptPath = MultiProcessorConstants.INVERTED_COMMA
+					+ convertToScriptPath(localScript.getAbsolutePath()) + MultiProcessorConstants.INVERTED_COMMA;
+			dirPath = convertToScriptPath(dirPath);
+
+			// deleting contents in folder before start of application
+			cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.BASH, localScriptPath,
+					ScriptConstants.DELETE_CONTENT, dirPath);
+
+			exec = new ExecProcess(cmd);
+			try {
+				exec.run();
+			} catch (Exception e) {
+				throw new Exception(e.getLocalizedMessage());
+			}
+		}
 	}
 }
 

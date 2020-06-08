@@ -483,6 +483,10 @@ public class HomeController {
 			
 			//creating folder for search
 			createLocalFolderForSearch();
+			
+			//deleting contents of search folder
+			dirPath = MultiprocessorUtil.getApplicationProperty(PropertyConstants.SEARCH_PATH);
+			MultiprocessorUtil.deleteDirectory(dirPath);
 
 			// conversion to linux path
 			for (MultipartFile file : files) {
@@ -494,22 +498,21 @@ public class HomeController {
 			dirPath = filenew.getParent();
 			dirPath = dirPath.replace(MultiProcessorConstants.BACKSLASH, MultiProcessorConstants.SLASH);
 			
-			//create output directory
-			String outputDir = createOutputDir(); //have to check to add outputname of resultfile as well
-
+			//create log directory for search result
+			String logDir = createLogDir();
 
 			// executing the script
 			if (searchId.equalsIgnoreCase("Text")) {
 				if (text != null) {
 					String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SEARCH_BY_PATTERN, dirPath,
-							text, outputDir);
+							text, logDir,output);
 					log.info("command :  " + cmd);
 					executeScript(cmd);
 				}
 			} else {
 				if (extension != null) {
 					String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SEARCH_BY_EXTENSION, dirPath,
-							extension, outputDir);
+							extension, logDir,output);
 					log.info("command  : " + cmd);
 					executeScript(cmd);
 				}
@@ -659,8 +662,6 @@ public class HomeController {
 		} else {
 			serverFile = new File(bigXmlConfig.getUsersFolderPath() + File.separator + modifiedFileName);
 		}
-		
-		
 
 		//copy files and folder to Target folder
 		try {
