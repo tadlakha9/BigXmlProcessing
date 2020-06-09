@@ -13,7 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 export class SplitComponent implements OnInit {
 
   filePath:File;
-  Catfile:File;
+  files:File[]=[];
   typeOfSplit:string;
   splitType = ['line', 'size'];
   splitByRadio='';
@@ -42,8 +42,8 @@ export class SplitComponent implements OnInit {
   }
 
   onSelectedCatalogFile(event){
-    console.log(event.target.files);
-    this.Catfile = event.target.files[0];
+    this.files = event.target.files;
+    console.log("files:",this.files); 
   }
   save(form:NgForm){
     this.display = true;
@@ -61,10 +61,9 @@ export class SplitComponent implements OnInit {
     formData.append('splitByLine', form.value.splitByLine);
     formData.append('splitBySize', form.value.splitBySize);
     formData.append('fileType', form.value.fileType);
-    if(this.Catfile == undefined){
-      this.Catfile = new File([""], "catalog.txt");
+    for (var file of this.files) {
+    formData.append('filecat' , file, file.name); 
     }
-    formData.append('filecat', this.Catfile, this.Catfile.name);
     
     this.appService.splitService(formData).
     subscribe((response) => {      

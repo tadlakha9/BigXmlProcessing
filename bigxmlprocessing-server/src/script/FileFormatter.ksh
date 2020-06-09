@@ -194,7 +194,6 @@ GetParameters()
 				SPLIT_MODE="$1"
 				INPUT_FILE="$2"
 				LEVEL="$3"
-				CATALOGUE_FILE="$4"
 				ERROR_DIR="$5"
 				OUTPUT_FILE=$(echo "$INPUT_FILE" | cut -f 1 -d '.')				
 				ROOT_DIR=$(dirname $2)
@@ -203,7 +202,13 @@ GetParameters()
 				
 				if [ ! -z $4 ];then
 					#initialize special parameter
-					initializeForSGML $ERROR_DIR				
+					initializeForSGML $ERROR_DIR
+					FILE_NAME="${2##*/}"
+					MANUAL="${FILE_NAME%.*}"
+					CATALOGUE_FILE=$4/$MANUAL".CAT"
+					TMP_FILE=$4/$MANUAL".TMP"
+					#copy of catalog file as tmp in same folder
+					cp $CATALOGUE_FILE $TMP_FILE
 				fi
 				
 				if [ $# = 5 ]; then
@@ -227,7 +232,6 @@ GetParameters()
 				SPLIT_MODE="$1"
 				INPUT_FILE="$2"
 				CHUNK_SIZE="$3"
-				CATALOGUE_FILE="$4"
 				ERROR_DIR="$5"
 				OUTPUT_FILE=$(echo "$INPUT_FILE" | cut -f 1 -d '.')				
 				ROOT_DIR=$(dirname $2)
@@ -236,7 +240,13 @@ GetParameters()
 				
 				if [ ! -z $4 ];then
 					#initialize special parameter
-					initializeForSGML $ERROR_DIR				
+					initializeForSGML $ERROR_DIR
+					FILE_NAME="${2##*/}"
+					MANUAL="${FILE_NAME%.*}"
+					CATALOGUE_FILE=$4/$MANUAL".CAT"
+					TMP_FILE=$4/$MANUAL".TMP"
+					#copy of catalog file as tmp in same folder
+					cp $CATALOGUE_FILE $TMP_FILE
 				fi
 				
 				if [ $# = 5 ]; then
@@ -292,7 +302,6 @@ GetParameters()
 				SPLIT_MODE="$1"
 				INPUT_FILE="$2"
 				ELEMENT="$3"
-				CATALOGUE_FILE="$4"
 				ERROR_DIR="$5"
 				OUTPUT_FILE=$(echo "$INPUT_FILE" | cut -f 1 -d '.')				
 				ROOT_DIR=$(dirname $2)
@@ -301,7 +310,14 @@ GetParameters()
 				
 				if [ ! -z $4 ];then
 					#initialize special parameter
-					initializeForSGML $ERROR_DIR				
+					initializeForSGML $ERROR_DIR
+					FILE_NAME="${2##*/}"
+					MANUAL="${FILE_NAME%.*}"
+					CATALOGUE_FILE=$4/$MANUAL".CAT"
+					TMP_FILE=$4/$MANUAL".TMP"
+					#copy of catalog file as tmp in same folder
+					cp $CATALOGUE_FILE $TMP_FILE
+						
 				fi
 				
 				if [ $# = 5 ]; then
@@ -394,6 +410,7 @@ GetParameters()
 				ROOT_DIR="$2"
 				PATTERN="$3"
 				OUTPUT_DIR="$4"
+				OUTPUT_FILE="$5"
 				if [ ! -z $5 ];then
 					OUTPUT_FILE=$OUTPUT_DIR/$OUTPUT_FILE
 				fi
@@ -1094,15 +1111,15 @@ if [ "${DIR_MODE}" = "-d" ];then
 elif [ "${XML_FORMAT_MODE}" = "-format" ];then
 	formatXML $INPUT_FILE $XML_OUTPUT
 elif [ "${SPLIT_MODE}" = "-splits" ];then
-	splitBySize $INPUT_FILE $CHUNK_SIZE $CATALOGUE_FILE 
+	splitBySize $INPUT_FILE $CHUNK_SIZE $TMP_FILE 
 elif [ "${SPLIT_MODE}" = "-fsplits" ];then
 	flatSplitBySize $INPUT_FILE $CHUNK_SIZE 
 elif [ "${SPLIT_MODE}" = "-fsplitl" ];then
 	flatsplitByLine $INPUT_FILE $LINE_SIZE
 elif [ "${SPLIT_MODE}" = "-splitl" ];then
-	splitByLevel $INPUT_FILE $LEVEL $CATALOGUE_FILE
+	splitByLevel $INPUT_FILE $LEVEL $TMP_FILE
 elif [ "${SPLIT_MODE}" = "-splite" ];then
-	splitByElement $INPUT_FILE $ELEMENT $CATALOGUE_FILE
+	splitByElement $INPUT_FILE $ELEMENT $TMP_FILE
 elif [ "${SORT_MODE}" = "-sort" ];then
 	sortFile $INPUT_FILE $XML_OUTPUT $CATALOGUE_FILE
 elif [ "${SGML_CONV_XML_MODE}" = "-validatesgml" ];then

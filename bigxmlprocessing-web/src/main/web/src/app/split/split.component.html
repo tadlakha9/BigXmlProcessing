@@ -57,11 +57,11 @@
      </div>
     </div>
   
-    <div *ngIf="fileType == 'SGML'" >
+    <div>
       <div class=" col-md-12">
         <div class=" form-group">
-          <label for="catalog"> Catalog file: </label>  <br>
-          <input type="file" id="catalog" ngModel name="catalog" (change)="onSelectedCatalogFile($event)"/>
+          <label for="catalog"> Catalog folder: </label>  <br>
+          <input type="file" #folderInput id="catalog" webkitdirectory directory (change)="onSelectedCatalogFile($event)"/>
         </div>
       </div>
     </div> 

@@ -148,29 +148,38 @@ public class HomeController {
 			@RequestParam("size") String size, @RequestParam("splitByElement") String splitByElement,
 			@RequestParam("splitType") String splitType, @RequestParam("splitByLine") String splitByLine,
 			@RequestParam("splitBySize") String splitBySize, @RequestParam("fileType") String fileType,
-			@RequestParam("filecat") MultipartFile catFile) throws Exception {
+			@RequestParam("filecat") MultipartFile[]  catalogfolder) throws Exception {
 
 		ResponseEntity<String> statusInfo = null;
 		String errorDir = null;
 
 		try {
 			long startTime = System.currentTimeMillis();
-
+			String catalogdir= null;
 			log.info("File name." + file.getOriginalFilename());
 			Split split = new Split(typeOfSplit, level, size, splitByElement, splitBySize, splitBySize, splitBySize,
 					fileType);
 			log.info("splitObject:" + split);
-			log.info("catFile name." + catFile.getOriginalFilename());
+			
 
 			// getting the file path and catalogue file path
 			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
-			String catfilepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(catFile));
-
+			
 			// commands for different operations
 			String cmd = MultiProcessorConstants.EMPTY_STRING;
-			
+
 			if (fileType.equalsIgnoreCase(MultiProcessorConstants.SGML)) {
 				errorDir = createLogDir();
+				// conversion to linux path
+				for (MultipartFile catfile : catalogfolder) {
+					catalogdir = MultiprocessorUtil.convertToScriptPath(createLocalFile(catfile));
+					System.out.println("catalogdir:" + catalogdir);
+				}
+
+				// after uploading, now getting directory path
+				File filenew = new File(catalogdir);
+				catalogdir = filenew.getParent();
+				catalogdir = catalogdir.replace(MultiProcessorConstants.BACKSLASH, MultiProcessorConstants.SLASH);
 			}
 			
 			// switch case for different types of split
@@ -180,7 +189,7 @@ public class HomeController {
 					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_LEVEL, filepath, level);
 				} else {
 					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_LEVEL, filepath, level,
-							catfilepath,errorDir);
+							catalogdir,errorDir);
 				}
 				break;
 			case MultiProcessorConstants.OPTION_SPLIT_BY_SIZE:
@@ -189,7 +198,7 @@ public class HomeController {
 							size + ScriptConstants.SIZE_IN_KB);
 				} else {
 					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_SIZE, filepath,
-							size + ScriptConstants.SIZE_IN_KB, catfilepath, errorDir);
+							size + ScriptConstants.SIZE_IN_KB, catalogdir, errorDir);
 				}
 				break;
 			case MultiProcessorConstants.OPTION_SPLIT_BY_ELEMENT:
@@ -199,7 +208,7 @@ public class HomeController {
 
 				} else {
 					cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SPLIT_BY_ELEMENT, filepath,
-							splitByElement, catfilepath, errorDir);
+							splitByElement, catalogdir, errorDir);
 				}
 				break;
 
