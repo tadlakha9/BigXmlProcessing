@@ -151,9 +151,11 @@ public class ExecProcess {
 
             // update Standard Error
             mStderr = sgErr.getString();
-            System.out.println("Return Code: "+mRet);
-            System.out.println("Std Out: "+mStdout);
-            System.out.println("Std Error: "+mStderr);
+            
+            // trace the Exit Codes
+            theLoggger.log(Level.INFO, Messages.RETURN_VALUE, mRet);
+            theLoggger.log(Level.INFO, Messages.OUTPUT, mStdout);
+            theLoggger.log(Level.INFO, Messages.ERROR, mStderr);
         } catch (IOException ioe) {
             // Avoid that system error to be treated as command with non zero return code
             // Do not treat such an error as bad return code
@@ -359,19 +361,5 @@ public class ExecProcess {
             return sb.toString();
         }
     }
-    
-//    public static void main(String[] args) throws Exception {
-//    	ExecProcess p = null;
-//    	String cmd = "";
-//
-//        try {
-//        	cmd = "bash /home/agupta/FileFormatter.ksh -sort /home/agupta/AMM.XML"; 
-//            p = new ExecProcess(cmd);
-//            p.run();
-//        } catch (Exception e) {
-//        	if (p != null)
-//        		p.theLoggger.log(Level.SEVERE, e.getMessage());
-//            throw e;
-//        } 
-//	}
+
 }

@@ -15,7 +15,6 @@
    <module>bigxmlprocessing-server</module>
     <module>bigxmlprocessing-web</module>
   </modules>
-  
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>

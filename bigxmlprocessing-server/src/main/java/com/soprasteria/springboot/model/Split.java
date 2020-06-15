@@ -1,17 +1,15 @@
 package com.soprasteria.springboot.model;
 
-import org.springframework.web.multipart.MultipartFile;
-
 public class Split {
 	
-	public String typeOfSplit;
-	public String level;
-	public String size;
-	public String splitByElement;
-	public String splitType;
-	public String splitByLine;
-	public String splitBySize;
-	public String fileType;
+	private String typeOfSplit;
+	private String level;
+	private String size;
+	private String splitByElement;
+	private String splitType;
+	private String splitByLine;
+	private String splitBySize;
+	private String fileType;
 	
 	
 	public Split(String typeOfSplit, String level, String size, String splitByElement, String splitType,
@@ -34,11 +32,5 @@ public class Split {
 				+ splitByElement + ", splitType=" + splitType + ", splitByLine=" + splitByLine + ", splitBySize="
 				+ splitBySize + ", fileType=" + fileType + "]";
 	}
-	
-
-	
-
-
-	
 
 }

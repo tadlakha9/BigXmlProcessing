@@ -67,5 +67,17 @@ public class MultiProcessorConstants {
 
 	/** Constant for total execution time **/
 	public static final String EXECUTION_TIME = "Total Execution Time";
+	
+	/** Constant for Suffix */
+	public static final String AIX = "aix";
+	
+	/** Constant for Suffix in LiNUX */
+	public static final String NUX = "nux";
+	
+	/** Constant for Suffix in uNIX */
+	public static final String NIX = "nix";
+	
+	/** Constant for Suffix in WINdows */
+	public static final String WIN = "win";
 
 }

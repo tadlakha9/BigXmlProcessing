@@ -16,9 +16,13 @@ public class MultiprocessorUtil {
 	 * Properties object application parameters
 	 */
 	private static Properties applicationProperties;
-	/** * Application.properties path */
-	private static final String applicationPropertiesFilePath = "src//main//resources//application.properties";
-
+	
+	/** Application.properties file path */
+	private static final String APPLICATION_PROPERTY_FILE_PATH = "src//main//resources//application.properties";
+	
+	/** Operating System on which application is running */
+	private static final String OS = System.getProperty("os.name");
+	
 	/**
 	 * Method to convert window path to Linux Path
 	 * 
@@ -35,11 +39,16 @@ public class MultiprocessorUtil {
 
 		String[] driveAndFolder = path.split(MultiProcessorConstants.COLON);
 
-		// Handle invalid Paths
+		// Check if already in script mode
 		if (driveAndFolder.length == 0 || driveAndFolder.length == 1)
-			throw new IllegalArgumentException(Messages.INVALID_PATH);
+			return path;
 		else {
-			processedPath.append(ScriptConstants.ROOTPATH);
+			// Append '/mnt/' only if it is 'Window 10' otherwise only '/'
+			if (isWindows()) 
+				processedPath.append(ScriptConstants.ROOTPATH);
+			else if (isUnixOrLinux())
+				processedPath.append(MultiProcessorConstants.SLASH);
+			
 			processedPath.append(driveAndFolder[0].toLowerCase());
 			processedPath.append(
 					driveAndFolder[1].replace(MultiProcessorConstants.BACKSLASH, MultiProcessorConstants.SLASH));
@@ -58,7 +67,7 @@ public class MultiprocessorUtil {
 	 */
 	private static Properties loadParamFile(boolean obligatory) throws IOException {
 		Properties properties = null;
-		File applicationPropertyFile = new File(applicationPropertiesFilePath);
+		File applicationPropertyFile = new File(APPLICATION_PROPERTY_FILE_PATH);
 		try (FileInputStream paramStream = new FileInputStream(applicationPropertyFile)) {
 			properties = new Properties();
 			properties.load(paramStream);
@@ -143,6 +152,24 @@ public class MultiprocessorUtil {
 				throw new Exception(e.getLocalizedMessage());
 			}
 		}
+	}
+	
+	/**
+	 * Method to check if OS: Windows
+	 * @return boolean: true if Windows, false otherwise
+	 */
+	public static boolean isWindows() {
+		return (OS.indexOf(MultiProcessorConstants.WIN) >= 0);
+	}
+	
+	/**
+	 * Method to check if OS: Unix or Linux
+	 * 
+	 * @return boolean: true if Unix or Linux, false otherwise
+	 */
+	public static boolean isUnixOrLinux() {
+		return (OS.indexOf(MultiProcessorConstants.NIX) >= 0 || OS.indexOf(MultiProcessorConstants.NUX) >= 0
+				|| OS.indexOf(MultiProcessorConstants.AIX) >= 0);
 	}
 }
 
