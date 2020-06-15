@@ -61,6 +61,9 @@ export class SplitComponent implements OnInit {
     formData.append('splitByLine', form.value.splitByLine);
     formData.append('splitBySize', form.value.splitBySize);
     formData.append('fileType', form.value.fileType);
+    if(this.files.length==0 ){
+      this.files.push( new File([""], "filecatalog.txt"));
+      }
     for (var file of this.files) {
     formData.append('filecat' , file, file.name); 
     }
