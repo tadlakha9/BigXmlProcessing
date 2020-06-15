@@ -12,12 +12,10 @@ import org.springframework.context.annotation.Configuration;
 
 public class BigXmlProcessingConfig  {
 
-
     /** The Users folder path. */
     @Value("${users.folder.path}")
     private String usersFolderPath;
    
-	 
     /**
      * {@inheritDoc}
      */
@@ -44,8 +42,6 @@ public class BigXmlProcessingConfig  {
 		return indexpage;
 	}
 	
-	
-	
 	/**
 	 * Script File path 	
 	 */
@@ -68,5 +64,37 @@ public class BigXmlProcessingConfig  {
 		return resultFile;
 	}
 	
+	/**
+	 * Root Path For Application
+	 */
+	 @Value("${application.root.path}")
+	private String applicationRootPath;
+	
+	
+	public String getApplicationRootPath() {
+		return applicationRootPath;
+	}
+	
+	/**
+	 * Log Folder Path
+	 */
+	 @Value("${error.folder.path}")
+	private String logFolderPath;
+	
+	
+	public String getLogFolderPath() {
+		return logFolderPath;
+	}
+	
+	/**
+	 * Output Folder Path
+	 */
+	 @Value("${output.folder.path}")
+	private String outputFolderPath;
+	
+	
+	public String getOutputFolderPath() {
+		return outputFolderPath;
+	}
 	
 }

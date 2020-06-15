@@ -33,7 +33,7 @@ public class Application extends SpringBootServletInitializer {
 	private static void cleanMultiFolder() throws Exception {
 		try {
 			// getting path of multiprocessor folder
-			String dirPath = MultiprocessorUtil.getApplicationProperty(PropertyConstants.FOLDER_PATH);
+			String dirPath = MultiprocessorUtil.getApplicationProperty(PropertyConstants.MULTIPROCESSOR_PATH);
 			MultiprocessorUtil.deleteDirectory(dirPath);
 		} catch (Exception e) {
 			throw new Exception(e.getLocalizedMessage());

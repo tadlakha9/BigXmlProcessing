@@ -77,4 +77,10 @@ public class Messages {
 	/** message for Error while reading output of execution **/
 	public static final String ERROR_WHILE_READING_EXECUTION =  "Error while reading output of an execution";
 	
+	/** File Name */
+	public static final String FILE_NAME = "File name: {0}";
+	
+	/** Command */
+	public static final String COMMAND = "command: {0}";
+	
 }

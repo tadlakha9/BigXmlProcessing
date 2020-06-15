@@ -30,7 +30,7 @@ public class MultiprocessorUtil {
 	 * @return Processed Path
 	 * @throws IllegalArgumentException if an invalid path is provided
 	 */
-	public static String convertToScriptPath(String path) {
+	public static String convertToScriptPath(String path, String rootPath) {
 		StringBuilder processedPath = new StringBuilder();
 
 		// Return Empty Path if there is nothing to process in original Path
@@ -44,10 +44,8 @@ public class MultiprocessorUtil {
 			return path;
 		else {
 			// Append '/mnt/' only if it is 'Window 10' otherwise only '/'
-			if (isWindows()) 
-				processedPath.append(ScriptConstants.ROOTPATH);
-			else if (isUnixOrLinux())
-				processedPath.append(MultiProcessorConstants.SLASH);
+			if (rootPath != null && !rootPath.isEmpty()) 
+				processedPath.append(rootPath);
 			
 			processedPath.append(driveAndFolder[0].toLowerCase());
 			processedPath.append(
@@ -135,11 +133,14 @@ public class MultiprocessorUtil {
 		if (new File(dirPath).exists()) {
 			// getting script path
 			String scriptpath = getApplicationProperty(PropertyConstants.SCRIPT_PATH);
+			
+			// getting root path
+			String rootPath = getApplicationProperty(PropertyConstants.ROOT_PATH);
 
 			File localScript = new File(scriptpath);
 			String localScriptPath = MultiProcessorConstants.INVERTED_COMMA
-					+ convertToScriptPath(localScript.getAbsolutePath()) + MultiProcessorConstants.INVERTED_COMMA;
-			dirPath = convertToScriptPath(dirPath);
+					+ convertToScriptPath(localScript.getAbsolutePath(), rootPath) + MultiProcessorConstants.INVERTED_COMMA;
+			dirPath = convertToScriptPath(dirPath, rootPath);
 
 			// deleting contents in folder before start of application
 			cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.BASH, localScriptPath,

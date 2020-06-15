@@ -44,17 +44,17 @@ public class HomeController {
 	/**
 	 * SttdCode is return value after execution of command
 	 */
-	int SttdCode = 0;
+	int sttdCode = 0;
 	
 	/**
 	 *StdOut is standard output after execution of command 
 	 */
-	String StdOut = null;
+	String stdOut = null;
 	
 	/**
 	 * StdErr is error returned after execution of command
 	 */
-	String StdErr = null;
+	String stdErr = null;
 	
 	/**
 	 * message for return response
@@ -105,7 +105,7 @@ public class HomeController {
 		
 		//getting file path for FileFormatter script
 		String localScriptPath = MultiProcessorConstants.INVERTED_COMMA
-				+ MultiprocessorUtil.convertToScriptPath(localScript.getAbsolutePath())
+				+ MultiprocessorUtil.convertToScriptPath(localScript.getAbsolutePath(), bigXmlConfig.getApplicationRootPath())
 				+ MultiProcessorConstants.INVERTED_COMMA;
 
 		try {
@@ -114,14 +114,16 @@ public class HomeController {
 					+ command;
 			exec = new ExecProcess(cmd);
 			exec.run();
-			this.StdOut = exec.getStdout();
-			this.SttdCode = exec.getReturnValue();
-			this.StdErr = exec.getStderr();
+			this.stdOut = exec.getStdout();
+			this.sttdCode = exec.getReturnValue();
+			this.stdErr = exec.getStderr();
 
 		} catch (Exception e) {
-			this.StdErr = exec.getStderr();
-			this.StdOut = exec.getStdout();
-			e.printStackTrace();
+			if (exec != null) {
+				this.stdErr = exec.getStderr();
+				this.stdOut = exec.getStdout();
+			}
+			
 			throw new Exception(e.getMessage());
 		}
 	}
@@ -152,28 +154,29 @@ public class HomeController {
 
 		ResponseEntity<String> statusInfo = null;
 		String errorDir = null;
+		String rootPAth = bigXmlConfig.getApplicationRootPath();
 
 		try {
 			long startTime = System.currentTimeMillis();
 			String catalogdir= null;
-			log.info("File name." + file.getOriginalFilename());
+			log.info(Messages.FILE_NAME, file.getOriginalFilename());
 			Split split = new Split(typeOfSplit, level, size, splitByElement, splitBySize, splitBySize, splitBySize,
 					fileType);
-			log.info("splitObject:" + split);
+			log.info("splitObject: {0}", split);
 			
 
-			// getting the file path and catalogue file path
-			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
+			// getting the file path and catalog file path
+			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file), rootPAth);
 			
 			// commands for different operations
 			String cmd = MultiProcessorConstants.EMPTY_STRING;
 
 			if (fileType.equalsIgnoreCase(MultiProcessorConstants.SGML)) {
 				errorDir = createLogDir();
-				// conversion to linux path
+				// conversion to Linux path
 				for (MultipartFile catfile : catalogfolder) {
-					catalogdir = MultiprocessorUtil.convertToScriptPath(createLocalFile(catfile));
-					System.out.println("catalogdir:" + catalogdir);
+					catalogdir = MultiprocessorUtil.convertToScriptPath(createLocalFile(catfile), rootPAth);
+					log.info("catalogdir: {0}", catalogdir);
 				}
 
 				// after uploading, now getting directory path
@@ -228,26 +231,25 @@ public class HomeController {
 			}
 
 			// executing the script
-			log.info("command :  " + cmd);
+			log.info(Messages.COMMAND, cmd);
 			executeScript(cmd);
 
 			// calculate execution time
 			String executionTime = calculateTime(startTime);
 
 			// sending the response
-			if (this.SttdCode != 0) {
-				String message = Messages.ERROR_IN_SPLIT + this.StdErr;
+			if (this.sttdCode != 0) {
+				message = Messages.ERROR_IN_SPLIT + this.stdErr;
 				statusInfo = alert(message, true);
 			} else {
-				String message = Messages.SPLIT_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.StdOut
+				message = Messages.SPLIT_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.stdOut
 						+ MultiProcessorConstants.NEWLINE + executionTime;
 				statusInfo = alert(message, false);
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			if (this.SttdCode != 0) {
-				String message = Messages.ERROR_IN_SPLIT + this.StdErr;
+			if (this.sttdCode != 0) {
+				message = Messages.ERROR_IN_SPLIT + this.stdErr;
 				throw new Exception(message);
 			} else
 				throw new Exception(e.getLocalizedMessage());
@@ -278,8 +280,8 @@ public class HomeController {
 			long startTime = System.currentTimeMillis();
 
 			// calculating the file path
-			log.info("File name." + file.getOriginalFilename());
-			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
+			log.info(Messages.FILE_NAME, file.getOriginalFilename());
+			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file), bigXmlConfig.getApplicationRootPath());
 			
 			//create output directory
 			String outputDir = createOutputDir();
@@ -287,26 +289,26 @@ public class HomeController {
 			// executing the script
 			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SORT, filepath,outputDir);
 
-			log.info("command   " + cmd);
+			log.info(Messages.COMMAND, cmd);
 			executeScript(cmd);
 
 			// calculate execution time
 			String executionTime = calculateTime(startTime);
 
 			// sending the response
-			if (this.SttdCode != 0) {
-				String message = Messages.ERROR_IN_SORT + this.StdErr;
+			if (this.sttdCode != 0) {
+				message = Messages.ERROR_IN_SORT + this.stdErr;
 				statusInfo = alert(message, true);
 			} else {
-				String message = Messages.SORT_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.StdOut
+				message = Messages.SORT_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.stdOut
 						+ MultiProcessorConstants.NEWLINE + executionTime;
 				statusInfo = alert(message, false);
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			if (this.SttdCode != 0) {
-				String message = Messages.ERROR_IN_SORT + this.StdErr;
+			
+			if (this.sttdCode != 0) {
+				message = Messages.ERROR_IN_SORT + this.stdErr;
 				throw new Exception(message);
 			}else 
 				throw new Exception(e.getLocalizedMessage());	
@@ -329,37 +331,37 @@ public class HomeController {
 		try {
 			long startTime = System.currentTimeMillis();
 			// to be included SGM file option as well
-			log.info("File name." + file.getOriginalFilename());
+			log.info(Messages.FILE_NAME, file.getOriginalFilename());
 
 			// create a local file
 			PrettyPrint print = new PrettyPrint(file.getOriginalFilename());
-			log.info("Pretty Print fields:" + print);
-			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
+			log.info("Pretty Print fields: {0}", print);
+			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file), bigXmlConfig.getApplicationRootPath());
 			
 			//create output directory
 			String outputDir = createOutputDir();
 			
 			// execute the script
 			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.FORMAT, filepath,outputDir);
-			log.info("command executing  :  " + cmd);
+			log.info("command executing: {0}", cmd);
 			executeScript(cmd);
 
 			// calculate execution time
 			String executionTime = calculateTime(startTime);
 
 			// sending the response
-				if (this.SttdCode != 0) {
-				String message = Messages.ERROR_IN_FORMATTING + this.StdErr;
+				if (this.sttdCode != 0) {
+				message = Messages.ERROR_IN_FORMATTING + this.stdErr;
 				statusInfo = alert(message, true);
 			} else {
-				String message = Messages.FORMAT_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.StdOut
+				message = Messages.FORMAT_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.stdOut
 						+ MultiProcessorConstants.NEWLINE + executionTime;
 				statusInfo = alert(message, false);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			if (this.SttdCode != 0) {
-				String message = Messages.ERROR_IN_FORMATTING + this.StdErr;
+			
+			if (this.sttdCode != 0) {
+				message = Messages.ERROR_IN_FORMATTING + this.stdErr;
 				throw new Exception(message);
 			}else 
 				throw new Exception(e.getLocalizedMessage());	
@@ -370,18 +372,18 @@ public class HomeController {
 	}
 
 	/**
-	 * To create an Output directory for genarated files
+	 * To create an Output directory for generated files
 	 * 
 	 * @return outputDir 
 	 * @throws IOException
 	 */
 	private String createOutputDir() throws IOException {
-		String outputDir = MultiprocessorUtil.getApplicationProperty(PropertyConstants.OUTPUT_PATH);
+		String outputDir = bigXmlConfig.getOutputFolderPath();
 		File dir = new File(outputDir);
 		if (!dir.exists()) {
 			dir.mkdir();
 		}
-		outputDir = MultiprocessorUtil.convertToScriptPath(outputDir);
+		outputDir = MultiprocessorUtil.convertToScriptPath(outputDir, bigXmlConfig.getApplicationRootPath());
 
 		return outputDir;
 	}
@@ -397,7 +399,7 @@ public class HomeController {
 		if (!edir.exists()) {
 			edir.mkdir();
 		}
-		errorDir = MultiprocessorUtil.convertToScriptPath(errorDir);
+		errorDir = MultiprocessorUtil.convertToScriptPath(errorDir, bigXmlConfig.getApplicationRootPath());
 
 		return errorDir;
 	}
@@ -420,18 +422,18 @@ public class HomeController {
 			long startTime = System.currentTimeMillis();
 			String catalogdir= null;
 			// calculating the path of file 
-			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(sgmlfile));
+			String filepath = MultiprocessorUtil.convertToScriptPath(createLocalFile(sgmlfile), bigXmlConfig.getApplicationRootPath());
 			
-			//create output and logdirectory
+			//create output and log directory
 			String outputDir = createOutputDir();
 			String errorDir = createLogDir();
 			
 			Converter converter = new Converter(sgmlfile.getOriginalFilename(), errorDir);
-			log.info("Converter : " + converter);
+			log.info("Converter: {0} ", converter);
 			
-			// conversion to linux path
+			// conversion to Linux path
 			for (MultipartFile file : catalogfolder) {
-				catalogdir = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
+				catalogdir = MultiprocessorUtil.convertToScriptPath(createLocalFile(file), bigXmlConfig.getApplicationRootPath());
 			}
 			// after uploading, now getting directory path
 			File filenew = new File(catalogdir);
@@ -440,25 +442,25 @@ public class HomeController {
 					
 			// executing the script
 			String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SGML_TO_XML, filepath, catalogdir, outputDir, errorDir);
-			log.info("command  : " + cmd);
+			log.info(Messages.COMMAND, cmd);
 			executeScript(cmd);
 			
 			// calculate execution time
 			String executionTime = calculateTime(startTime);
 
 			// sending the response
-			if (this.SttdCode != 0) {
-				String message = Messages.ERROR_IN_CONVERSION + this.StdErr;
+			if (this.sttdCode != 0) {
+				message = Messages.ERROR_IN_CONVERSION + this.stdErr;
 				statusInfo = alert(message, true);
 			} else {
-				String message = Messages.CONVERSION_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.StdOut
+				message = Messages.CONVERSION_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.stdOut
 						+ MultiProcessorConstants.NEWLINE + executionTime;
 				statusInfo = alert(message, false);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			if (this.SttdCode != 0) {
-				String message = Messages.ERROR_IN_CONVERSION + this.StdErr;
+			
+			if (this.sttdCode != 0) {
+				message = Messages.ERROR_IN_CONVERSION + this.stdErr;
 				throw new Exception(message);
 			}else 
 				throw new Exception(e.getLocalizedMessage());	
@@ -494,12 +496,12 @@ public class HomeController {
 			createLocalFolderForSearch();
 			
 			//deleting contents of search folder
-			dirPath = MultiprocessorUtil.getApplicationProperty(PropertyConstants.SEARCH_PATH);
+			dirPath = bigXmlConfig.getSearchFolderPath();
 			MultiprocessorUtil.deleteDirectory(dirPath);
 
-			// conversion to linux path
+			// conversion to Linux path
 			for (MultipartFile file : files) {
-				dirPath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file));
+				dirPath = MultiprocessorUtil.convertToScriptPath(createLocalFile(file), bigXmlConfig.getApplicationRootPath());
 			}
 
 			// getting directory path
@@ -515,22 +517,22 @@ public class HomeController {
 				if (text != null) {
 					String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SEARCH_BY_PATTERN, dirPath,
 							text, logDir,output);
-					log.info("command :  " + cmd);
+					log.info(Messages.COMMAND, cmd);
 					executeScript(cmd);
 				}
 			} else {
 				if (extension != null) {
 					String cmd = MultiprocessorUtil.getProcessorCommand(ScriptConstants.SEARCH_BY_EXTENSION, dirPath,
 							extension, logDir,output);
-					log.info("command  : " + cmd);
+					log.info(Messages.COMMAND, cmd);
 					executeScript(cmd);
 				}
 			}
 
-			log.info("Dir name." + dirPath);
-			log.info("searchId." + searchId);
-			log.info("extension." + extension);
-			log.info("text." + text);
+			log.info("Dir name: {0}", dirPath);
+			log.info("searchId: {0]", searchId);
+			log.info("extension: {0}", extension);
+			log.info("text: {0}", text);
 
 			// calculate execution time
 			String executionTime = calculateTime(startTime);
@@ -539,18 +541,18 @@ public class HomeController {
 			searchFlag=false;
 
 			// sending the response
-			if (this.SttdCode != 0) {
-				String message = Messages.ERROR_IN_SEARCH + this.StdErr;
+			if (this.sttdCode != 0) {
+				message = Messages.ERROR_IN_SEARCH + this.stdErr;
 				statusInfo = alert(message, true);
 			} else {
-				String message = Messages.SEARCH_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.StdOut
+				message = Messages.SEARCH_SUCCESSFUL + MultiProcessorConstants.NEWLINE + this.stdOut
 						+ MultiProcessorConstants.NEWLINE + executionTime;
 				statusInfo = alert(message, false);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			if (this.SttdCode != 0) {
-				String message = Messages.ERROR_IN_SEARCH + this.StdErr;
+			
+			if (this.sttdCode != 0) {
+				message = Messages.ERROR_IN_SEARCH + this.stdErr;
 				throw new Exception(message);
 			}else 
 				throw new Exception(e.getLocalizedMessage());	
@@ -582,11 +584,11 @@ public class HomeController {
 		// sending email
 		sslemail.sendemail(subject, desfeedback);
 
-		log.info("feedbacktype " + feedbacktype);
-		log.info("desfeedback " + desfeedback);
-		log.info("name " + name);
-		log.info("email " + email);
-		return new ResponseEntity<String>(Messages.FEEDBACK_SUBMITTED_SUCCESSFULLY, HttpStatus.OK);
+		log.info("feedbacktype: {0}", feedbacktype);
+		log.info("desfeedback: {0}", desfeedback);
+		log.info("name: {0}", name);
+		log.info("email: {0}", email);
+		return new ResponseEntity<>(Messages.FEEDBACK_SUBMITTED_SUCCESSFULLY, HttpStatus.OK);
 	}
 
 	
@@ -600,9 +602,9 @@ public class HomeController {
 		
 		//sending response
 		if (isError) {
-			return new ResponseEntity<String>(statusInfo, HttpStatus.EXPECTATION_FAILED);
+			return new ResponseEntity<>(statusInfo, HttpStatus.EXPECTATION_FAILED);
 		} else {
-			return new ResponseEntity<String>(statusInfo, HttpStatus.OK);
+			return new ResponseEntity<>(statusInfo, HttpStatus.OK);
 		}
 	}
 	
@@ -676,7 +678,7 @@ public class HomeController {
 		try {
 			FileUtils.writeByteArrayToFile(serverFile, file.getBytes());
 		} catch (Exception e) {
-			e.printStackTrace();
+			
 			throw new Exception(e.getLocalizedMessage());
 		}
 		
